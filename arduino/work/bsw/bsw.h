@@ -16,6 +16,7 @@
 /* Inclusion of all BSW header files */
 #include "usart/usart.h"
 #include "dio/dio.h"
+#include "timer/timer.h"
 
 /*
  * Definition of all configurable constants of BSW
@@ -30,6 +31,7 @@ typedef struct
 {
 	usart* p_usart; /*!< Pointer to usart driver object */
 	dio* p_dio; /*!< Pointer to dio driver object */
+	timer* p_timer; /*!< Pointer to timer driver object */
 }
 T_BSW_cnf_struct;
 

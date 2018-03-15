@@ -9,12 +9,23 @@
 
 #include <avr/io.h>
 #include <util/delay.h>
+#include <avr/interrupt.h>
 
 
 #include "bsw/bsw.h"
 #include "asw/asw.h"
 
 
+/*!
+ * @brief Main software interrupt
+ * @details This function handles the interrupt raised by Timer #1. It wakes up the software every 500 ms to perform applications.
+ * @return Nothing
+ */
+ISR(TIMER1_COMPA_vect)
+{
+	ASW_cnf_struct.p_usartDebug->sendData((uint8_t*)("hello\n"));
+
+}
 
 /*!
  * @brief Background task of program
@@ -24,23 +35,20 @@
 int main( void )
 {
 
+	/* Initialize all classes */
 	bsw_init();
 	asw_init();
 
 
-	for( ; ; )
-	{
-		// set Pin #7 of Port B
-		BSW_cnf_struct.p_dio->dio_setPortB(7,true);
 
-		// Wait for 1 second
-		_delay_ms( 250.0 ) ;
+	/* Enable interrupts */
+	sei();
 
-		BSW_cnf_struct.p_dio->dio_setPortB(7,false);
+	/* Configure and start main timer for periodic interrupt at 500ms */
+	BSW_cnf_struct.p_timer->configureTimer1(256,31250);
+	BSW_cnf_struct.p_timer->startTimer1();
 
-		_delay_ms( 250.0 ) ;
-
-		ASW_cnf_struct.p_usartDebug->sendData((uint8_t*)("hello\n"));
-	}
+	/* Go into an infinite loop */
+	while(1){}
 }
 

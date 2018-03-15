@@ -15,5 +15,6 @@ void bsw_init()
 {
 	BSW_cnf_struct.p_usart = new usart(USART_BAUDRATE);
 	BSW_cnf_struct.p_dio = new dio();
+	BSW_cnf_struct.p_timer = new timer();
 }
 

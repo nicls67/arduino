@@ -9,6 +9,7 @@
 #ifndef WORK_BSW_DIO_DIO_H_
 #define WORK_BSW_DIO_DIO_H_
 
+#include <avr/io.h>
 
 /*!
  * @brief DIO class
