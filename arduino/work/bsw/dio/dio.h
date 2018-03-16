@@ -37,6 +37,16 @@ public:
 	 */
 	void dio_setPortB(uint8_t pin, bool state);
 
+	/*!
+	 * @brief Inverts the state of output port
+	 * @details This function inverts the state of the chosen pin of port B
+	 *
+	 * @param [in] pin Pin to invert
+	 * @return Nothing
+	 *
+	 */
+	void dio_invertPortB(uint8_t pin);
+
 private:
 
 	/*!

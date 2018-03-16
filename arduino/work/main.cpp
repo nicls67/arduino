@@ -24,7 +24,7 @@
 ISR(TIMER1_COMPA_vect)
 {
 	ASW_cnf_struct.p_usartDebug->sendData((uint8_t*)("hello\n"));
-
+	BSW_cnf_struct.p_dio->dio_invertPortB(7);
 }
 
 /*!

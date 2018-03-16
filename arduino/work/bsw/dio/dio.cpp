@@ -34,5 +34,8 @@ void dio::dio_setPortB(uint8_t pin, bool state)
 	PORTB |= (state << pin);
 }
 
-
+void dio::dio_invertPortB(uint8_t pin)
+{
+	PORTB ^= (1 << pin);
+}
 
