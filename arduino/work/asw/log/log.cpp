@@ -8,6 +8,7 @@
  */
 
 #include <avr/io.h>
+#include <stdlib.h>
 
 #include "log.h"
 #include "../../bsw/usart/usart.h"
@@ -26,5 +27,17 @@ void UsartDebug::sendData(char* str)
 	BSW_cnf_struct.p_usart->usart_sendString((uint8_t*)str);
 }
 
+void UsartDebug::sendInteger(uint16_t data, uint8_t base)
+{
+	/* If the base in not between 2 and 36, 10 is used as default */
+	if((base > 36) && (base < 2))
+		base = 10;
 
+	char* str = (char*)malloc(5* sizeof(char));
+	str = itoa(data, str, base);
+
+	BSW_cnf_struct.p_usart->usart_sendString((uint8_t*)str);
+
+	free(str);
+}
 

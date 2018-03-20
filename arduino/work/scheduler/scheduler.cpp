@@ -42,9 +42,6 @@ void scheduler::launchPeriodicTasks()
 {
 	Task_t* cur_task = Task_cnf_struct.firstTask;
 
-//#ifdef DEBUG_FLAG
-//	ASW_cnf_struct.p_usartDebug->sendData("Launcher\n");
-//#endif
 	/* Parse all tasks */
 	while(cur_task != 0)
 	{
@@ -53,9 +50,6 @@ void scheduler::launchPeriodicTasks()
 		{
 			/* Launch the task */
 			(*cur_task->TaskPtr)();
-#ifdef DEBUG_FLAG
-			ASW_cnf_struct.p_usartDebug->sendData((char*)"Task launched\n");
-#endif
 		}
 
 		/* Go to next task */
@@ -65,14 +59,11 @@ void scheduler::launchPeriodicTasks()
 	/* Increment counter */
 	pit_number++;
 
-//#ifdef DEBUG_FLAG
-//	ASW_cnf_struct.p_usartDebug->sendData("pit number ");
-//	char* str = (char*)malloc(5* sizeof(char));
-//	str = itoa(pit_number, str, 10);
-//	ASW_cnf_struct.p_usartDebug->sendData(str);
-//	ASW_cnf_struct.p_usartDebug->sendData("\n");
-//	free(str);
-//#endif
+#ifdef DEBUG_FLAG
+	ASW_cnf_struct.p_usartDebug->sendData((char*)"pit number ");
+	ASW_cnf_struct.p_usartDebug->sendInteger(pit_number,10);
+	ASW_cnf_struct.p_usartDebug->sendData((char*)"\n");
+#endif
 }
 
 void scheduler::startScheduling()
@@ -109,12 +100,4 @@ void scheduler::addPeriodicTask(TaskPtr_t task_ptr, uint16_t a_period)
 	/* Increment task number */
 	Task_cnf_struct.task_nb++;
 
-#ifdef DEBUG_FLAG
-	ASW_cnf_struct.p_usartDebug->sendData((char*)"Task added ");
-	char* str = (char*)malloc(3* sizeof(char));
-	str = itoa(Task_cnf_struct.task_nb, str, 10);
-	ASW_cnf_struct.p_usartDebug->sendData((char*)str);
-	ASW_cnf_struct.p_usartDebug->sendData((char*)"\n");
-	free(str);
-#endif
 }

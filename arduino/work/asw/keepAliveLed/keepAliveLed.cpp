@@ -30,7 +30,4 @@ void keepAliveLed::blinkLed_task()
 {
 	/* Call DIO driver to invert LED pin state */
 	BSW_cnf_struct.p_dio->dio_invertPortB(PB7);
-#ifdef DEBUG_FLAG
-	ASW_cnf_struct.p_usartDebug->sendData((char*)"LED\n");
-#endif
 }

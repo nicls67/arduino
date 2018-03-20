@@ -27,12 +27,22 @@ public:
 	UsartDebug();
 
 	/*!
-	 * @brief Send a debug data on USART link
+	 * @brief Send a string on USART link
 	 * @details This functions sends the requested string on USART link by calling driver's transmission function
 	 * @param [in] str Pointer to the string being sent
 	 * @return Nothing
 	 */
 	void sendData(char* str);
+
+	/*!
+	 * @brief Send a integer data on USART link
+	 * @details This functions sends the requested integer on USART link by calling driver's transmission function.
+	 * 			The integer is first converted into a string and then sent
+	 * @param [in] data integer data to be sent
+	 * @param [in] base numerical base used to convert integer into string (between 2 and 36)
+	 * @return Nothing
+	 */
+	void sendInteger(uint16_t data, uint8_t base);
 
 private:
 };

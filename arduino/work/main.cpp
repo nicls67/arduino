@@ -34,9 +34,6 @@
  */
 ISR(TIMER1_COMPA_vect)
 {
-#ifdef DEBUG_FLAG
-	ASW_cnf_struct.p_usartDebug->sendData((char*)"IT started\n");
-#endif
 	p_scheduler->launchPeriodicTasks();
 }
 
