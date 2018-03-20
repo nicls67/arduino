@@ -6,6 +6,13 @@
  *  @author nicls67
  */
 
+#include <avr/io.h>
+#include <stdlib.h>
+
+/* Inclusion of all BSW header files */
+#include "usart/usart.h"
+#include "dio/dio.h"
+#include "timer/timer.h"
 
 #include "bsw.h"
 

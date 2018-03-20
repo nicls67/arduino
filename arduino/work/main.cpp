@@ -7,13 +7,24 @@
  */
 
 
+
+#include "main.h"
+
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
+#include <stdlib.h>
 
+#include "lib/operators.h"
 
+#include "bsw/usart/usart.h"
+#include "bsw/dio/dio.h"
+#include "bsw/timer/timer.h"
 #include "bsw/bsw.h"
+#include "asw/log/log.h"
+#include "asw/keepAliveLed/keepAliveLed.h"
 #include "asw/asw.h"
+#include "scheduler/scheduler.h"
 
 
 /*!
@@ -23,8 +34,10 @@
  */
 ISR(TIMER1_COMPA_vect)
 {
-	ASW_cnf_struct.p_usartDebug->sendData((uint8_t*)("hello\n"));
-	BSW_cnf_struct.p_dio->dio_invertPortB(7);
+#ifdef DEBUG_FLAG
+	ASW_cnf_struct.p_usartDebug->sendData((char*)"IT started\n");
+#endif
+	p_scheduler->launchPeriodicTasks();
 }
 
 /*!
@@ -35,18 +48,22 @@ ISR(TIMER1_COMPA_vect)
 int main( void )
 {
 
+	/* Initialize scheduler */
+	p_scheduler = new scheduler();
+
 	/* Initialize all classes */
 	bsw_init();
 	asw_init();
-
-
 
 	/* Enable interrupts */
 	sei();
 
 	/* Configure and start main timer for periodic interrupt at 500ms */
-	BSW_cnf_struct.p_timer->configureTimer1(256,31250);
-	BSW_cnf_struct.p_timer->startTimer1();
+	p_scheduler->startScheduling();
+
+#ifdef DEBUG_FLAG
+	ASW_cnf_struct.p_usartDebug->sendData((char*)"Initialization done\n");
+#endif
 
 	/* Go into an infinite loop */
 	while(1){}

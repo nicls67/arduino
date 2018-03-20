@@ -10,12 +10,6 @@
 #ifndef WORK_ASW_ASW_H_
 #define WORK_ASW_ASW_H_
 
-#include <avr/io.h>
-#include <stdlib.h>
-#include "../lib/operators.h"
-
-/* Inclusion of all ASW header files */
-#include "log/log.h"
 
 
 /*!
@@ -25,6 +19,7 @@
 typedef struct
 {
 	UsartDebug* p_usartDebug; /*!< Pointer to usart debug object */
+	keepAliveLed* p_keepAliveLed; /*!< Pointer to keepAliveLed object */
 }
 T_ASW_cnf_struct;
 

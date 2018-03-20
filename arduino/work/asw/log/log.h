@@ -10,8 +10,6 @@
 #ifndef WORK_LIB_LOG_H_
 #define WORK_LIB_LOG_H_
 
-#include <avr/io.h>
-#include "../../bsw/bsw.h"
 
 /*!
  * @brief
@@ -34,7 +32,7 @@ public:
 	 * @param [in] str Pointer to the string being sent
 	 * @return Nothing
 	 */
-	void sendData(uint8_t* str);
+	void sendData(char* str);
 
 private:
 };

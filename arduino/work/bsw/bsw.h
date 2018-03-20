@@ -9,14 +9,10 @@
 #ifndef WORK_BSW_BSW_H_
 #define WORK_BSW_BSW_H_
 
-#include <avr/io.h>
-#include <stdlib.h>
-#include "../lib/operators.h"
 
-/* Inclusion of all BSW header files */
-#include "usart/usart.h"
-#include "dio/dio.h"
-#include "timer/timer.h"
+
+
+
 
 /*
  * Definition of all configurable constants of BSW
