@@ -9,6 +9,8 @@
 #ifndef WORK_BSW_DIO_DIO_H_
 #define WORK_BSW_DIO_DIO_H_
 
+#define PORT_CNF_OUT 1
+#define PORT_CNF_IN  0
 
 
 /*!
@@ -46,6 +48,29 @@ public:
 	 *
 	 */
 	void dio_invertPortB(uint8_t pin);
+
+	/*!
+	 *  @brief Gets the logical state of selected pin
+	 *  @details This function gets the logical value of the selected pin of port B
+	 *
+	 *  @param [in] pin pin of port B to get value
+	 *  @return Logical state of selected pin
+	 */
+	bool dio_getPortB(uint8_t pin);
+
+	/*!
+	 *  @brief Changes the IO configuration of the selected pin of port B
+	 *  @details This function configures the selected pin of port B as input or output according to parameter cnf
+	 *
+	 *  @param [in] pin pin selected for configuration change
+	 *  @param [in] cnf Requested configuration for the selected pin\n
+	 *   			PORT_CNF_OUT (1) : pin configured as output\n
+	 *   			PORT_CNF_IN  (0) : pin configured as input
+	 *
+	 *   @return Nothing
+	 */
+	void dio_changePortBPinCnf(uint8_t pin, uint8_t cnf);
+
 
 private:
 

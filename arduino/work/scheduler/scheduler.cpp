@@ -15,9 +15,11 @@
 #include "../bsw/usart/usart.h"
 #include "../bsw/dio/dio.h"
 #include "../bsw/timer/timer.h"
+#include "../bsw/dht22/dht22.h"
 #include "../bsw/bsw.h"
 #include "../asw/log/log.h"
 #include "../asw/keepAliveLed/keepAliveLed.h"
+#include "../asw/TempSensor/TempSensor.h"
 #include "../asw/asw.h"
 #include "../main.h"
 
@@ -31,8 +33,8 @@ scheduler::scheduler()
 	Task_cnf_struct.task_nb = 0;
 	Task_cnf_struct.firstTask = 0;
 
-	/* Initialize counter to 0 */
-	pit_number = 0;
+	/* Initialize counter to 1, then the tasks are not started at first PIT to avoid HW initialization issue */
+	pit_number = 1;
 
 	/* Configure timer for periodic interrupt */
 	BSW_cnf_struct.p_timer->configureTimer1(PRESCALER_PERIODIC_TIMER, TIMER_CTC_VALUE);
@@ -41,6 +43,7 @@ scheduler::scheduler()
 void scheduler::launchPeriodicTasks()
 {
 	Task_t* cur_task = Task_cnf_struct.firstTask;
+	uint8_t task_nb = 0; /* Used for debug */
 
 	/* Parse all tasks */
 	while(cur_task != 0)
@@ -48,6 +51,12 @@ void scheduler::launchPeriodicTasks()
 		/* If the task shall be launched at the current cycle */
 		if((pit_number % (cur_task->period / SW_PERIOD_MS)) == 0)
 		{
+			task_nb++;
+//#ifdef DEBUG_FLAG
+//			ASW_cnf_struct.p_usartDebug->sendData((char*)"Launching task ");
+//			ASW_cnf_struct.p_usartDebug->sendInteger(task_nb,10);
+//			ASW_cnf_struct.p_usartDebug->sendData((char*)"\n");
+//#endif
 			/* Launch the task */
 			(*cur_task->TaskPtr)();
 		}
@@ -59,11 +68,11 @@ void scheduler::launchPeriodicTasks()
 	/* Increment counter */
 	pit_number++;
 
-#ifdef DEBUG_FLAG
-	ASW_cnf_struct.p_usartDebug->sendData((char*)"pit number ");
-	ASW_cnf_struct.p_usartDebug->sendInteger(pit_number,10);
-	ASW_cnf_struct.p_usartDebug->sendData((char*)"\n");
-#endif
+//#ifdef DEBUG_FLAG
+//	ASW_cnf_struct.p_usartDebug->sendData((char*)"pit number ");
+//	ASW_cnf_struct.p_usartDebug->sendInteger(pit_number,10);
+//	ASW_cnf_struct.p_usartDebug->sendData((char*)"\n");
+//#endif
 }
 
 void scheduler::startScheduling()
@@ -90,7 +99,7 @@ void scheduler::addPeriodicTask(TaskPtr_t task_ptr, uint16_t a_period)
 	else
 	{
 		/* Find the last task of the chain */
-		while(cur_task != 0)
+		while(cur_task->nextTask != 0)
 			cur_task = cur_task->nextTask;
 
 		/* Link the new task to the chain */
@@ -100,4 +109,9 @@ void scheduler::addPeriodicTask(TaskPtr_t task_ptr, uint16_t a_period)
 	/* Increment task number */
 	Task_cnf_struct.task_nb++;
 
+}
+
+inline uint32_t scheduler::getPitNumber()
+{
+	return pit_number;
 }

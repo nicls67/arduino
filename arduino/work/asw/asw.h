@@ -20,6 +20,7 @@ typedef struct
 {
 	UsartDebug* p_usartDebug; /*!< Pointer to usart debug object */
 	keepAliveLed* p_keepAliveLed; /*!< Pointer to keepAliveLed object */
+	TempSensor* p_TempSensor; /*!< Pointer to TempSensor object */
 }
 T_ASW_cnf_struct;
 

@@ -14,6 +14,7 @@
 #include "../../bsw/usart/usart.h"
 #include "../../bsw/dio/dio.h"
 #include "../../bsw/timer/timer.h"
+#include "../../bsw/dht22/dht22.h"
 #include "../../bsw/bsw.h"
 
 UsartDebug::UsartDebug()
@@ -41,3 +42,14 @@ void UsartDebug::sendInteger(uint16_t data, uint8_t base)
 	free(str);
 }
 
+void UsartDebug::sendBool(bool data)
+{
+	uint8_t* str = (uint8_t*)malloc(2*sizeof(uint8_t));
+
+	if (data == true)
+		str = (uint8_t*)"1";
+	else
+		str = (uint8_t*)"0";
+
+	BSW_cnf_struct.p_usart->usart_sendString(str);
+}

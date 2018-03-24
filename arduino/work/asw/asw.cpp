@@ -12,6 +12,7 @@
 /* Inclusion of all ASW header files*/
 #include "log/log.h"
 #include "keepAliveLed/keepAliveLed.h"
+#include "TempSensor/TempSensor.h"
 
 #include "asw.h"
 
@@ -23,4 +24,5 @@ void asw_init()
 {
 	ASW_cnf_struct.p_usartDebug = new UsartDebug();
 	ASW_cnf_struct.p_keepAliveLed = new keepAliveLed();
+	ASW_cnf_struct.p_TempSensor = new TempSensor();
 }

@@ -79,6 +79,7 @@
 		<buildTargets>
 			<target name="clean" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>make</buildCommand>
+				<buildArguments>-j16</buildArguments>
 				<buildTarget>clean</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>true</useDefaultCommand>
@@ -93,8 +94,24 @@
 				<runAllBuilders>true</runAllBuilders>
 			</target>
 			<target name="doxygen" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>../doxygen/make_doxygen.bat</buildCommand>
+				<buildCommand>doxygen</buildCommand>
+				<buildArguments>../doxygen/DoxyFile</buildArguments>
+				<buildTarget/>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>false</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
+			<target name="latex" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>../doxygen/latex/make.bat</buildCommand>
 				<buildArguments/>
+				<buildTarget/>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>false</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
+			<target name="refman copy" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>cp</buildCommand>
+				<buildArguments>../doxygen/latex/refman.pdf ../doxygen</buildArguments>
 				<buildTarget/>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>

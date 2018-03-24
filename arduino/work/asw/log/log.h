@@ -12,7 +12,7 @@
 
 
 /*!
- * @brief
+ * @brief Class used for debugging on usart link
  * @details This class defines functions used for sending debug data on USART link.
  */
 class UsartDebug
@@ -43,6 +43,15 @@ public:
 	 * @return Nothing
 	 */
 	void sendInteger(uint16_t data, uint8_t base);
+
+	/*!
+	* @brief Send a boolean data on USART link
+	* @details 	This functions sends the requested boolean on USART link by calling driver's transmission function.
+	* 			The boolean data is first converted into a string and then sent
+	* @param [in] data boolean data to be sent
+	* @return Nothing
+	*/
+	void sendBool(bool data);
 
 private:
 };

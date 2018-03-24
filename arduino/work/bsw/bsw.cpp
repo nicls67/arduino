@@ -13,6 +13,7 @@
 #include "usart/usart.h"
 #include "dio/dio.h"
 #include "timer/timer.h"
+#include "dht22/dht22.h"
 
 #include "bsw.h"
 
@@ -23,5 +24,6 @@ void bsw_init()
 	BSW_cnf_struct.p_usart = new usart(USART_BAUDRATE);
 	BSW_cnf_struct.p_dio = new dio();
 	BSW_cnf_struct.p_timer = new timer();
+	BSW_cnf_struct.p_dht22 = new dht22();
 }
 

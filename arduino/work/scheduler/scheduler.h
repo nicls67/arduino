@@ -67,6 +67,13 @@ public:
 	 */
 	void addPeriodicTask(TaskPtr_t task_ptr, uint16_t a_period);
 
+	/*!
+	 * @brief Get function for PIT number
+	 * @details This function returns the PIT number
+	 * @return PIT number
+	 */
+	uint32_t getPitNumber();
+
 
 private:
 
