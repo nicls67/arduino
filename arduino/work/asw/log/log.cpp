@@ -11,11 +11,8 @@
 #include <stdlib.h>
 
 #include "log.h"
-#include "../../bsw/usart/usart.h"
-#include "../../bsw/dio/dio.h"
-#include "../../bsw/timer/timer.h"
-#include "../../bsw/dht22/dht22.h"
-#include "../../bsw/bsw.h"
+
+
 
 UsartDebug::UsartDebug()
 {

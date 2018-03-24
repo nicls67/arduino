@@ -10,17 +10,7 @@
 #include <avr/io.h>
 
 #include "keepAliveLed.h"
-#include "../../scheduler/scheduler.h"
-#include "../../bsw/usart/usart.h"
-#include "../../bsw/dio/dio.h"
-#include "../../bsw/timer/timer.h"
-#include "../../bsw/dht22/dht22.h"
-#include "../../bsw/bsw.h"
-#include "../log/log.h"
-#include "../keepAliveLed/keepAliveLed.h"
-#include "../TempSensor/TempSensor.h"
-#include "../../asw/asw.h"
-#include "../../main.h"
+
 
 keepAliveLed::keepAliveLed()
 {

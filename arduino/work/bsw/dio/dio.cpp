@@ -8,11 +8,8 @@
 
 
 #include <avr/io.h>
-#include "../usart/usart.h"
-#include "../dio/dio.h"
-#include "../timer/timer.h"
-#include "../dht22/dht22.h"
-#include "../bsw.h"
+
+#include "dio.h"
 
 /*!
  * @brief Defines the configuration of DDRB register

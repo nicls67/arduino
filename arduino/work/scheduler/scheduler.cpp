@@ -10,19 +10,8 @@
 #include <stdlib.h>
 #include <avr/io.h>
 
+
 #include "../lib/operators.h"
-
-#include "../bsw/usart/usart.h"
-#include "../bsw/dio/dio.h"
-#include "../bsw/timer/timer.h"
-#include "../bsw/dht22/dht22.h"
-#include "../bsw/bsw.h"
-#include "../asw/log/log.h"
-#include "../asw/keepAliveLed/keepAliveLed.h"
-#include "../asw/TempSensor/TempSensor.h"
-#include "../asw/asw.h"
-#include "../main.h"
-
 #include "scheduler.h"
 
 scheduler* p_scheduler; /*!< Pointer to scheduler object */

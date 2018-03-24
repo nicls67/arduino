@@ -10,16 +10,8 @@
 #include <avr/io.h>
 
 #include "TempSensor.h"
-#include "../../scheduler/scheduler.h"
-#include "../../bsw/usart/usart.h"
-#include "../../bsw/dio/dio.h"
-#include "../../bsw/timer/timer.h"
-#include "../../bsw/dht22/dht22.h"
-#include "../../bsw/bsw.h"
 
-#include "../log/log.h"
-#include "../keepAliveLed/keepAliveLed.h"
-#include "../asw.h"
+
 
 TempSensor::TempSensor()
 {

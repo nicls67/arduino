@@ -31,4 +31,8 @@ public:
 	static void readTempSensor_task();
 };
 
+#include "../../scheduler/scheduler.h"
+#include "../../bsw/bsw.h"
+#include "../asw.h"
+
 #endif /* WORK_ASW_TEMPSENSOR_TEMPSENSOR_H_ */

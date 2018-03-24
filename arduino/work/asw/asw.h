@@ -10,6 +10,10 @@
 #ifndef WORK_ASW_ASW_H_
 #define WORK_ASW_ASW_H_
 
+/* Inclusion of all ASW header files*/
+#include "log/log.h"
+#include "keepAliveLed/keepAliveLed.h"
+#include "TempSensor/TempSensor.h"
 
 
 /*!

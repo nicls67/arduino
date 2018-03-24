@@ -11,6 +11,7 @@
 #define WORK_LIB_LOG_H_
 
 
+
 /*!
  * @brief Class used for debugging on usart link
  * @details This class defines functions used for sending debug data on USART link.
@@ -56,6 +57,6 @@ public:
 private:
 };
 
-
+#include "../../bsw/bsw.h"
 
 #endif /* WORK_LIB_LOG_H_ */

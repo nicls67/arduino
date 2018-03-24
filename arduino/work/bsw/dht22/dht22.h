@@ -10,6 +10,9 @@
 #ifndef WORK_BSW_DHT22_DHT22_H_
 #define WORK_BSW_DHT22_DHT22_H_
 
+
+
+
 #define DHT22_PORT PB6 /*!< DHT22 is connected to port PB6 */
 
 /*!
@@ -49,5 +52,8 @@ private:
 	void initializeCommunication();
 
 };
+
+#include "../bsw.h"
+#include "../../asw/asw.h"
 
 #endif /* WORK_BSW_DHT22_DHT22_H_ */

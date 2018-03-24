@@ -11,6 +11,7 @@
 #define WORK_ASW_KEEPALIVELED_KEEPALIVELED_H_
 
 
+
 #define PERIOD_MS_TASK_LED SW_PERIOD_MS /*!< Period for led blinking */
 
 /*!
@@ -39,5 +40,9 @@ public:
 private:
 
 };
+
+#include "../../bsw/bsw.h"
+#include "../../scheduler/scheduler.h"
+#include "../../main.h"
 
 #endif /* WORK_ASW_KEEPALIVELED_KEEPALIVELED_H_ */

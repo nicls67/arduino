@@ -12,15 +12,10 @@
 #include <avr/interrupt.h>
 
 #include "dht22.h"
-#include "../../bsw/usart/usart.h"
-#include "../../bsw/dio/dio.h"
-#include "../../bsw/timer/timer.h"
-#include "../../bsw/bsw.h"
 
-#include "../../asw/log/log.h"
-#include "../../asw/keepAliveLed/keepAliveLed.h"
-#include "../../asw/TempSensor/TempSensor.h"
-#include "../../asw/asw.h"
+
+
+
 
 #define MAX_WAIT_TIME_US 100
 

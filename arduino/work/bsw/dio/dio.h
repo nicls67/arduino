@@ -9,6 +9,8 @@
 #ifndef WORK_BSW_DIO_DIO_H_
 #define WORK_BSW_DIO_DIO_H_
 
+
+
 #define PORT_CNF_OUT 1
 #define PORT_CNF_IN  0
 

@@ -9,10 +9,7 @@
 
 #include <avr/io.h>
 
-/* Inclusion of all ASW header files*/
-#include "log/log.h"
-#include "keepAliveLed/keepAliveLed.h"
-#include "TempSensor/TempSensor.h"
+
 
 #include "asw.h"
 
