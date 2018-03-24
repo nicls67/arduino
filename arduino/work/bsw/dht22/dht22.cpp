@@ -35,8 +35,6 @@ bool dht22::read()
 	uint8_t rcv_buf_data[32];
 	uint8_t rcv_buf_crc[8];
 
-	ASW_cnf_struct.p_usartDebug->sendData((char*)"\nReading...\n");
-
 	/* Disable interrupt during the communication */
 	cli();
 
@@ -191,12 +189,6 @@ bool dht22::read()
 	/* Convert data in humidity and temperature */
 	raw_humidity = (raw_rcv_data >> 16) & 0xFFFF;
 	raw_temperature = raw_rcv_data & 0xFFFF;
-
-
-	ASW_cnf_struct.p_usartDebug->sendData((char*)"\nHumidity : ");
-	ASW_cnf_struct.p_usartDebug->sendInteger(raw_humidity,10);
-	ASW_cnf_struct.p_usartDebug->sendData((char*)"\nTemp : ");
-	ASW_cnf_struct.p_usartDebug->sendInteger(raw_temperature,10);
 
 
 	return true;

@@ -42,9 +42,6 @@ int main( void )
 	/* Configure and start main timer for periodic interrupt at 500ms */
 	p_scheduler->startScheduling();
 
-#ifdef DEBUG_FLAG
-	ASW_cnf_struct.p_usartDebug->sendData((char*)"Initialization done\n");
-#endif
 
 	/* Go into an infinite loop */
 	while(1){}

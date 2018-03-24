@@ -21,7 +21,5 @@
 #include "bsw/bsw.h"
 #include "scheduler/scheduler.h"
 
-#define DEBUG_FLAG
-
 
 #endif /* WORK_MAIN_H_ */

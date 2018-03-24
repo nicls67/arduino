@@ -24,7 +24,4 @@ void TempSensor::readTempSensor_task()
 	bool validity;
 
 	validity = BSW_cnf_struct.p_dht22->read();
-
-	ASW_cnf_struct.p_usartDebug->sendData((char*)"\nValidity ");
-	ASW_cnf_struct.p_usartDebug->sendBool(validity);
 }
