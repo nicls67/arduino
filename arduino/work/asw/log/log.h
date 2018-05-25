@@ -10,7 +10,8 @@
 #ifndef WORK_LIB_LOG_H_
 #define WORK_LIB_LOG_H_
 
-
+#define PERIOD_MS_TASK_DISPLAY_TEMP 5000 /*!< Period for displaying temperature and humidity data */
+#define F_DISPLAY_TEMP
 
 /*!
  * @brief Class used for debugging on usart link
@@ -54,9 +55,17 @@ public:
 	*/
 	void sendBool(bool data);
 
+	/*!
+	 * @brief Displays temperature and humidity data on usart link
+	 * @details This task sends temperature and humidity data on usart link every 5 seconds
+	 * @return Nothing
+	 */
+	static void DisplayTempAndHumUsart_task();
+
 private:
 };
 
 #include "../../bsw/bsw.h"
+#include "../../scheduler/scheduler.h"
 
 #endif /* WORK_LIB_LOG_H_ */

@@ -36,13 +36,13 @@ public:
 	 * @details This function communicates with DHT22 using 1-wire protocol to read raw values of temperature and humidity.
 	 * 			A checksum check is done when communication is finished to validate the received data
 	 *
+	 * @param [out] raw_humidity Raw humidity value received from sensor
+	 * @param [out] raw_temperature Raw temperature value received from sensor
 	 * @return Validity of the read value
 	 */
-	bool read();
+	bool read(uint16_t* raw_humidity, uint16_t* raw_temperature);
 
 private:
-	uint16_t raw_temperature; /*!< Raw value of temperature read from DHT22 */
-	uint16_t raw_humidity; /*!< Raw value of humidity read from DHT22 */
 
 	/*!
 	 * @brief Initializes the communication

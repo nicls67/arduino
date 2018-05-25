@@ -16,7 +16,10 @@
 
 UsartDebug::UsartDebug()
 {
-	/* The function does nothing yet */
+#ifdef F_DISPLAY_TEMP
+	/* Add task for temperature display */
+	p_scheduler->addPeriodicTask((TaskPtr_t)(&UsartDebug::DisplayTempAndHumUsart_task), PERIOD_MS_TASK_DISPLAY_TEMP);
+#endif
 }
 
 void UsartDebug::sendData(char* str)
@@ -49,4 +52,45 @@ void UsartDebug::sendBool(bool data)
 		str = (uint8_t*)"0";
 
 	BSW_cnf_struct.p_usart->usart_sendString(str);
+}
+
+void UsartDebug::DisplayTempAndHumUsart_task()
+{
+	uint16_t data;
+	uint8_t data_int, data_dec;
+	bool validity;
+
+	ASW_cnf_struct.p_usartDebug->sendData((char*)"\n\nTemperature : ");
+
+	validity = ASW_cnf_struct.p_TempSensor->getTemp(&data);
+
+	if(validity)
+	{
+		data_int = (uint8_t)(data/10);
+		data_dec = (uint8_t)(data%10);
+		ASW_cnf_struct.p_usartDebug->sendInteger(data_int,10);
+		ASW_cnf_struct.p_usartDebug->sendData((char*)".");
+		ASW_cnf_struct.p_usartDebug->sendInteger(data_dec,10);
+	}
+	else
+		ASW_cnf_struct.p_usartDebug->sendData((char*)"invalid");
+
+
+	ASW_cnf_struct.p_usartDebug->sendData((char*)" degC\nHumidite : ");
+
+	validity = ASW_cnf_struct.p_TempSensor->getHumidity(&data);
+
+	if(validity)
+	{
+		data_int = (uint8_t)(data/10);
+		data_dec = (uint8_t)(data%10);
+		ASW_cnf_struct.p_usartDebug->sendInteger(data_int,10);
+		ASW_cnf_struct.p_usartDebug->sendData((char*)".");
+		ASW_cnf_struct.p_usartDebug->sendInteger(data_dec,10);
+	}
+	else
+		ASW_cnf_struct.p_usartDebug->sendData((char*)"invalid");
+
+	ASW_cnf_struct.p_usartDebug->sendData((char*)" %");
+
 }

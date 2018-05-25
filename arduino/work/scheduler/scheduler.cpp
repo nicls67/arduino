@@ -100,7 +100,7 @@ void scheduler::addPeriodicTask(TaskPtr_t task_ptr, uint16_t a_period)
 
 }
 
-inline uint32_t scheduler::getPitNumber()
+uint32_t scheduler::getPitNumber()
 {
 	return pit_number;
 }

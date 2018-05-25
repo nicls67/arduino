@@ -21,13 +21,10 @@
 
 dht22::dht22()
 {
-	raw_temperature = 0;
-	raw_humidity = 0;
-
 	initializeCommunication();
 }
 
-bool dht22::read()
+bool dht22::read(uint16_t* raw_humidity, uint16_t* raw_temperature)
 {
 	uint8_t wait_cpt;
 	uint8_t bit_cpt = 32;
@@ -187,8 +184,8 @@ bool dht22::read()
 
 
 	/* Convert data in humidity and temperature */
-	raw_humidity = (raw_rcv_data >> 16) & 0xFFFF;
-	raw_temperature = raw_rcv_data & 0xFFFF;
+	*raw_humidity = (raw_rcv_data >> 16) & 0xFFFF;
+	*raw_temperature = raw_rcv_data & 0xFFFF;
 
 
 	return true;
