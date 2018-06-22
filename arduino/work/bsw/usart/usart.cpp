@@ -30,8 +30,9 @@ void usart::usart_init()
 	UBRR0H = (uint8_t) ( (ui32UBRR>>8) & (0x000000FF) ) ;
 	UBRR0L = (uint8_t) ( ui32UBRR & (0x000000FF) ) ;
 
-	/* Enable receiver and transmitter */
-	UCSR0B = (1<<RXEN0) | (1<<TXEN0) ;
+	/* Enable receiver and transmitter
+	 * Enable Rx complete interrupt    */
+	UCSR0B = (1<<RXEN0) | (1<<TXEN0) | (1<<RXCIE0) ;
 
 	/* Set frame format: 8data, 2stop bit */
 	UCSR0C = (1<<USBS0) | (3<<UCSZ00) ;
@@ -74,3 +75,14 @@ void usart::usart_transmit( uint8_t Data )
 	/* Put data into buffer, sends the data */
 	UDR0 = Data ;
 }
+
+uint8_t usart::usart_read()
+{
+	/* Wait for data to be received */
+	while ( !(UCSR0A & (1<<RXC0)) );
+
+	/* Get and return received data from buffer */
+	return UDR0;
+}
+
+

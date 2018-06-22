@@ -21,6 +21,28 @@ ISR(TIMER1_COMPA_vect)
 	p_scheduler->launchPeriodicTasks();
 }
 
+
+/*!
+ * @brief USART Rx Complete interrupt
+ * @details This function handles the interrupt raised when a frame has been received by USART. If debug mode mode is active, it calls debug mode management function.
+ * 			If inactive, it calls debug mode activation function if the received character is 'a'
+ * @return Nothing
+ */
+ISR(USART0_RX_vect)
+{
+	uint8_t data;
+
+	if(ASW_cnf_struct.p_usartDebug->isDebugModeActive() == true)
+	{
+		data = BSW_cnf_struct.p_usart->usart_read();
+		ASW_cnf_struct.p_usartDebug->DebugModeManagement(data);
+	}
+	else if(BSW_cnf_struct.p_usart->usart_read() == 'a')
+	{
+		ASW_cnf_struct.p_usartDebug->activateDebugMode();
+	}
+}
+
 /*!
  * @brief Background task of program
  * @details This function initializes all the software and then goes into an infinite loop.

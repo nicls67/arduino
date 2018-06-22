@@ -48,6 +48,14 @@ public:
 	 */
 	void usart_init();
 
+	/*! @brief USART read function
+	 *  @details This function will read reception register of USART
+	 *  @return The function returns the 8 bits read from reception buffer
+	 */
+	uint8_t usart_read();
+
+
+
 
 private:
 

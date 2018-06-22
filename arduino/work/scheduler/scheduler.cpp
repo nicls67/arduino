@@ -41,11 +41,7 @@ void scheduler::launchPeriodicTasks()
 		if((pit_number % (cur_task->period / SW_PERIOD_MS)) == 0)
 		{
 			task_nb++;
-//#ifdef DEBUG_FLAG
-//			ASW_cnf_struct.p_usartDebug->sendData((char*)"Launching task ");
-//			ASW_cnf_struct.p_usartDebug->sendInteger(task_nb,10);
-//			ASW_cnf_struct.p_usartDebug->sendData((char*)"\n");
-//#endif
+
 			/* Launch the task */
 			(*cur_task->TaskPtr)();
 		}
@@ -56,12 +52,6 @@ void scheduler::launchPeriodicTasks()
 
 	/* Increment counter */
 	pit_number++;
-
-//#ifdef DEBUG_FLAG
-//	ASW_cnf_struct.p_usartDebug->sendData((char*)"pit number ");
-//	ASW_cnf_struct.p_usartDebug->sendInteger(pit_number,10);
-//	ASW_cnf_struct.p_usartDebug->sendData((char*)"\n");
-//#endif
 }
 
 void scheduler::startScheduling()
@@ -70,7 +60,7 @@ void scheduler::startScheduling()
 }
 
 
-void scheduler::addPeriodicTask(TaskPtr_t task_ptr, uint16_t a_period)
+void scheduler::addPeriodicTask(TaskPtr_t task_ptr, uint16_t a_period, uint8_t a_task_id)
 {
 	Task_t* new_task;
 	Task_t* cur_task;
@@ -79,6 +69,7 @@ void scheduler::addPeriodicTask(TaskPtr_t task_ptr, uint16_t a_period)
 	new_task = new Task_t;
 	new_task->TaskPtr = task_ptr;
 	new_task->period = a_period;
+	new_task->task_id = a_task_id;
 	new_task->nextTask = 0;
 
 	cur_task = Task_cnf_struct.firstTask;
@@ -103,4 +94,36 @@ void scheduler::addPeriodicTask(TaskPtr_t task_ptr, uint16_t a_period)
 uint32_t scheduler::getPitNumber()
 {
 	return pit_number;
+}
+
+
+bool scheduler::removePeriodicTask(uint8_t a_task_id)
+{
+	/* First find the task in the scheduler */
+	Task_t* cur_task = Task_cnf_struct.firstTask;
+	Task_t* prev_task = Task_cnf_struct.firstTask;
+
+	while ((cur_task != 0) && (cur_task->task_id != a_task_id))
+	{
+		prev_task = cur_task;
+		cur_task = cur_task->nextTask;
+	}
+
+
+	/* If pointer is equal to 0, the requested task does not exist */
+	if (cur_task == 0)
+		return false;
+
+	/* The task exists, remove it from scheduler */
+	Task_cnf_struct.task_nb--;
+	if (cur_task == Task_cnf_struct.firstTask)
+		Task_cnf_struct.firstTask = cur_task->nextTask;
+	else
+		prev_task->nextTask = cur_task->nextTask;
+
+	delete cur_task;
+
+	return true;
+
+
 }

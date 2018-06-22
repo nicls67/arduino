@@ -1,5 +1,5 @@
 /*!
- * @file log.cpp
+ * @file debug.cpp
  *
  * @brief This file defines classes for log and debug data transmission on USART link
  *
@@ -7,19 +7,30 @@
  * @author nicls67
  */
 
+
+
 #include <avr/io.h>
 #include <stdlib.h>
 
-#include "log.h"
+#include "debug.h"
+
+/*!
+ * @brief Main menu of debug mode
+ */
+const char str_debug_main_menu[] =
+		"\n\n"
+		"Menu principal :  \n"
+		"1 : Afficher donnees capteurs\n"
+		"\n"
+		"s : Quitter debug\n";
+
 
 
 
 UsartDebug::UsartDebug()
 {
-#ifdef F_DISPLAY_TEMP
-	/* Add task for temperature display */
-	p_scheduler->addPeriodicTask((TaskPtr_t)(&UsartDebug::DisplayTempAndHumUsart_task), PERIOD_MS_TASK_DISPLAY_TEMP);
-#endif
+	debugModeActive_F = false;
+	debug_state = INIT;
 }
 
 void UsartDebug::sendData(char* str)
@@ -54,7 +65,7 @@ void UsartDebug::sendBool(bool data)
 	BSW_cnf_struct.p_usart->usart_sendString(str);
 }
 
-void UsartDebug::DisplayTempAndHumUsart_task()
+void UsartDebug::DisplaySensors_task()
 {
 	uint16_t data;
 	uint8_t data_int, data_dec;
@@ -92,5 +103,64 @@ void UsartDebug::DisplayTempAndHumUsart_task()
 		ASW_cnf_struct.p_usartDebug->sendData((char*)"invalid");
 
 	ASW_cnf_struct.p_usartDebug->sendData((char*)" %");
+
+}
+
+bool UsartDebug::isDebugModeActive()
+{
+	return debugModeActive_F;
+}
+
+void UsartDebug::activateDebugMode()
+{
+	debugModeActive_F = true;
+
+	ASW_cnf_struct.p_usartDebug->sendData((char*)"Debug actif!\n");
+	ASW_cnf_struct.p_usartDebug->DebugModeManagement((uint8_t)0);
+}
+
+void UsartDebug::DebugModeManagement(uint8_t rcv_char)
+{
+	/* switch on debug state */
+	switch(debug_state)
+	{
+	case INIT:
+		ASW_cnf_struct.p_usartDebug->sendData((char*)str_debug_main_menu);
+		debug_state = WAIT_INIT;
+		break;
+
+	case WAIT_INIT:
+		switch (rcv_char)
+		{
+		case 's':
+			ASW_cnf_struct.p_usartDebug->sendData((char*)"\nBye !\n");
+			debugModeActive_F = false;
+			debug_state = INIT;
+			break;
+
+		case '1':
+			debug_state = DISPLAY_DATA;
+			ASW_cnf_struct.p_usartDebug->sendData((char*)"\nOk, appuyer sur s pour arreter !\n");
+			p_scheduler->addPeriodicTask((TaskPtr_t)(&UsartDebug::DisplaySensors_task), PERIOD_MS_TASK_DISPLAY_SENSORS, TASK_ID_DISPLAY_SENSORS);
+			break;
+
+		default:
+			ASW_cnf_struct.p_usartDebug->sendData((char*)"\nImpossible de faire ca... !\n");
+			break;
+		}
+		break;
+
+	case DISPLAY_DATA:
+		if (rcv_char == 's')
+		{
+			if (p_scheduler->removePeriodicTask(TASK_ID_DISPLAY_SENSORS) == false)
+				ASW_cnf_struct.p_usartDebug->sendData((char*)"Impossible de supprimer la tache...");
+
+			debug_state = WAIT_INIT;
+			ASW_cnf_struct.p_usartDebug->sendData((char*)str_debug_main_menu);
+		}
+		break;
+
+	}
 
 }

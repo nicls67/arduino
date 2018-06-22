@@ -15,7 +15,7 @@
 keepAliveLed::keepAliveLed()
 {
 	/* Add task blinLed_task to scheduler with period of 500ms */
-	p_scheduler->addPeriodicTask((TaskPtr_t)(&keepAliveLed::blinkLed_task), PERIOD_MS_TASK_LED);
+	p_scheduler->addPeriodicTask((TaskPtr_t)(&keepAliveLed::blinkLed_task), PERIOD_MS_TASK_LED, TASK_ID_LED);
 }
 
 void keepAliveLed::blinkLed_task()

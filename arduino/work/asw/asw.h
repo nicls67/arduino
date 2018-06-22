@@ -11,9 +11,14 @@
 #define WORK_ASW_ASW_H_
 
 /* Inclusion of all ASW header files*/
-#include "log/log.h"
+#include "debug/debug.h"
 #include "keepAliveLed/keepAliveLed.h"
 #include "TempSensor/TempSensor.h"
+
+/* Definition of all tasks IDs */
+#define TASK_ID_DISPLAY_SENSORS 0
+#define TASK_ID_LED             1
+#define TASK_ID_TEMP_SENSOR     2
 
 
 /*!

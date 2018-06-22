@@ -62,13 +62,22 @@ public:
 
 	/*!
 	 * @brief Add a task into the scheduler
-	 * @details This function create a new task in the scheduler linked to the function task_ptr with a period a_period
+	 * @details This function create a new task in the scheduler linked to the function task_ptr with a period a_period and an ID a_task_id
 	 *
 	 * @param [in] task_ptr Pointer to the task which will be added
 	 * @param [in] a_period Period of the new task
+	 * @param [in] a_task_id ID of the task to add
 	 * @return Nothing
 	 */
-	void addPeriodicTask(TaskPtr_t task_ptr, uint16_t a_period);
+	void addPeriodicTask(TaskPtr_t task_ptr, uint16_t a_period, uint8_t a_task_id);
+
+	/*!
+	 * @brief Remove a task from the scheduler
+	 * @details This function finds the task defined by a_task_id in the scheduler and removes it.
+	 * @param [in] a_task_id ID of the task to remove from scheduler
+	 * @return TRUE if the task has been removed, FALSE if the task does not exist in the scheduler
+	 */
+	bool removePeriodicTask(uint8_t a_task_id);
 
 	/*!
 	 * @brief Get function for PIT number
@@ -85,12 +94,13 @@ private:
 	/*!
 	 * @brief Type defining a task structure
 	 * @details This structure defines a task.
-	 * 			A task is defined by a function to call (defined by its pointer) and a period.
+	 * 			A task is defined by a function to call (defined by its pointer), an ID and a period.
 	 */
 	typedef struct Task_t
 	{
 		TaskPtr_t TaskPtr; /*!< Pointer to the task */
 		uint16_t period; /*!< Period of the task */
+		uint8_t task_id; /*!< Task ID */
 		Task_t *nextTask; /*!< Pointer to the next task to launch */
 	}
 	Task_t;
