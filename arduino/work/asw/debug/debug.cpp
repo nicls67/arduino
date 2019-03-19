@@ -141,7 +141,7 @@ void UsartDebug::DebugModeManagement(uint8_t rcv_char)
 		case '1':
 			debug_state = DISPLAY_DATA;
 			ASW_cnf_struct.p_usartDebug->sendData((char*)"\nOk, appuyer sur s pour arreter !\n");
-			p_scheduler->addPeriodicTask((TaskPtr_t)(&UsartDebug::DisplaySensors_task), PERIOD_MS_TASK_DISPLAY_SENSORS, TASK_ID_DISPLAY_SENSORS);
+			p_scheduler->addPeriodicTask((TaskPtr_t)(&UsartDebug::DisplaySensors_task), PERIOD_MS_TASK_DISPLAY_SENSORS);
 			break;
 
 		default:
@@ -153,7 +153,7 @@ void UsartDebug::DebugModeManagement(uint8_t rcv_char)
 	case DISPLAY_DATA:
 		if (rcv_char == 's')
 		{
-			if (p_scheduler->removePeriodicTask(TASK_ID_DISPLAY_SENSORS) == false)
+			if (p_scheduler->removePeriodicTask(&UsartDebug::DisplaySensors_task) == false)
 				ASW_cnf_struct.p_usartDebug->sendData((char*)"Impossible de supprimer la tache...");
 
 			debug_state = WAIT_INIT;

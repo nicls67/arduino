@@ -24,7 +24,7 @@ TempSensor::TempSensor()
 	valid_pit = 0;
 
 	/* Add task to scheduler */
-	p_scheduler->addPeriodicTask((TaskPtr_t)(&TempSensor::readTempSensor_task), PERIOD_MS_TASK_TEMP_SENSOR, TASK_ID_TEMP_SENSOR);
+	p_scheduler->addPeriodicTask((TaskPtr_t)(&TempSensor::readTempSensor_task), PERIOD_MS_TASK_TEMP_SENSOR);
 }
 
 void TempSensor::readTempSensor_task()

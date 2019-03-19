@@ -60,7 +60,7 @@ void scheduler::startScheduling()
 }
 
 
-void scheduler::addPeriodicTask(TaskPtr_t task_ptr, uint16_t a_period, uint8_t a_task_id)
+void scheduler::addPeriodicTask(TaskPtr_t task_ptr, uint16_t a_period)
 {
 	Task_t* new_task;
 	Task_t* cur_task;
@@ -69,7 +69,6 @@ void scheduler::addPeriodicTask(TaskPtr_t task_ptr, uint16_t a_period, uint8_t a
 	new_task = new Task_t;
 	new_task->TaskPtr = task_ptr;
 	new_task->period = a_period;
-	new_task->task_id = a_task_id;
 	new_task->nextTask = 0;
 
 	cur_task = Task_cnf_struct.firstTask;
@@ -97,20 +96,20 @@ uint32_t scheduler::getPitNumber()
 }
 
 
-bool scheduler::removePeriodicTask(uint8_t a_task_id)
+bool scheduler::removePeriodicTask(TaskPtr_t task_ptr)
 {
 	/* First find the task in the scheduler */
 	Task_t* cur_task = Task_cnf_struct.firstTask;
 	Task_t* prev_task = Task_cnf_struct.firstTask;
 
-	while ((cur_task != 0) && (cur_task->task_id != a_task_id))
+	while ((cur_task != 0) && (cur_task->TaskPtr != task_ptr))
 	{
 		prev_task = cur_task;
 		cur_task = cur_task->nextTask;
 	}
 
 
-	/* If pointer is equal to 0, the requested task does not exist */
+	/* If pointer is equal to 0, the requested task does not exist, exit the function */
 	if (cur_task == 0)
 		return false;
 
