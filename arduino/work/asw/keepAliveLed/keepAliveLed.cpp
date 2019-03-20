@@ -21,5 +21,5 @@ keepAliveLed::keepAliveLed()
 void keepAliveLed::blinkLed_task()
 {
 	/* Call DIO driver to invert LED pin state */
-	BSW_cnf_struct.p_dio->dio_invertPortB(PB7);
+	BSW_cnf_struct.p_dio->dio_invertPort(LED_PORT);
 }

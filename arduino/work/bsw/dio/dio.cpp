@@ -11,36 +11,9 @@
 
 #include "dio.h"
 
-/*!
- * @brief Defines the configuration of DDRB register
- * @details This constant defines the direction of IO pins of PORT B. It will configure register DDRB.\n
- *          PB0 : N/A\n
- *          PB1 : N/A\n
- *          PB2 : N/A\n
- *          PB3 : N/A\n
- *          PB4 : N/A\n
- *          PB5 : N/A\n
- *          PB6 : OUT\n
- *          PB7 : OUT\n
- */
-#define PORTB_CNF_DDRB (uint8_t)0b11000000
+#include "../../asw/asw.h"
 
-/*!
- * @brief Defines the configuration of PORTB register
- * @details This constant defines the initial value of IO pins for PORT B. It will configure register PORTB.
- * 			Pins configured as input shall not be configured here.\n
- *          PB0 : N/A\n
- *          PB1 : N/A\n
- *          PB2 : N/A\n
- *          PB3 : N/A\n
- *          PB4 : N/A\n
- *          PB5 : N/A\n
- *          PB6 : HIGH\n
- *          PB7 : HIGH\n
- */
-#define PORTB_CNF_PORTB (uint8_t)0b11000000
-
-void dio::dio_init()
+void dio::ports_init()
 {
 	/* Initialize ports as input or output */
 	DDRB = PORTB_CNF_DDRB;
@@ -49,49 +22,159 @@ void dio::dio_init()
 	PORTB = PORTB_CNF_PORTB;
 }
 
+uint8_t* dio::getPORTxAddress(uint8_t portcode)
+{
+	uint8_t port_idx = DECODE_PORT(portcode);
+	uint8_t* port_addr;
+
+	/* Find port address according to index */
+	switch(port_idx)
+	{
+	case PORT_A:
+		port_addr = (uint8_t*)PORTA_PTR;
+		break;
+	case PORT_B:
+		port_addr = (uint8_t*)PORTB_PTR;
+		break;
+	case PORT_C:
+		port_addr = (uint8_t*)PORTC_PTR;
+		break;
+	case PORT_D:
+		port_addr = (uint8_t*)PORTD_PTR;
+		break;
+	default:
+		/* default case : normally not reachable */
+		port_addr = (uint8_t*)PORTA_PTR;
+		break;
+	}
+
+	return port_addr;
+}
+
+uint8_t* dio::getPINxAddress(uint8_t portcode)
+{
+	uint8_t port_idx = DECODE_PORT(portcode);
+	uint8_t* port_addr;
+
+	/* Find port address according to index */
+	switch(port_idx)
+	{
+	case PORT_A:
+		port_addr = (uint8_t*)PINA_PTR;
+		break;
+	case PORT_B:
+		port_addr = (uint8_t*)PINB_PTR;
+		break;
+	case PORT_C:
+		port_addr = (uint8_t*)PINC_PTR;
+		break;
+	case PORT_D:
+		port_addr = (uint8_t*)PIND_PTR;
+		break;
+	default:
+		/* default case : normally not reachable */
+		port_addr = (uint8_t*)PINA_PTR;
+		break;
+	}
+
+	return port_addr;
+}
+
+uint8_t* dio::getDDRxAddress(uint8_t portcode)
+{
+	uint8_t port_idx = DECODE_PORT(portcode);
+	uint8_t* port_addr;
+
+	/* Find port address according to index */
+	switch(port_idx)
+	{
+	case PORT_A:
+		port_addr = (uint8_t*)DDRA_PTR;
+		break;
+	case PORT_B:
+		port_addr = (uint8_t*)DDRB_PTR;
+		break;
+	case PORT_C:
+		port_addr = (uint8_t*)DDRC_PTR;
+		break;
+	case PORT_D:
+		port_addr = (uint8_t*)DDRD_PTR;
+		break;
+	default:
+		/* default case : normally not reachable */
+		port_addr = (uint8_t*)DDRA_PTR;
+		break;
+	}
+
+	return port_addr;
+}
+
 dio::dio()
 {
-	dio_init();
+	ports_init();
 
+	/* Initialize class members */
+	PINx_addr_mem = getPINxAddress(PORT_A);
+	PINx_idx_mem = (uint8_t)0;
 }
 
-void dio::dio_setPortB(uint8_t pin, bool state)
+void dio::dio_setPort(uint8_t portcode, bool state)
 {
 	uint8_t mask;
+	uint8_t* port = getPORTxAddress(portcode);
 
-	mask = ~(1 << pin);
-
-	PORTB &= mask;
-
-	PORTB |= (state << pin);
+	mask = ~(1 << DECODE_PIN(portcode));
+	*port &= mask;
+	*port |= (state << DECODE_PIN(portcode));
 }
 
-void dio::dio_invertPortB(uint8_t pin)
+void dio::dio_invertPort(uint8_t portcode)
 {
-	PORTB ^= (1 << pin);
+	uint8_t* port = getPORTxAddress(portcode);
+
+	*port ^= (1 << DECODE_PIN(portcode));
 }
 
 
-bool dio::dio_getPortB(uint8_t pin)
+bool dio::dio_getPort(uint8_t portcode)
 {
 	bool res;
+	uint8_t port_value = *(getPINxAddress(portcode));
 
-	res = (PINB >> pin) & 0x1;
+	res = (port_value >> DECODE_PIN(portcode)) & 0x1;
 
 	return res;
 }
 
-void dio::dio_changePortBPinCnf(uint8_t pin, uint8_t cnf)
+void dio::dio_changePortPinCnf(uint8_t portcode, uint8_t cnf)
 {
-	uint8_t mask = ~(1 << pin);
-
-	/* reset selected pin */
-	DDRB &= mask;
+	uint8_t mask = ~(1 << DECODE_PIN(portcode));
+	uint8_t* port = getDDRxAddress(portcode);
 
 	/* If cnf is different from 0 or 1, set it by default to 0 (input) */
 	if ((cnf != PORT_CNF_OUT) && (cnf != PORT_CNF_IN))
 		cnf = PORT_CNF_IN;
 
+	/* reset selected pin */
+	*port &= mask;
+
 	/* set selected pin to cnf */
-	DDRB |= (cnf << pin);
+	*port |= (cnf << DECODE_PIN(portcode));
+}
+
+void dio::dio_memorizePINaddress(uint8_t portcode)
+{
+	PINx_addr_mem = getPINxAddress(portcode);
+	PINx_idx_mem = DECODE_PIN(portcode);
+}
+
+bool dio::dio_getPort_fast(void)
+{
+	bool res;
+
+	uint8_t port_value = *PINx_addr_mem;
+
+	res = (port_value >> PINx_idx_mem) & 0x1;
+
+	return res;
 }

@@ -13,6 +13,7 @@
 
 
 #define PERIOD_MS_TASK_LED SW_PERIOD_MS /*!< Period for led blinking */
+#define LED_PORT ENCODE_PORT(PORT_B, 7) /*!< LED is connected to port PB7 */
 
 /*!
  * @brief Class for keep-alive LED blinking

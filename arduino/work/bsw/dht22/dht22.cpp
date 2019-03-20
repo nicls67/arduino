@@ -32,36 +32,41 @@ bool dht22::read(uint16_t* raw_humidity, uint16_t* raw_temperature)
 	uint8_t rcv_buf_data[32];
 	uint8_t rcv_buf_crc[8];
 
+	/* To speed-up register reading time, the registers addresses are computed now and only once
+	 * and memorized into DIO driver.
+	 * Then the registers reads will be done with the "fast" reading function using the memorized addresses */
+	BSW_cnf_struct.p_dio->dio_memorizePINaddress(DHT22_PORT);
+
 	/* Disable interrupt during the communication */
 	cli();
 
 	/* Set pin to LOW for 1 ms at least */
-	BSW_cnf_struct.p_dio->dio_setPortB(DHT22_PORT, false);
+	BSW_cnf_struct.p_dio->dio_setPort(DHT22_PORT, false);
 	_delay_us(1100);
 
 	/* Set pin to HIGH for 35 us */
-	BSW_cnf_struct.p_dio->dio_setPortB(DHT22_PORT, true);
+	BSW_cnf_struct.p_dio->dio_setPort(DHT22_PORT, true);
 	_delay_us(35);
 
 	/* Re-configure pin as input */
-	BSW_cnf_struct.p_dio->dio_changePortBPinCnf(DHT22_PORT, PORT_CNF_IN);
+	BSW_cnf_struct.p_dio->dio_changePortPinCnf(DHT22_PORT, PORT_CNF_IN);
 
 	/* Sensor will now set pin state to LOW for 80 us
 	 * Wait for 40 us (half time) and check that the pin is LOW */
 	_delay_us(40);
-	if (BSW_cnf_struct.p_dio->dio_getPortB(DHT22_PORT) != false)
+	if (BSW_cnf_struct.p_dio->dio_getPort_fast() != false)
 		return false;
 
 	/* Sensor will set pin state to HIGH for 80 us
 	 * Wait for 80 us (2nd half of the 80 us LOW + 1st half time of the 80 us HIGH) and check that the pin is HIGH */
 	_delay_us(80);
-	if (BSW_cnf_struct.p_dio->dio_getPortB(DHT22_PORT) != true)
+	if (BSW_cnf_struct.p_dio->dio_getPort_fast() != true)
 		return false;
 
 	/* Wait until signal goes to LOW (bit transmission)
 	 * If the signal never goes to LOW, report transmission failure */
 	wait_cpt = 0;
-	while(BSW_cnf_struct.p_dio->dio_getPortB(DHT22_PORT) != false)
+	while(BSW_cnf_struct.p_dio->dio_getPort_fast() != false)
 	{
 		_delay_us(1);
 		wait_cpt++;
@@ -72,7 +77,7 @@ bool dht22::read(uint16_t* raw_humidity, uint16_t* raw_temperature)
 	/* Wait until signal goes to HIGH (bit transmission)
 	 * If the signal never goes to HIGH, report transmission failure */
 	wait_cpt = 0;
-	while(BSW_cnf_struct.p_dio->dio_getPortB(DHT22_PORT) != true)
+	while(BSW_cnf_struct.p_dio->dio_getPort_fast() != true)
 	{
 		_delay_us(1);
 		wait_cpt++;
@@ -83,10 +88,9 @@ bool dht22::read(uint16_t* raw_humidity, uint16_t* raw_temperature)
 	/* There are 32 bits of data to receive */
 	while (bit_cpt > 0)
 	{
-		//ASW_cnf_struct.p_usartDebug->sendData((char*)"bit\n");
 		/* Count the number of cycles until the signal goes LOW */
 		wait_cpt = 0;
-		while(BSW_cnf_struct.p_dio->dio_getPortB(DHT22_PORT) != false)
+		while(BSW_cnf_struct.p_dio->dio_getPort_fast() != false)
 		{
 			_delay_us(1);
 			wait_cpt++;
@@ -101,7 +105,7 @@ bool dht22::read(uint16_t* raw_humidity, uint16_t* raw_temperature)
 		/* Wait until signal goes to HIGH (bit transmission)
 		 * If the signal never goes to HIGH, report transmission failure */
 		wait_cpt = 0;
-		while(BSW_cnf_struct.p_dio->dio_getPortB(DHT22_PORT) != true)
+		while(BSW_cnf_struct.p_dio->dio_getPort_fast() != true)
 		{
 			_delay_us(1);
 			wait_cpt++;
@@ -116,7 +120,7 @@ bool dht22::read(uint16_t* raw_humidity, uint16_t* raw_temperature)
 	{
 		/* Count the number of cycles until the signal goes LOW */
 		wait_cpt = 0;
-		while(BSW_cnf_struct.p_dio->dio_getPortB(DHT22_PORT) != false)
+		while(BSW_cnf_struct.p_dio->dio_getPort_fast() != false)
 		{
 			_delay_us(0.5);
 			wait_cpt++;
@@ -131,7 +135,7 @@ bool dht22::read(uint16_t* raw_humidity, uint16_t* raw_temperature)
 		/* Wait until signal goes to HIGH (bit transmission)
 		 * If the signal never goes to HIGH, report transmission failure */
 		wait_cpt = 0;
-		while(BSW_cnf_struct.p_dio->dio_getPortB(DHT22_PORT) != true)
+		while(BSW_cnf_struct.p_dio->dio_getPort_fast() != true)
 		{
 			_delay_us(1);
 			wait_cpt++;
@@ -194,9 +198,9 @@ bool dht22::read(uint16_t* raw_humidity, uint16_t* raw_temperature)
 void dht22::initializeCommunication()
 {
 	/* Configures pin at output for the beginning of communication */
-	BSW_cnf_struct.p_dio->dio_changePortBPinCnf(DHT22_PORT, PORT_CNF_OUT);
+	BSW_cnf_struct.p_dio->dio_changePortPinCnf(DHT22_PORT, PORT_CNF_OUT);
 
 	/* Set pin at level HIGH */
-	BSW_cnf_struct.p_dio->dio_setPortB(DHT22_PORT, true);
+	BSW_cnf_struct.p_dio->dio_setPort(DHT22_PORT, true);
 
 }

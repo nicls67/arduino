@@ -13,7 +13,7 @@
 
 
 
-#define DHT22_PORT PB6 /*!< DHT22 is connected to port PB6 */
+#define DHT22_PORT ENCODE_PORT(PORT_B, 6) /*!< DHT22 is connected to port PB6 */
 
 /*!
  * @brief DHT 22 driver class
