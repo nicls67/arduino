@@ -14,6 +14,7 @@
 #include "dio/dio.h"
 #include "timer/timer.h"
 #include "dht22/dht22.h"
+#include "CpuLoad/CpuLoad.h"
 
 
 
@@ -32,6 +33,7 @@ typedef struct
 	dio* p_dio; /*!< Pointer to dio driver object */
 	timer* p_timer; /*!< Pointer to timer driver object */
 	dht22* p_dht22; /*!< Pointer to dht22 driver object */
+	CpuLoad* p_cpuload; /*!< Pointer to cpu load library object */
 }
 T_BSW_cnf_struct;
 

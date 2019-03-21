@@ -70,3 +70,5 @@ void timer::stopTimer1()
 	uint8_t mask = (uint8_t)0b111;
 	TCCR1B &= (~mask);
 }
+
+

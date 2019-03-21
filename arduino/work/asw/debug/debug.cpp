@@ -21,6 +21,7 @@ const char str_debug_main_menu[] =
 		"\n\n"
 		"Menu principal :  \n"
 		"1 : Afficher donnees capteurs\n"
+		"2 : Afficher charge CPU\n"
 		"\n"
 		"s : Quitter debug\n";
 
@@ -106,6 +107,17 @@ void UsartDebug::DisplaySensors_task()
 
 }
 
+void UsartDebug::DisplayCPULoad_task()
+{
+	ASW_cnf_struct.p_usartDebug->sendData((char*)"\n\nCharge CPU :\n");
+	ASW_cnf_struct.p_usartDebug->sendData((char*)"    Actuelle : ");
+	ASW_cnf_struct.p_usartDebug->sendInteger(BSW_cnf_struct.p_cpuload->getCurrrentCPULoad(),10);
+	ASW_cnf_struct.p_usartDebug->sendData((char*)"\n    Moyenne : ");
+	ASW_cnf_struct.p_usartDebug->sendInteger(BSW_cnf_struct.p_cpuload->getAverageCPULoad(),10);
+	ASW_cnf_struct.p_usartDebug->sendData((char*)"\n    Max : ");
+	ASW_cnf_struct.p_usartDebug->sendInteger(BSW_cnf_struct.p_cpuload->getMaxCPULoad(),10);
+}
+
 bool UsartDebug::isDebugModeActive()
 {
 	return debugModeActive_F;
@@ -144,6 +156,12 @@ void UsartDebug::DebugModeManagement(uint8_t rcv_char)
 			p_scheduler->addPeriodicTask((TaskPtr_t)(&UsartDebug::DisplaySensors_task), PERIOD_MS_TASK_DISPLAY_SENSORS);
 			break;
 
+		case '2':
+			debug_state = DISPLAY_CPU_LOAD;
+			ASW_cnf_struct.p_usartDebug->sendData((char*)"\nOk, appuyer sur s pour arreter !\n");
+			p_scheduler->addPeriodicTask((TaskPtr_t)(&UsartDebug::DisplayCPULoad_task), PERIOD_MS_TASK_DISPLAY_CPU_LOAD);
+			break;
+
 		default:
 			ASW_cnf_struct.p_usartDebug->sendData((char*)"\nImpossible de faire ca... !\n");
 			break;
@@ -154,6 +172,17 @@ void UsartDebug::DebugModeManagement(uint8_t rcv_char)
 		if (rcv_char == 's')
 		{
 			if (p_scheduler->removePeriodicTask(&UsartDebug::DisplaySensors_task) == false)
+				ASW_cnf_struct.p_usartDebug->sendData((char*)"Impossible de supprimer la tache...");
+
+			debug_state = WAIT_INIT;
+			ASW_cnf_struct.p_usartDebug->sendData((char*)str_debug_main_menu);
+		}
+		break;
+
+	case DISPLAY_CPU_LOAD:
+		if (rcv_char == 's')
+		{
+			if (p_scheduler->removePeriodicTask(&UsartDebug::DisplayCPULoad_task) == false)
 				ASW_cnf_struct.p_usartDebug->sendData((char*)"Impossible de supprimer la tache...");
 
 			debug_state = WAIT_INIT;

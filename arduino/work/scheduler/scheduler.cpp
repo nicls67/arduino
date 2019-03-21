@@ -50,6 +50,9 @@ void scheduler::launchPeriodicTasks()
 		cur_task = cur_task->nextTask;
 	}
 
+	/* Compute CPU load */
+	BSW_cnf_struct.p_cpuload->ComputeCPULoad();
+
 	/* Increment counter */
 	pit_number++;
 }

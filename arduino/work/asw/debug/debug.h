@@ -10,7 +10,8 @@
 #ifndef WORK_LIB_LOG_H_
 #define WORK_LIB_LOG_H_
 
-#define PERIOD_MS_TASK_DISPLAY_SENSORS 5000 /*!< Period for displaying temperature and humidity data */
+#define PERIOD_MS_TASK_DISPLAY_SENSORS  5000 /*!< Period for displaying temperature and humidity data */
+#define PERIOD_MS_TASK_DISPLAY_CPU_LOAD 5000 /*!< Period for displaying CPU load data */
 
 
 /*!
@@ -21,6 +22,7 @@ typedef enum
 	INIT, /*!< Init state : display the main menu */
 	WAIT_INIT, /*!< Wait for a received character in init state */
 	DISPLAY_DATA, /*!< Display sensor data in continuous */
+	DISPLAY_CPU_LOAD, /*!< Display CPU load in continuous */
 
 }debug_state_t;
 
@@ -38,14 +40,6 @@ public:
 	 * @return Nothing
 	 */
 	UsartDebug();
-
-	/*!
-	 * @brief Send a string on USART link
-	 * @details This functions sends the requested string on USART link by calling driver's transmission function
-	 * @param [in] str Pointer to the string being sent
-	 * @return Nothing
-	 */
-	void sendData(char* str);
 
 	/*!
 	 * @brief Send a integer data on USART link
@@ -74,6 +68,13 @@ public:
 	static void DisplaySensors_task();
 
 	/*!
+	 * @brief Displays CPU load data on usart link
+	 * @details This task sends CPU load data (current and average load) on usart link every 5 seconds
+	 * @return Nothing
+	 */
+	static void DisplayCPULoad_task();
+
+	/*!
 	 * @brief Check is debug mode is active or not
 	 * @details This function checks if debug mode is active or not.
 	 * @return TRUE is debug mode is active, FALSE otherwise
@@ -93,6 +94,7 @@ public:
 	 *  		 	  - init state : display main menu
 	 *  		 	  - WAIT_INIT state : handles user choice in main menu and selects next state
 	 *  		 	  - DISPLAY_DATA state : display sensor data periodically
+	 *  		 	  - DISPLAY CPU LOAD : display CPU load periodically
 	 *
 	 *  It is called each time a data is received on USART and debug mode is active
 	 *
@@ -102,6 +104,14 @@ public:
 	void DebugModeManagement(uint8_t rcv_char);
 
 private:
+
+	/*!
+	 * @brief Send a string on USART link
+	 * @details This functions sends the requested string on USART link by calling driver's transmission function
+	 * @param [in] str Pointer to the string being sent
+	 * @return Nothing
+	 */
+	void sendData(char* str);
 
 	debug_state_t debug_state;
 	bool debugModeActive_F; /*!< Debug mode activation flag */

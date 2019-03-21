@@ -52,6 +52,17 @@ public:
 	 */
 	void stopTimer1();
 
+	/*!
+	 * @brief Reads current value of timer #1
+	 * @details This function reads the value of of timer #1 using register TCNT1. The function is inlined to speed up SW execution.
+	 *
+	 * @return Current timer value
+	 */
+	inline uint16_t getTimer1Value()
+	{
+		return TCNT1;
+	}
+
 private:
 	uint8_t prescaler;
 
