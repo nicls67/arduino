@@ -12,6 +12,10 @@
 
 #define PERIOD_MS_TASK_TEMP_SENSOR 5000 /*!< Period for reading temperature data */
 
+/*!
+ * @brief Class for temperature sensor
+ * @details This class defines all functions used to read data from temperature sensor and monotor it
+ */
 class TempSensor
 {
 public:
