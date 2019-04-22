@@ -15,6 +15,8 @@
 #include "timer/timer.h"
 #include "dht22/dht22.h"
 #include "CpuLoad/CpuLoad.h"
+#include "I2C/I2C.h"
+#include "LCD/LCD.h"
 
 
 
@@ -22,6 +24,7 @@
  * Definition of all configurable constants of BSW
  */
 #define USART_BAUDRATE (uint16_t)9600 /*!< usart connection to PC uses a baud rate of 9600 */
+#define I2C_BITRATE (uint32_t)100000 /*!< I2C bus bitrate is 100 kHz */
 
 /*!
  * @brief BSW configuration structure
@@ -34,6 +37,8 @@ typedef struct
 	timer* p_timer; /*!< Pointer to timer driver object */
 	dht22* p_dht22; /*!< Pointer to dht22 driver object */
 	CpuLoad* p_cpuload; /*!< Pointer to cpu load library object */
+	I2C* p_i2c; /*!< Pointer to I2C driver object */
+	LCD* p_lcd; /*!< Pointer to LCD driver object */
 }
 T_BSW_cnf_struct;
 
