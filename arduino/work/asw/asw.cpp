@@ -7,9 +7,8 @@
  * @author nicls67
  */
 
+#include <stdlib.h>
 #include <avr/io.h>
-
-
 
 #include "asw.h"
 
@@ -22,4 +21,5 @@ void asw_init()
 	ASW_cnf_struct.p_usartDebug = new UsartDebug();
 	ASW_cnf_struct.p_keepAliveLed = new keepAliveLed();
 	ASW_cnf_struct.p_TempSensor = new TempSensor();
+	ASW_cnf_struct.p_DisplayInterface = new DisplayInterface();
 }

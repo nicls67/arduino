@@ -54,6 +54,5 @@ private:
 };
 
 #include "../bsw.h"
-#include "../../asw/asw.h"
 
 #endif /* WORK_BSW_DHT22_DHT22_H_ */

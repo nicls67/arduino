@@ -23,6 +23,7 @@
 #define LCD_INST_FUNCTION_SET 5 /*!< Instruction bit for "function set" is DB5 */
 #define LCD_INST_DISPLAY_CTRL 3 /*!< Instruction bit for "display control" is DB3 */
 #define LCD_INST_ENTRY_MODE_SET 2 /*!< Instruction bit for "entry mode" is DB2 */
+#define LCD_INST_SET_DDRAM_ADDR 7 /*!< Instruction bit for "set DDRAM address" is DB7 */
 
 /* Definition of fields for function set command */
 #define LCD_FCT_SET_FIELD_DL 4 /*!< Field DL (data length) of command "function set" is on bit DB4 */
@@ -66,6 +67,22 @@
 #define LCD_CNF_ENTRY_MODE_DISPLAY_SHIFT_ON  1 /*!< Display shift is performed, bit is set to 1 */
 #define LCD_CNF_ENTRY_MODE_DISPLAY_SHIFT_OFF 0 /*!< Display shift is not performed, bit is set to 0 */
 
+/* Backlight configuration */
+#define LCD_CNF_BACKLIGHT_ON  1 /*!< Backlight is enabled */
+#define LCD_CNF_BACKLIGHT_OFF 0 /*!< Backlight is disabled */
+
+/* RAM address limits */
+#define LCD_RAM_1_LINE_MIN 0 /*!< Minimum address value in 1-line mode */
+#define LCD_RAM_1_LINE_MAX 0x4F /*!< Maximum address value in 1-line mode */
+#define LCD_RAM_2_LINES_MIN_1 0 /*!< Minimum address value in 2-lines mode for line 1 */
+#define LCD_RAM_2_LINES_MAX_1 0x27 /*!< Maximum address value in 2-lines mode for line 1 */
+#define LCD_RAM_2_LINES_MIN_2 0x40 /*!< Minimum address value in 2-lines mode for line 2 */
+#define LCD_RAM_2_LINES_MAX_2 0x67 /*!< Maximum address value in 2-lines mode for line 2 */
+
+/* Definition of waiting times after screen operations in us */
+#define LCD_WAIT_CLR_RETURN 1600 /*!< Waiting time after clear display and return home operations is at least 1520 us */
+#define LCD_WAIT_OTHER_MODES 40 /*!< Waiting time after all other modes is at least 38 us */
+
 
 
 /*!
@@ -77,7 +94,8 @@ typedef enum
 	LCD_CMD_FUNCTION_SET,
 	LCD_CMD_CLEAR_DISPLAY,
 	LCD_CMD_DISPLAY_CTRL,
-	LCD_CMD_ENTRY_MODE_SET
+	LCD_CMD_ENTRY_MODE_SET,
+	LCD_CMD_SET_DDRAM_ADDR
 }
 T_LCD_command;
 
@@ -93,6 +111,30 @@ typedef enum
 T_LCD_config_mode;
 
 /*!
+ * @brief Screen RAM definition
+ * @details This enumeration defines the RAM areas of the LCD screen : DDRAM for display, CGRAM for characters generation
+ */
+typedef enum
+{
+	LCD_DATA_DDRAM,
+	LCD_DATA_CGRAM
+}
+T_LCD_ram_area;
+
+typedef struct
+{
+	bool backlight_en;
+	bool lineNumber_cnf;
+	bool fontType_cnf;
+	bool display_en;
+	bool cursor_en;
+	bool cursorBlink_en;
+	bool entryModeDir;
+	bool entryModeShift;
+}
+T_LCD_conf_struct;
+
+/*!
  * @brief Class for LCD S2004A display driver
  * @details This class handles functions managing LCD display S2004a on I2C bus
  */
@@ -105,9 +147,10 @@ public:
 	 * @brief LCD class constructor
 	 * @details This constructor function initializes the class LCD and calls screen configuration function.
 	 *
+	 * @param [in] init_conf Initial configuration structure
 	 * @return Nothing
 	 */
-	LCD();
+	LCD(const T_LCD_conf_struct* init_conf);
 
 	/*!
 	 * @brief LCD command management function
@@ -214,6 +257,35 @@ public:
 		cnfEntryModeShift = param;
 	}
 
+	/*!
+	 * @brief DDRAM address setting function
+	 * @details This function updates the DDRAM address according to the given parameter. The parameter is checked against limits to be sure the address stays always coherent. It also calls the command function to update screen accordingly.
+	 *
+	 * @param [in] addr New DDRAM address
+	 * @return Nothing
+	 */
+	void SetDDRAMAddress(uint8_t addr);
+
+	/*!
+	 * @brief DDRAM address get function
+	 * @details This function return the value of the current DDRAM address stored in internal variable ddram_addr.
+	 *
+	 * @return Current DDRAM address
+	 */
+	inline uint8_t GetDDRAMAddress()
+	{
+		return ddram_addr;
+	}
+
+	/*!
+	 * @brief Screen RAM write function
+	 * @details This function writes in the memorized RAM address the character given as parameter. After a write the screen automatically increment/decrement the RAM address, so we do the same in the function to stay coherent.
+	 * 			Currently only DDRAM write is implemented.
+	 *
+	 * 	@param [in] data Dta byte to write in RAM
+	 * 	@return Nothing
+	 */
+	void WriteInRam(uint8_t a_char, T_LCD_ram_area area);
 
 
 private:
@@ -227,6 +299,7 @@ private:
 	bool cnfEntryModeDir; /*!< Entry mode direction configuration : 1 = cursor moves to right when DDRAM address is incremented, 0 = cursor moves to left when DDRAM address is incremented */
 	bool cnfEntryModeShift; /*!< Entry mode configuration : 0 = no display shift is performed after a DDRAM read, 1 = a shift is performed */
 
+	uint8_t ddram_addr; /*!< Screen DDRAM address */
 
 	/*!
 	 * @brief I2C write function for 4-bits mode
@@ -256,7 +329,7 @@ private:
 	 *
 	 * @return Nothing
 	 */
-	void ConfigureScreen();
+	void InitializeScreen();
 };
 
 #include "../bsw.h"

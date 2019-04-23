@@ -11,19 +11,22 @@
 
 #include "LCD.h"
 
-LCD::LCD()
+LCD::LCD(const T_LCD_conf_struct* init_conf)
 {
-	/* Screen default configuration */
-	ConfigureBacklight(true);
-	ConfigureLineNumber(LCD_CNF_ONE_LINE);
-	ConfigureLineNumber(LCD_CNF_FONT_5_8);
-	ConfigureDisplayOnOff(LCD_CNF_DISPLAY_ON);
-	ConfigureCursorOnOff(LCD_CNF_CURSOR_ON);
-	ConfigureCursorBlink(LCD_CNF_CURSOR_BLINK_ON);
-	ConfigureEntryModeDir(LCD_CNF_ENTRY_MODE_DIRECTION_RIGHT);
-	ConfigureEntryModeShift(LCD_CNF_ENTRY_MODE_DISPLAY_SHIFT_OFF);
+	/* Initialize class variables */
+	ddram_addr = 0;
 
-	ConfigureScreen();
+	/* Screen default configuration */
+	ConfigureBacklight(init_conf->backlight_en);
+	ConfigureLineNumber(init_conf->lineNumber_cnf);
+	ConfigureFontType(init_conf->fontType_cnf);
+	ConfigureDisplayOnOff(init_conf->display_en);
+	ConfigureCursorOnOff(init_conf->cursor_en);
+	ConfigureCursorBlink(init_conf->cursorBlink_en);
+	ConfigureEntryModeDir(init_conf->entryModeDir);
+	ConfigureEntryModeShift(init_conf->entryModeShift);
+
+	InitializeScreen();
 
 }
 
@@ -56,7 +59,7 @@ void LCD::write(uint8_t data, T_LCD_config_mode mode)
 }
 
 
-void LCD::ConfigureScreen()
+void LCD::InitializeScreen()
 {
 	uint8_t data;
 
@@ -101,14 +104,8 @@ void LCD::ConfigureScreen()
 	/* Configure display */
 	command(LCD_CMD_DISPLAY_CTRL);
 
-	/* Wait at least 38 us */
-	_delay_us(40);
-
 	/* Clear display */
 	command(LCD_CMD_CLEAR_DISPLAY);
-
-	/* Wait at least 1.52 ms */
-	_delay_us(1600);
 
 	/* Configure cursor */
 	command(LCD_CMD_ENTRY_MODE_SET);
@@ -117,24 +114,35 @@ void LCD::ConfigureScreen()
 void LCD::command(T_LCD_command cmd)
 {
 	uint8_t data = 0;
+	uint32_t wait_time = 0;
 
 	switch(cmd)
 	{
 	case LCD_CMD_FUNCTION_SET:
 		/* Data length bit is forced to 0, we can work only in 4-bits mode */
 		data = (1 << LCD_INST_FUNCTION_SET) + (cnfLineNumber << LCD_FCT_SET_FIELD_N) + (cnfFontType << LCD_FCT_SET_FIELD_F);
+		wait_time = LCD_WAIT_OTHER_MODES;
 		break;
 
 	case LCD_CMD_DISPLAY_CTRL:
 		data = (1 << LCD_INST_DISPLAY_CTRL) + (cnfDisplayOnOff << LCD_DISPLAY_CTRL_FIELD_D) + (cnfCursorOnOff << LCD_DISPLAY_CTRL_FIELD_C) + (cnfCursorBlink << LCD_DISPLAY_CTRL_FIELD_B);
+		wait_time = LCD_WAIT_OTHER_MODES;
 		break;
 
 	case LCD_CMD_CLEAR_DISPLAY:
 		data = (1 << LCD_INST_CLR_DISPLAY_BIT);
+		ddram_addr = 0;
+		wait_time = LCD_WAIT_CLR_RETURN;
 		break;
 
 	case LCD_CMD_ENTRY_MODE_SET:
 		data = (1 << LCD_INST_ENTRY_MODE_SET) + (cnfEntryModeDir << LCD_CNF_SHIFT_ID) + (cnfEntryModeShift << LCD_CNF_SHIFT_SH);
+		wait_time = LCD_WAIT_OTHER_MODES;
+		break;
+
+	case LCD_CMD_SET_DDRAM_ADDR:
+		data = (1 << LCD_INST_SET_DDRAM_ADDR) + ddram_addr;
+		wait_time = LCD_WAIT_OTHER_MODES;
 		break;
 
 	default:
@@ -143,4 +151,53 @@ void LCD::command(T_LCD_command cmd)
 	}
 
 	write(data, LCD_MODE_INSTRUCTION);
+	_delay_us(wait_time);
+}
+
+void LCD::SetDDRAMAddress(uint8_t addr)
+{
+	/* If 1-line mode, address shall be between 0 and 0x4F */
+	if (cnfLineNumber == LCD_CNF_ONE_LINE)
+	{
+		if (addr > LCD_RAM_1_LINE_MAX)
+			addr = LCD_RAM_1_LINE_MAX;
+	}
+	/* If 2-lines mode, address shall be between 0 and 0x27 or between 0x40 and 0x67 */
+	else if (cnfLineNumber == LCD_CNF_TWO_LINE)
+	{
+		if ((addr > LCD_RAM_2_LINES_MAX_1) && (addr < LCD_RAM_2_LINES_MIN_2))
+			addr = LCD_RAM_2_LINES_MAX_1;
+		else if (addr > LCD_RAM_2_LINES_MAX_2)
+			addr = LCD_RAM_2_LINES_MAX_2;
+	}
+
+	/* Now set the internal variable and update screen */
+	ddram_addr = addr;
+	command(LCD_CMD_SET_DDRAM_ADDR);
+}
+
+void LCD::WriteInRam(uint8_t a_char, T_LCD_ram_area area)
+{
+
+	/* Only DDRAM is implemented for now */
+	if (area == LCD_DATA_DDRAM)
+	{
+		/* Increment RAM address */
+		if (cnfLineNumber == LCD_CNF_ONE_LINE)
+			ddram_addr = (ddram_addr + 1) % LCD_RAM_1_LINE_MAX;
+
+		else if (cnfLineNumber == LCD_CNF_TWO_LINE)
+		{
+			ddram_addr++;
+
+			if (ddram_addr == LCD_RAM_2_LINES_MAX_1)
+				ddram_addr = LCD_RAM_2_LINES_MIN_2;
+
+			else if (ddram_addr == LCD_RAM_2_LINES_MAX_2)
+				ddram_addr = LCD_RAM_2_LINES_MIN_1;
+		}
+	}
+
+	write(a_char, LCD_MODE_DATA);
+	_delay_us(LCD_WAIT_OTHER_MODES);
 }

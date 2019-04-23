@@ -14,6 +14,7 @@
 #include "debug/debug.h"
 #include "keepAliveLed/keepAliveLed.h"
 #include "TempSensor/TempSensor.h"
+#include "display_ift/DisplayInterface.h"
 
 
 /*!
@@ -25,6 +26,7 @@ typedef struct
 	UsartDebug* p_usartDebug; /*!< Pointer to usart debug object */
 	keepAliveLed* p_keepAliveLed; /*!< Pointer to keepAliveLed object */
 	TempSensor* p_TempSensor; /*!< Pointer to TempSensor object */
+	DisplayInterface* p_DisplayInterface; /*!< Pointer to DisplayInterface object */
 }
 T_ASW_cnf_struct;
 
