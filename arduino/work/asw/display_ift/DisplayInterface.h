@@ -33,13 +33,35 @@ public:
 	/*!
 	 * @brief Class constructor
 	 * @details This function initializes all class variables and instantiates the LCD driver according to the defined configuration.
+	 *
+	 * @return Nothing
 	 */
 	DisplayInterface();
 
+	/*!
+	 * @brief Line display function
+	 * @details This function displays the given string on the requested line. If the string is too long to be displayed entirely, the end of the string is cut.
+	 * 			TODO : in next versions the display shall be moving to display all the string.
+	 *
+	 * @param [in] str Pointer to the string to display
+	 * @param [in] size Size of the string to display
+	 * @param [in] line Index of the line where the string shall be displayed
+	 * @return Nothing
+	 */
+	void DisplayFullLine(uint8_t* str, uint8_t size, uint8_t line);
 
 private:
 
 	LCD* p_lcd; /*!< Pointer to the attached LCD driver object */
+
+	/*!
+	 * @brief Finds start address of a line.
+	 * @details This function finds the address in DDRAM of the first character of a line.
+	 *
+	 * @param [in] line Line which address shall be found
+	 * @return Address in DDRAM of the first character of the line
+	 */
+	uint8_t FindFirstCharAddr(uint8_t line);
 };
 
 #include "../../bsw/bsw.h"

@@ -83,6 +83,9 @@
 #define LCD_WAIT_CLR_RETURN 1600 /*!< Waiting time after clear display and return home operations is at least 1520 us */
 #define LCD_WAIT_OTHER_MODES 40 /*!< Waiting time after all other modes is at least 38 us */
 
+/* Definition of screen sizes */
+#define LCD_SIZE_NB_CHAR_PER_LINE 20 /*!< LCD screen has 20 characters per line */
+#define LCD_SIZE_NB_LINES 4 /*!< LCD screen has 4 lines */
 
 
 /*!
@@ -286,6 +289,17 @@ public:
 	 * 	@return Nothing
 	 */
 	void WriteInRam(uint8_t a_char, T_LCD_ram_area area);
+
+	/*!
+	 * @brief Number of line get function
+	 * @details This function returns the line number configuration of the screen : 1 or 2 lines mode.
+	 *
+	 * @return Line number configuration
+	 */
+	inline bool GetLineNumberCnf()
+	{
+		return cnfLineNumber;
+	}
 
 
 private:

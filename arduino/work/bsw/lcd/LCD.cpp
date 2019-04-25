@@ -184,16 +184,16 @@ void LCD::WriteInRam(uint8_t a_char, T_LCD_ram_area area)
 	{
 		/* Increment RAM address */
 		if (cnfLineNumber == LCD_CNF_ONE_LINE)
-			ddram_addr = (ddram_addr + 1) % LCD_RAM_1_LINE_MAX;
+			ddram_addr = (ddram_addr + 1) % (LCD_RAM_1_LINE_MAX + 1);
 
 		else if (cnfLineNumber == LCD_CNF_TWO_LINE)
 		{
 			ddram_addr++;
 
-			if (ddram_addr == LCD_RAM_2_LINES_MAX_1)
+			if (ddram_addr == (LCD_RAM_2_LINES_MAX_1 + 1))
 				ddram_addr = LCD_RAM_2_LINES_MIN_2;
 
-			else if (ddram_addr == LCD_RAM_2_LINES_MAX_2)
+			else if (ddram_addr == (LCD_RAM_2_LINES_MAX_2 + 1))
 				ddram_addr = LCD_RAM_2_LINES_MIN_1;
 		}
 	}
