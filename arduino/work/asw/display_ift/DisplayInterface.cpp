@@ -15,6 +15,8 @@
 
 DisplayInterface::DisplayInterface()
 {
+	uint8_t i;
+
 	/* Instantiate new LCD driver and attach it to BSW structure */
 	if (BSW_cnf_struct.p_lcd == 0)
 	{
@@ -22,44 +24,79 @@ DisplayInterface::DisplayInterface()
 	}
 	p_lcd = BSW_cnf_struct.p_lcd;
 
+	/* All lines are empty at startup (LCD driver has cleared the screen) */
+	for (i=0; i<LCD_SIZE_NB_LINES; i++)
+		lineEmptyTab[i] = true;
+
 	/* Test */
-	p_lcd->command(LCD_CMD_CLEAR_DISPLAY);
 	_delay_us(500000);
-	DisplayFullLine((uint8_t*)"toto", 4, 0);
+	DisplayFullLine((uint8_t*)"toto", 4, 0, GO_TO_NEXT_LINE);
 	_delay_us(500000);
-	DisplayFullLine((uint8_t*)"azerty", 6, 1);
+	DisplayFullLine((uint8_t*)"azertyuiopqsdfghjklmwxcvbn", 26, 1, GO_TO_NEXT_LINE);
 	_delay_us(500000);
-	DisplayFullLine((uint8_t*)"nbvcxwmlkjhftyjbvbffcdvhjhkknhytfhhjukjnbhgg", 30, 2);
+	ClearLine(1);
 	_delay_us(500000);
-	DisplayFullLine((uint8_t*)"SALUT", 8, 3);
-	_delay_us(500000);
+	DisplayFullLine((uint8_t*)"ahahah", 6, 3, GO_TO_NEXT_LINE);
+
 
 }
 
-void DisplayInterface::DisplayFullLine(uint8_t* str, uint8_t size, uint8_t line)
+bool DisplayInterface::DisplayFullLine(uint8_t* str, uint8_t size, uint8_t line, T_DisplayInterface_LineDisplayMode mode)
 {
-	uint8_t ram_addr;
 	uint8_t i;
-
-	/* Size is limited to the screen size for now */
-	if (size > LCD_SIZE_NB_CHAR_PER_LINE)
-		size = LCD_SIZE_NB_CHAR_PER_LINE;
 
 	/* Check that the line number is correct, if it's incorrect, exit the function */
 	if (line >= LCD_SIZE_NB_LINES)
-		return;
+		return false;
 
 	/* Find DDRAM address of the start of the requested line */
-	ram_addr = FindFirstCharAddr(line);
+	p_lcd->SetDDRAMAddress(FindFirstCharAddr(line));
 
-	/* Write each character on the screen */
-	for (i=0; i<size; i++)
+	switch (mode)
 	{
-		p_lcd->SetDDRAMAddress(ram_addr);
-		p_lcd->WriteInRam(str[i], LCD_DATA_DDRAM);
-		ram_addr++;
+	case NORMAL:
+		/* Size is limited to the screen size */
+		if (size > LCD_SIZE_NB_CHAR_PER_LINE)
+			size = LCD_SIZE_NB_CHAR_PER_LINE;
+
+		/* Write each character on the screen */
+		for (i=0; i<size; i++)
+		{
+			p_lcd->WriteInRam(str[i], LCD_DATA_DDRAM);
+		}
+		lineEmptyTab[line] = false;
+		break;
+
+	case LINE_SHIFT:
+		/* TODO : will be implemented later */
+		break;
+
+	case GO_TO_NEXT_LINE:
+		/* If there are too many characters to display */
+		if (size > LCD_SIZE_NB_CHAR_PER_LINE)
+		{
+			size -= LCD_SIZE_NB_CHAR_PER_LINE;
+
+			/* Write each character on the screen */
+			for (i=0; i<LCD_SIZE_NB_CHAR_PER_LINE; i++)
+			{
+				p_lcd->WriteInRam(str[i], LCD_DATA_DDRAM);
+			}
+			lineEmptyTab[line] = false;
+
+			/* Call the function recursively to display the remaining characters on the next line */
+			DisplayFullLine(&str[LCD_SIZE_NB_CHAR_PER_LINE], size, line + 1, GO_TO_NEXT_LINE);
+		}
+		else
+		{
+			/* All characters can be displayed on the line, call the function in normal mode */
+			DisplayFullLine(str, size, line, NORMAL);
+		}
+
+		break;
 	}
 
+	return true;
 }
 
 uint8_t DisplayInterface::FindFirstCharAddr(uint8_t line)
@@ -99,4 +136,35 @@ uint8_t DisplayInterface::FindFirstCharAddr(uint8_t line)
 	}
 
 	return start_addr;
+}
+
+bool DisplayInterface::ClearLine(uint8_t line)
+{
+	uint8_t i;
+
+	/* Check that the line number is correct, if it's incorrect, exit the function */
+	if (line >= LCD_SIZE_NB_LINES)
+		return false;
+
+	/* Find DDRAM address of the start of the requested line */
+	p_lcd->SetDDRAMAddress(FindFirstCharAddr(line));
+
+	/* Set data to ' ' (space character) in DDRAM */
+	for (i=0; i<LCD_SIZE_NB_CHAR_PER_LINE; i++)
+	{
+		p_lcd->WriteInRam(' ', LCD_DATA_DDRAM);
+	}
+
+	lineEmptyTab[line] = true;
+
+	return true;
+}
+
+bool DisplayInterface::IsLineEmpty(uint8_t line)
+{
+	/* Check that the line number is correct, if it's incorrect, exit the function */
+	if (line >= LCD_SIZE_NB_LINES)
+		return true;
+
+	return lineEmptyTab[line];
 }

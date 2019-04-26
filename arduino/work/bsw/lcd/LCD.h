@@ -285,7 +285,8 @@ public:
 	 * @details This function writes in the memorized RAM address the character given as parameter. After a write the screen automatically increment/decrement the RAM address, so we do the same in the function to stay coherent.
 	 * 			Currently only DDRAM write is implemented.
 	 *
-	 * 	@param [in] data Dta byte to write in RAM
+	 * 	@param [in] a_char Data byte to write in RAM
+	 * 	@param [in] area Area in RAM where the data will be written : DDRAM or CGRAM
 	 * 	@return Nothing
 	 */
 	void WriteInRam(uint8_t a_char, T_LCD_ram_area area);
