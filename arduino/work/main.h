@@ -15,7 +15,7 @@
 #include <avr/interrupt.h>
 #include <stdlib.h>
 
-#include "lib/operators.h"
+#include "lib/operators/operators.h"
 
 #include "asw/asw.h"
 #include "bsw/bsw.h"

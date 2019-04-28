@@ -10,6 +10,8 @@
 #ifndef WORK_SCHEDULER_SCHEDULER_H_
 #define WORK_SCHEDULER_SCHEDULER_H_
 
+#include "../lib/LinkedList/LinkedList.h"
+
 
 #define SW_PERIOD_MS 500 /*!< Software period, used to define periodic timer interrupt */
 #define PRESCALER_PERIODIC_TIMER 256 /*!< Value of prescaler to use for periodic timer */
@@ -81,6 +83,17 @@ public:
 	 */
 	uint32_t getPitNumber();
 
+	/*!
+	 * @brief Linked list comparison function
+	 * @details This function is called by the linked list class to compare one element of the list to a given element.
+	 * 			In the class scheduler, the LLElement is a task pointer (containing a function pointer and a period), and the compareElement a function pointer.
+	 * 			The comparison will be done between the two function pointer.
+	 *
+	 * @param [in] LLElement Pointer to the linked list element
+	 * @param [in] CompareElement Pointer to the element to the compare
+	 * @return True if both elements are identical, false otherwise
+	 */
+	static bool LLElementCompare(void* LLElement, void* CompareElement);
 
 private:
 
@@ -89,28 +102,16 @@ private:
 	/*!
 	 * @brief Type defining a task structure
 	 * @details This structure defines a task.
-	 * 			A task is defined by a function to call (defined by its pointer), an ID and a period.
+	 * 			A task is defined by a function to call (defined by its pointer) and a period.
 	 */
 	typedef struct Task_t
 	{
 		TaskPtr_t TaskPtr; /*!< Pointer to the task */
 		uint16_t period; /*!< Period of the task */
-		Task_t *nextTask; /*!< Pointer to the next task to launch */
 	}
 	Task_t;
 
-	/*!
-	 * @brief Task configuration structure
-	 * @details This structure contains task list and memorizes the number of current tasks launched
-	 */
-	typedef struct
-	{
-		Task_t* firstTask; /*!< Pointer to the first task to launch */
-		uint8_t task_nb; /*!< Number of task */
-	}
-	Task_cnf_struct_t;
-
-	Task_cnf_struct_t Task_cnf_struct; /*!< Declaration of task configuration structure */
+	LinkedList* TasksLL_ptr; /*!< Pointer to the linked list object containing the tasks */
 
 	uint32_t pit_number; /*!< Counter of periodic interrupts */
 
