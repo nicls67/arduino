@@ -15,7 +15,9 @@ typedef bool (*CompareFctPtr_t)(void* LLElement, void* CompareElement); /*!< Typ
 
 /*!
  * @brief Linked list class
- * @details This class defines a linked list and the associated services
+ * @details This class defines a linked list and the associated services. \n
+ * 			All classes using a linked list with this interface shall implement a comparison function used to find the list element to remove. This function shall have the following prototype :
+ * 			static bool LLElementCompare(void* LLElement, void* CompareElement);
  */
 class LinkedList {
 
