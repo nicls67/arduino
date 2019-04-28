@@ -49,16 +49,19 @@ bool DisplayInterface::DisplayFullLine(uint8_t* str, uint8_t size, uint8_t line,
 	if (line >= LCD_SIZE_NB_LINES)
 		return false;
 
+	/* If all characters can be displayed on one line, switch mode to NORMAL */
+	if (size <= LCD_SIZE_NB_CHAR_PER_LINE)
+		mode = NORMAL;
+	/* If there are too many characters and mode is NORMAL, switch mode to LINE_SHIFT */
+	else if ((size > LCD_SIZE_NB_CHAR_PER_LINE) && (mode == NORMAL))
+		mode = LINE_SHIFT;
+
 	/* Find DDRAM address of the start of the requested line */
 	p_lcd->SetDDRAMAddress(FindFirstCharAddr(line));
 
 	switch (mode)
 	{
 	case NORMAL:
-		/* Size is limited to the screen size */
-		if (size > LCD_SIZE_NB_CHAR_PER_LINE)
-			size = LCD_SIZE_NB_CHAR_PER_LINE;
-
 		/* Write each character on the screen */
 		for (i=0; i<size; i++)
 		{
@@ -68,31 +71,21 @@ bool DisplayInterface::DisplayFullLine(uint8_t* str, uint8_t size, uint8_t line,
 		break;
 
 	case LINE_SHIFT:
-		/* TODO : will be implemented later */
+
 		break;
 
 	case GO_TO_NEXT_LINE:
-		/* If there are too many characters to display */
-		if (size > LCD_SIZE_NB_CHAR_PER_LINE)
+		size -= LCD_SIZE_NB_CHAR_PER_LINE;
+
+		/* Write each character on the screen */
+		for (i=0; i<LCD_SIZE_NB_CHAR_PER_LINE; i++)
 		{
-			size -= LCD_SIZE_NB_CHAR_PER_LINE;
-
-			/* Write each character on the screen */
-			for (i=0; i<LCD_SIZE_NB_CHAR_PER_LINE; i++)
-			{
-				p_lcd->WriteInRam(str[i], LCD_DATA_DDRAM);
-			}
-			lineEmptyTab[line] = false;
-
-			/* Call the function recursively to display the remaining characters on the next line */
-			DisplayFullLine(&str[LCD_SIZE_NB_CHAR_PER_LINE], size, line + 1, GO_TO_NEXT_LINE);
+			p_lcd->WriteInRam(str[i], LCD_DATA_DDRAM);
 		}
-		else
-		{
-			/* All characters can be displayed on the line, call the function in normal mode */
-			DisplayFullLine(str, size, line, NORMAL);
-		}
+		lineEmptyTab[line] = false;
 
+		/* Call the function recursively to display the remaining characters on the next line */
+		DisplayFullLine(&str[LCD_SIZE_NB_CHAR_PER_LINE], size, line + 1, GO_TO_NEXT_LINE);
 		break;
 	}
 
