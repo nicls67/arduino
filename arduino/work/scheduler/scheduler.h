@@ -24,8 +24,9 @@ typedef void (*TaskPtr_t)(void);
 
 /*!
  * @brief Scheduler class
- * @details This class defines the scheduler of the system.
- * 			It is called by the main interrupt and calls successively all applicative functions according to their recurrence time.
+ * @details This class defines the scheduler of the system. \n
+ * 			It is called by the main interrupt and calls successively all applicative functions according to their recurrence time. \n
+ * 			All tasks called by the scheduler shall have the following prototype : static void task();
  */
 class scheduler
 {
