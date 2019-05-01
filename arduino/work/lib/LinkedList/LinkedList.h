@@ -63,7 +63,7 @@ public:
 
 	/*!
 	 * @brief Move to next element function
-	 * @details This function moves the element pointer tot he next element of the chain.
+	 * @details This function moves the element pointer to the next element of the chain.
 	 *
 	 * @return True if the next element exists, false if there is no next element
 	 */
@@ -79,6 +79,15 @@ public:
 	{
 		curElement_ptr = firstElement;
 	}
+
+	/*!
+	 * @brief Empty linked list
+	 * @details This function checks whether the linked list is empty or not (pointer to first element is equal to 0 or not).
+	 *
+	 * @return True if the list is empty, false otherwise
+	 */
+	bool IsLLEmpty();
+
 
 private:
 	/*!

@@ -25,6 +25,7 @@ LCD::LCD(const T_LCD_conf_struct* init_conf)
 	ConfigureCursorBlink(init_conf->cursorBlink_en);
 	ConfigureEntryModeDir(init_conf->entryModeDir);
 	ConfigureEntryModeShift(init_conf->entryModeShift);
+	ConfigureI2CAddr(init_conf->i2c_addr);
 
 	InitializeScreen();
 
@@ -63,7 +64,7 @@ void LCD::InitializeScreen()
 {
 	uint8_t data;
 
-	BSW_cnf_struct.p_i2c->setTxAddress(I2C_ADDR);
+	BSW_cnf_struct.p_i2c->setTxAddress(cnfI2C_addr);
 
 	/* Wait for 30ms after power on */
 	_delay_us(30000);

@@ -80,3 +80,11 @@ bool LinkedList::MoveToNextElement()
 		return false;
 	}
 }
+
+bool LinkedList::IsLLEmpty()
+{
+	if (firstElement == 0)
+		return true;
+	else
+		return false;
+}

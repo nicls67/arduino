@@ -12,7 +12,12 @@
 
 #include "../../bsw/lcd/lcd.h"
 
+/*!
+ * @brief LCD configuration structure
+ * @details This structure defines the initial configuration of the LCD screen.
+ */
 const T_LCD_conf_struct LCD_init_cnf = {
+	0x27,
 	LCD_CNF_BACKLIGHT_ON,
 	LCD_CNF_TWO_LINE,
 	LCD_CNF_FONT_5_8,
@@ -37,6 +42,23 @@ typedef enum
 	GO_TO_NEXT_LINE
 }
 T_DisplayInterface_LineDisplayMode;
+
+/*!
+ * @brief Structure containing shift data
+ * @details This structure contains all useful data for line shifting. These data need to be kept between each call of the periodic function.
+ */
+typedef struct
+{
+	uint8_t* str_start_ptr;
+	uint8_t* str_cur_ptr;
+	uint8_t size;
+	uint8_t line;
+	uint8_t temporization;
+}
+T_Display_shift_data;
+
+#define DISPLAY_LINE_SHIFT_PERIOD_MS 500 /*!< In "line shift" mode for line display, line is shifted every 500 ms */
+#define DISPLAY_LINE_SHIFT_TEMPO_TIME 6 /*!< In "line shift" mode for line display, a temporization of 3 periods is added at the end and the beginning of the lines */
 
 
 /*!
@@ -84,11 +106,43 @@ public:
 	 */
 	bool IsLineEmpty(uint8_t line);
 
+	/*!
+	 * @brief Linked list comparison function
+	 * @details This function is called by the linked list class to compare one element of the list to a given element.
+	 * 			In the class DisplayInterface, the LLElement is a shift data pointer (containing a line number inside it), and the compareElement a line number.
+	 * 			The comparison will be done between the two function pointer.
+	 *
+	 * @param [in] LLElement Pointer to the linked list element
+	 * @param [in] CompareElement Pointer to the element to the compare
+	 * @return True if both elements are identical, false otherwise
+	 */
+	static bool LLElementCompare(void* LLElement, void* CompareElement);
+
+	/*!
+	 * @brief Line shifting periodic task
+	 * @details This function is called periodically by the scheduler. It shifts all the lines in line shifting mode and updates the data structures.
+	 *
+	 * @return Nothing
+	 */
+	static void shiftLine_task();
+
+	/*!
+	 * @brief Linked list shift data get function
+	 * @details This function returns the pointer to the shift data linked list.
+	 *
+	 * @return Pointer to linked list
+	 */
+	inline LinkedList* getLLShiftDataPtr()
+	{
+		return LL_shift_data_ptr;
+	}
+
 private:
 
 	LCD* p_lcd; /*!< Pointer to the attached LCD driver object */
 	uint32_t dummy; /*!< Needed for data alignment */
 	bool lineEmptyTab[LCD_SIZE_NB_LINES]; /*!< Table indicating whether a line is empty or not (true = line empty, false = line not empty */
+	LinkedList* LL_shift_data_ptr; /*!< Linked list containing data for line shifting, each element of the list corresponds to a line of the screen */
 
 	/*!
 	 * @brief Finds start address of a line.

@@ -10,8 +10,6 @@
 #ifndef WORK_BSW_LCD_LCD_H_
 #define WORK_BSW_LCD_LCD_H_
 
-#define I2C_ADDR 0x27 /*!< I2C address of LCD display */
-
 /* Dedinition of LCD pins connections */
 #define EN_PIN 2 /*!< EN bit is on P2 */
 #define RW_PIN 1 /*!< RW pin is on P1 */
@@ -126,6 +124,7 @@ T_LCD_ram_area;
 
 typedef struct
 {
+	uint8_t i2c_addr;
 	bool backlight_en;
 	bool lineNumber_cnf;
 	bool fontType_cnf;
@@ -261,6 +260,18 @@ public:
 	}
 
 	/*!
+	 * @brief I2C address configuration function
+	 * @details This function configures the I2V address of the LCD screen according to the parameter.
+	 *
+	 * @param [in] param I2C address
+	 * @return Nothing
+	 */
+	inline void ConfigureI2CAddr(uint8_t param)
+	{
+		cnfI2C_addr = param;
+	}
+
+	/*!
 	 * @brief DDRAM address setting function
 	 * @details This function updates the DDRAM address according to the given parameter. The parameter is checked against limits to be sure the address stays always coherent. It also calls the command function to update screen accordingly.
 	 *
@@ -313,6 +324,7 @@ private:
 	bool cnfCursorBlink; /*!< Cursor blinking configuration : 1 = cursor blink is on, 0 = cursor blink is off */
 	bool cnfEntryModeDir; /*!< Entry mode direction configuration : 1 = cursor moves to right when DDRAM address is incremented, 0 = cursor moves to left when DDRAM address is incremented */
 	bool cnfEntryModeShift; /*!< Entry mode configuration : 0 = no display shift is performed after a DDRAM read, 1 = a shift is performed */
+	uint8_t cnfI2C_addr; /*!< I2C address of the LCD screen */
 
 	uint8_t ddram_addr; /*!< Screen DDRAM address */
 
