@@ -76,6 +76,8 @@ void UsartDebug::DisplaySensors_task()
 
 	validity = ASW_cnf_struct.p_TempSensor->getTemp(&data);
 
+	/* TODO : add function for data formatting */
+
 	if(validity)
 	{
 		data_int = (uint8_t)(data/10);
