@@ -80,6 +80,61 @@ public:
 	 */
 	void updateLastValidValues();
 
+	/*!
+	 * @brief Temperature formatting function - Integer part
+	 * @details This function return the integer part of the temperature
+	 *
+	 * @return Integer value of the temperature
+	 */
+	inline uint8_t GetTempInteger()
+	{
+		return (uint8_t)(valid_temp/10);
+	}
+
+	/*!
+	 * @brief Temperature formatting function - Decimal part
+	 * @details This function return the decimal part of the temperature
+	 *
+	 * @return Decimal value of the temperature
+	 */
+	inline uint8_t GetTempDecimal()
+	{
+		return (uint8_t)(valid_temp%10);
+	}
+
+	/*!
+	 * @brief Humidity formatting function - Integer part
+	 * @details This function return the integer part of the humidity
+	 *
+	 * @return Integer value of the humidity
+	 */
+	inline uint8_t GetHumInteger()
+	{
+		return (uint8_t)(valid_hum/10);
+	}
+
+	/*!
+	 * @brief Humidity formatting function - Decimal part
+	 * @details This function return the decimal part of the humidity
+	 *
+	 * @return Decimal value of the humidity
+	 */
+	inline uint8_t GetHumDecimal()
+	{
+		return (uint8_t)(valid_hum%10);
+	}
+
+	/*!
+	 * @brief Data validity get function
+	 * @details This function returns the validity of the sensor data
+	 *
+	 * @returns True if the sensor values are valid, false otherwise
+	 */
+	inline bool GetValidity()
+	{
+		return validity;
+	}
+
 private:
 
 	uint16_t read_temperature; /*!< Raw value of temperature read from DHT22 (= real temperature *10) */
@@ -93,8 +148,7 @@ private:
 	uint16_t valid_hum; /*!< Valid value of humidity */
 };
 
-#include "../../scheduler/scheduler.h"
-#include "../../bsw/bsw.h"
-#include "../asw.h"
+
+
 
 #endif /* WORK_ASW_TEMPSENSOR_TEMPSENSOR_H_ */

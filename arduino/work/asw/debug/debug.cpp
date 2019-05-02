@@ -12,6 +12,9 @@
 #include <avr/io.h>
 #include <stdlib.h>
 
+#include "../../bsw/bsw.h"
+#include "../asw.h"
+#include "../../scheduler/scheduler.h"
 #include "debug.h"
 
 /*!
@@ -68,39 +71,28 @@ void UsartDebug::sendBool(bool data)
 
 void UsartDebug::DisplaySensors_task()
 {
-	uint16_t data;
-	uint8_t data_int, data_dec;
 	bool validity;
+
+	validity = ASW_cnf_struct.p_TempSensor->GetValidity();
 
 	ASW_cnf_struct.p_usartDebug->sendData((char*)"\n\nTemperature : ");
 
-	validity = ASW_cnf_struct.p_TempSensor->getTemp(&data);
-
-	/* TODO : add function for data formatting */
-
 	if(validity)
 	{
-		data_int = (uint8_t)(data/10);
-		data_dec = (uint8_t)(data%10);
-		ASW_cnf_struct.p_usartDebug->sendInteger(data_int,10);
+		ASW_cnf_struct.p_usartDebug->sendInteger(ASW_cnf_struct.p_TempSensor->GetTempInteger(),10);
 		ASW_cnf_struct.p_usartDebug->sendData((char*)".");
-		ASW_cnf_struct.p_usartDebug->sendInteger(data_dec,10);
+		ASW_cnf_struct.p_usartDebug->sendInteger(ASW_cnf_struct.p_TempSensor->GetTempDecimal(),10);
 	}
 	else
 		ASW_cnf_struct.p_usartDebug->sendData((char*)"invalid");
 
-
 	ASW_cnf_struct.p_usartDebug->sendData((char*)" degC\nHumidite : ");
-
-	validity = ASW_cnf_struct.p_TempSensor->getHumidity(&data);
 
 	if(validity)
 	{
-		data_int = (uint8_t)(data/10);
-		data_dec = (uint8_t)(data%10);
-		ASW_cnf_struct.p_usartDebug->sendInteger(data_int,10);
+		ASW_cnf_struct.p_usartDebug->sendInteger(ASW_cnf_struct.p_TempSensor->GetHumInteger(),10);
 		ASW_cnf_struct.p_usartDebug->sendData((char*)".");
-		ASW_cnf_struct.p_usartDebug->sendInteger(data_dec,10);
+		ASW_cnf_struct.p_usartDebug->sendInteger(ASW_cnf_struct.p_TempSensor->GetHumDecimal(),10);
 	}
 	else
 		ASW_cnf_struct.p_usartDebug->sendData((char*)"invalid");
