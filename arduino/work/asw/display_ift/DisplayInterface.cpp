@@ -17,6 +17,8 @@ DisplayInterface::DisplayInterface()
 {
 	uint8_t i;
 
+	dummy = 0;
+
 	/* Instantiate new LCD driver and attach it to BSW structure */
 	if (BSW_cnf_struct.p_lcd == 0)
 	{
@@ -30,19 +32,6 @@ DisplayInterface::DisplayInterface()
 
 	/* Linked list is not created yet */
 	LL_shift_data_ptr = 0;
-
-	/* Test */
-	_delay_us(500000);
-	DisplayFullLine((uint8_t*)"toto", 4, 0, NORMAL);
-	_delay_us(500000);
-	DisplayFullLine((uint8_t*)"Bonjour, un long texte de test ", 30, 1, LINE_SHIFT);
-	_delay_us(500000);
-	DisplayFullLine((uint8_t*)"Coucou, un autre long texte ", 27, 2, LINE_SHIFT);
-	_delay_us(500000);
-	DisplayFullLine((uint8_t*)"ahahah", 6, 3, NORMAL);
-	_delay_us(500000);
-	ClearLine(1);
-
 
 }
 
