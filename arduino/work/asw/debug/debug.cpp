@@ -67,6 +67,8 @@ void UsartDebug::sendBool(bool data)
 		str = (uint8_t*)"0";
 
 	BSW_cnf_struct.p_usart->usart_sendString(str);
+
+	free(str);
 }
 
 void UsartDebug::DisplaySensors_task()
