@@ -12,6 +12,7 @@
 
 #include "../lib/LinkedList/LinkedList.h"
 
+/* TODO : modify scheduler to become no more dependent of the periodic interrupt. -> continuous check of tasks to launch */
 
 #define SW_PERIOD_MS 500 /*!< Software period, used to define periodic timer interrupt */
 #define PRESCALER_PERIODIC_TIMER 256 /*!< Value of prescaler to use for periodic timer */
