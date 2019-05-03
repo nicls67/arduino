@@ -54,7 +54,7 @@ public:
 	/*!
 	* @brief Send a boolean data on USART link
 	* @details 	This functions sends the requested boolean on USART link by calling driver's transmission function.
-	* 			The boolean data is first converted into a string and then sent
+	* 			The boolean data is first converted into a string and then sent.
 	* @param [in] data boolean data to be sent
 	* @return Nothing
 	*/
@@ -91,12 +91,12 @@ public:
 	/*!
 	 *  @brief Management of debug mode
 	 *  @details This function manages the debug mode according to the following state machine :
-	 *  		 	  - init state : display main menu
-	 *  		 	  - WAIT_INIT state : handles user choice in main menu and selects next state
-	 *  		 	  - DISPLAY_DATA state : display sensor data periodically
-	 *  		 	  - DISPLAY CPU LOAD : display CPU load periodically
+	 *  		 	  - init state : display main menu\n
+	 *  		 	  - WAIT_INIT state : handles user choice in main menu and selects next state\n
+	 *  		 	  - DISPLAY_DATA state : display sensor data periodically\n
+	 *  		 	  - DISPLAY CPU LOAD : display CPU load periodically\n\n
 	 *
-	 *  It is called each time a data is received on USART and debug mode is active
+	 *  It is called each time a data is received on USART and debug mode is active.
 	 *
 	 *  @param [in] rcv_char 8 bits character received on USART
 	 *  @return Nothing
