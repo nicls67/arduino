@@ -64,7 +64,7 @@ private:
 	 *  @param [in] Data Desired data char to transmit
 	 *  @return Nothing.
 	 */
-	static void usart_transmit( uint8_t Data ) ;
+	void usart_transmit( uint8_t Data ) ;
 
 
 	uint16_t BaudRate; /*!< Defines the baud rate used by driver */
