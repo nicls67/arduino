@@ -18,8 +18,10 @@ T_ASW_cnf_struct ASW_cnf_struct;
 
 void asw_init()
 {
+	/* TODO : class initialization should be done in the user class, not everytime in ASW */
 	ASW_cnf_struct.p_usartDebug = new UsartDebug();
 	ASW_cnf_struct.p_keepAliveLed = new keepAliveLed();
 	ASW_cnf_struct.p_TempSensor = new TempSensor();
-	ASW_cnf_struct.p_DisplayInterface = new DisplayInterface();
+	ASW_cnf_struct.p_DisplayInterface = 0;
+	ASW_cnf_struct.p_DisplayManagement = new DisplayManagement();
 }

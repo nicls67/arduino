@@ -15,7 +15,9 @@
 #include "keepAliveLed/keepAliveLed.h"
 #include "TempSensor/TempSensor.h"
 #include "display_ift/DisplayInterface.h"
+#include "display_mgt/DisplayManagement.h"
 
+/* TODO : remove inclusions in header files: all inclusions shall be done in source files */
 
 /*!
  * @brief ASW configuration structure
@@ -23,10 +25,11 @@
  */
 typedef struct
 {
-	UsartDebug* p_usartDebug; /*!< Pointer to usart debug object */
+	UsartDebug* p_usartDebug; /*!< Pointer to USART debug object */
 	keepAliveLed* p_keepAliveLed; /*!< Pointer to keepAliveLed object */
 	TempSensor* p_TempSensor; /*!< Pointer to TempSensor object */
 	DisplayInterface* p_DisplayInterface; /*!< Pointer to DisplayInterface object */
+	DisplayManagement* p_DisplayManagement; /*!< Pointer to DisplayManagement object */
 }
 T_ASW_cnf_struct;
 
