@@ -28,7 +28,7 @@ public:
 	 * @param [in] str Pointer to initialization string
 	 * @return Nothing
 	 */
-	String(uint8_t* str);
+	String(const uint8_t* str);
 
 	/*!
 	 * @brief String pointer get function

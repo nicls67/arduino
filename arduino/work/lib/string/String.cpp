@@ -12,15 +12,12 @@
 
 #include "String.h"
 
-#include "../../asw/asw.h"
-#include "../../bsw/bsw.h"
-
-String::String(uint8_t* str)
+String::String(const uint8_t* str)
 {
 	uint8_t i;
 
 	/* Compute size of the given string */
-	size = ComputeStringSize(str);
+	size = ComputeStringSize((uint8_t*)str);
 
 	/* Allocate memory for the string (add one more byte for the \0 character) */
 	string = (uint8_t*)malloc((size + 1) * sizeof(uint8_t));
