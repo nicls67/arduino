@@ -13,6 +13,8 @@
 #define PERIOD_MS_TASK_DISPLAY_SENSORS  5000 /*!< Period for displaying temperature and humidity data */
 #define PERIOD_MS_TASK_DISPLAY_CPU_LOAD 5000 /*!< Period for displaying CPU load data */
 
+/* TODO : update class to no longer need to call bsw for strings */
+/* TODO : create a specific class for debug menu */
 
 /*!
  * @brief Defines the debug states
