@@ -13,8 +13,12 @@
 /* TODO : LCD configuration shall be done here, not in display interface */
 
 #define DISPLAY_MGT_PERIOD_TASK_SENSOR 5000 /*!< Display is updated every 5s */
+#define DISPLAY_MGT_LINE_TEMP 0 /*!< Current temperature is displayed on line 0 */
+#define DISPLAY_MGT_LINE_HUM 1 /*!< Current humidity is displayed on line 1 */
 
-const uint8_t* tempDisplayString[] = "Temperature : xx.x";
+const uint8_t tempDisplayString[] = "Temperature : "; /*!< String used for temperature display */
+const uint8_t humidityDisplayString[] = "Humidite : "; /*!< String used for humidity display */
+
 /*!
  * @brief Display management class
  * @details This class manages all displays. It is a top-level class.
@@ -56,9 +60,21 @@ public:
 		return p_display_ift;
 	}
 
+	/*!
+	 * @brief Sensor pointer get function
+	 * @details This function returns the pointer to the temperature sensor object
+	 *
+	 * @return Pointer to sensor object
+	 */
+	inline TempSensor* GetTempSensorPtr()
+	{
+		return p_tempSensor;
+	}
+
 private:
 
 	DisplayInterface * p_display_ift; /*!< Pointer to the display interface object */
+	TempSensor* p_tempSensor; /*!< Pointer to the temperature sensor object */
 
 };
 
