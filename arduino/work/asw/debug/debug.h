@@ -120,7 +120,4 @@ private:
 
 };
 
-#include "../../bsw/bsw.h"
-#include "../../scheduler/scheduler.h"
-
 #endif /* WORK_LIB_LOG_H_ */

@@ -10,8 +10,6 @@
 #ifndef WORK_SCHEDULER_SCHEDULER_H_
 #define WORK_SCHEDULER_SCHEDULER_H_
 
-#include "../lib/LinkedList/LinkedList.h"
-
 /* TODO : modify scheduler to become no more dependent of the periodic interrupt. -> continuous check of tasks to launch */
 
 #define SW_PERIOD_MS 500 /*!< Software period, used to define periodic timer interrupt */

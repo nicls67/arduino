@@ -10,6 +10,17 @@
 #include <stdlib.h>
 #include <avr/io.h>
 
+#include "../lib/LinkedList/LinkedList.h"
+
+
+#include "../bsw/LCD/LCD.h"
+
+#include "debug/debug.h"
+#include "TempSensor/TempSensor.h"
+#include "display_ift/DisplayInterface.h"
+#include "display_mgt/DisplayManagement.h"
+#include "keepAliveLed/keepAliveLed.h"
+
 #include "asw.h"
 
 

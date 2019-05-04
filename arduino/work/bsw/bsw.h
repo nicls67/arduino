@@ -9,15 +9,6 @@
 #ifndef WORK_BSW_BSW_H_
 #define WORK_BSW_BSW_H_
 
-/* Inclusion of all BSW header files */
-#include "usart/usart.h"
-#include "dio/dio.h"
-#include "timer/timer.h"
-#include "dht22/dht22.h"
-#include "CpuLoad/CpuLoad.h"
-#include "I2C/I2C.h"
-#include "LCD/LCD.h"
-
 
 
 /*

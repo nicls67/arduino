@@ -10,8 +10,6 @@
 #ifndef WORK_ASW_DISPLAY_IFT_DISPLAYINTERFACE_H_
 #define WORK_ASW_DISPLAY_IFT_DISPLAYINTERFACE_H_
 
-#include "../../bsw/lcd/lcd.h"
-
 /*!
  * @brief LCD configuration structure
  * @details This structure defines the initial configuration of the LCD screen.
@@ -154,7 +152,5 @@ private:
 	uint8_t FindFirstCharAddr(uint8_t line);
 };
 
-#include "../../bsw/bsw.h"
-#include "../asw.h"
 
 #endif /* WORK_ASW_DISPLAY_IFT_DISPLAYINTERFACE_H_ */

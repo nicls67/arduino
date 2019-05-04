@@ -10,14 +10,6 @@
 #ifndef WORK_ASW_ASW_H_
 #define WORK_ASW_ASW_H_
 
-/* Inclusion of all ASW header files*/
-#include "debug/debug.h"
-#include "keepAliveLed/keepAliveLed.h"
-#include "TempSensor/TempSensor.h"
-#include "display_ift/DisplayInterface.h"
-#include "display_mgt/DisplayManagement.h"
-
-/* TODO : remove inclusions in header files: all inclusions shall be done in source files */
 
 /*!
  * @brief ASW configuration structure

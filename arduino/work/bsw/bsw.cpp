@@ -10,6 +10,13 @@
 #include <stdlib.h>
 
 
+#include "usart/usart.h"
+#include "timer/timer.h"
+#include "lcd/LCD.h"
+#include "I2C/I2C.h"
+#include "dio/dio.h"
+#include "dht22/dht22.h"
+#include "cpuLoad/CpuLoad.h"
 
 #include "bsw.h"
 

@@ -10,9 +10,6 @@
 #ifndef WORK_BSW_TIMER_TIMER_H_
 #define WORK_BSW_TIMER_TIMER_H_
 
-
-#include <avr/io.h>
-
 /*!
  * @brief Class defining a timer
  * @details This class defines a timer/counter. The selected timer is configured in CTC mode and interrupts are enabled.

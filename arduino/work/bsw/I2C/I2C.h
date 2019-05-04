@@ -73,6 +73,5 @@ private:
 	void initializeBus();
 };
 
-#include "../bsw.h"
 
 #endif /* WORK_BSW_I2C_I2C_H_ */

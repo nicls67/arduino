@@ -10,7 +10,7 @@
 #ifndef WORK_BSW_LCD_LCD_H_
 #define WORK_BSW_LCD_LCD_H_
 
-/* Dedinition of LCD pins connections */
+/* Definition of LCD pins connections */
 #define EN_PIN 2 /*!< EN bit is on P2 */
 #define RW_PIN 1 /*!< RW pin is on P1 */
 #define RS_PIN 0 /*!< RS pin is on P0 */
@@ -359,6 +359,5 @@ private:
 	void InitializeScreen();
 };
 
-#include "../bsw.h"
 
 #endif /* WORK_BSW_LCD_LCD_H_ */

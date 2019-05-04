@@ -11,7 +11,7 @@
 #define WORK_BSW_DHT22_DHT22_H_
 
 
-
+/* TODO : make a more generic class for 1-wire communication, and maybe if needed a specific class for dht22 which will use this 1-wire class */
 
 #define DHT22_PORT ENCODE_PORT(PORT_B, 6) /*!< DHT22 is connected to port PB6 */
 
@@ -52,7 +52,5 @@ private:
 	void initializeCommunication();
 
 };
-
-#include "../bsw.h"
 
 #endif /* WORK_BSW_DHT22_DHT22_H_ */

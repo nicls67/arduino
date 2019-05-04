@@ -147,8 +147,5 @@ private:
 	uint8_t  PINx_idx_mem; /*!< Memorizes pin index of register PINx in order to speed up register reading time in function dio_getPort_fast */
 };
 
-#include "../bsw.h"
-#include "dio_port_cnf.h"
-#include "dio_reg_atm2560.h"
 
 #endif /* WORK_BSW_DIO_DIO_H_ */

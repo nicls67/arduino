@@ -72,11 +72,4 @@ private:
 };
 
 
-
-
-
-
-
-
-
 #endif /* WORK_BSW_USART_USART_H_ */

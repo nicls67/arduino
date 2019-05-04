@@ -10,16 +10,6 @@
 #ifndef WORK_MAIN_H_
 #define WORK_MAIN_H_
 
-#include <avr/io.h>
-#include <util/delay.h>
-#include <avr/interrupt.h>
-#include <stdlib.h>
-
-#include "lib/operators/operators.h"
-
-#include "asw/asw.h"
-#include "bsw/bsw.h"
-#include "scheduler/scheduler.h"
 
 
 #endif /* WORK_MAIN_H_ */

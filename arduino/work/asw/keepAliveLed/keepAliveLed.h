@@ -42,8 +42,5 @@ private:
 
 };
 
-#include "../../bsw/bsw.h"
-#include "../../scheduler/scheduler.h"
-#include "../../main.h"
 
 #endif /* WORK_ASW_KEEPALIVELED_KEEPALIVELED_H_ */

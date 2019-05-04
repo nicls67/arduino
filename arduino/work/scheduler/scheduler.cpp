@@ -10,10 +10,20 @@
 #include <stdlib.h>
 #include <avr/io.h>
 
-
+#include "../lib/LinkedList/LinkedList.h"
 #include "../lib/operators/operators.h"
-#include "scheduler.h"
+
+#include "../bsw/usart/usart.h"
+#include "../bsw/timer/timer.h"
+#include "../bsw/lcd/LCD.h"
+#include "../bsw/I2C/I2C.h"
+#include "../bsw/dio/dio.h"
+#include "../bsw/dht22/dht22.h"
+#include "../bsw/cpuLoad/CpuLoad.h"
+
 #include "../bsw/bsw.h"
+
+#include "scheduler.h"
 
 scheduler* p_scheduler; /*!< Pointer to scheduler object */
 

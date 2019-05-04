@@ -10,11 +10,22 @@
 #include <stdlib.h>
 #include <avr/io.h>
 
-#include "../asw.h"
-#include "../../scheduler/scheduler.h"
+#include "../../lib/LinkedList/LinkedList.h"
 #include "../../lib/string/string.h"
 
+#include "../../scheduler/scheduler.h"
+
+#include "../../bsw/LCD/LCD.h"
+
+#include "../debug/debug.h"
+#include "../display_ift/DisplayInterface.h"
+#include "../keepAliveLed/keepAliveLed.h"
+#include "../TempSensor/TempSensor.h"
 #include "DisplayManagement.h"
+
+#include "../asw.h"
+
+
 
 DisplayManagement::DisplayManagement() {
 
