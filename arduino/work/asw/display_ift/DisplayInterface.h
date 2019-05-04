@@ -10,21 +10,6 @@
 #ifndef WORK_ASW_DISPLAY_IFT_DISPLAYINTERFACE_H_
 #define WORK_ASW_DISPLAY_IFT_DISPLAYINTERFACE_H_
 
-/*!
- * @brief LCD configuration structure
- * @details This structure defines the initial configuration of the LCD screen.
- */
-const T_LCD_conf_struct LCD_init_cnf = {
-	0x27,
-	LCD_CNF_BACKLIGHT_ON,
-	LCD_CNF_TWO_LINE,
-	LCD_CNF_FONT_5_8,
-	LCD_CNF_DISPLAY_ON,
-	LCD_CNF_CURSOR_OFF,
-	LCD_CNF_CURSOR_BLINK_OFF,
-	LCD_CNF_ENTRY_MODE_DIRECTION_RIGHT,
-	LCD_CNF_ENTRY_MODE_DISPLAY_SHIFT_OFF
-};
 
 /*!
  * @brief Modes for line display
@@ -68,11 +53,12 @@ class DisplayInterface {
 public:
 	/*!
 	 * @brief Class constructor
-	 * @details This function initializes all class variables and instantiates the LCD driver according to the defined configuration.
+	 * @details This function initializes all class variables and instantiates the LCD driver according to the given configuration.
 	 *
+	 * @param [in] LCD_init_cnf Initial configuration of the screen
 	 * @return Nothing
 	 */
-	DisplayInterface();
+	DisplayInterface(const T_LCD_conf_struct * LCD_init_cnf);
 
 	/*!
 	 * @brief Line display function

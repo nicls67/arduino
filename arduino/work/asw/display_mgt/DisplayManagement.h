@@ -10,11 +10,27 @@
 #ifndef WORK_ASW_DISPLAY_MGT_DISPLAYMANAGEMENT_H_
 #define WORK_ASW_DISPLAY_MGT_DISPLAYMANAGEMENT_H_
 
-/* TODO : LCD configuration shall be done here, not in display interface */
-
+#define DISPLAY_MGT_LCD_I2C_ADDR 0x27
 #define DISPLAY_MGT_PERIOD_TASK_SENSOR 5000 /*!< Display is updated every 5s */
 #define DISPLAY_MGT_LINE_TEMP 0 /*!< Current temperature is displayed on line 0 */
 #define DISPLAY_MGT_LINE_HUM 1 /*!< Current humidity is displayed on line 1 */
+
+/*!
+ * @brief LCD configuration structure
+ * @details This structure defines the initial configuration of the LCD screen.
+ */
+const T_LCD_conf_struct LCD_init_cnf = {
+	DISPLAY_MGT_LCD_I2C_ADDR,
+	LCD_CNF_BACKLIGHT_ON,
+	LCD_CNF_TWO_LINE,
+	LCD_CNF_FONT_5_8,
+	LCD_CNF_DISPLAY_ON,
+	LCD_CNF_CURSOR_OFF,
+	LCD_CNF_CURSOR_BLINK_OFF,
+	LCD_CNF_ENTRY_MODE_DIRECTION_RIGHT,
+	LCD_CNF_ENTRY_MODE_DISPLAY_SHIFT_OFF
+};
+
 
 const uint8_t tempDisplayString[] = "Temperature : "; /*!< String used for temperature display */
 const uint8_t humidityDisplayString[] = "Humidite : "; /*!< String used for humidity display */

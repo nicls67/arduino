@@ -31,7 +31,7 @@ DisplayManagement::DisplayManagement() {
 
 	/* Create display interface object */
 	if (ASW_cnf_struct.p_DisplayInterface == 0)
-		ASW_cnf_struct.p_DisplayInterface = new DisplayInterface();
+		ASW_cnf_struct.p_DisplayInterface = new DisplayInterface(&LCD_init_cnf);
 
 	p_display_ift = ASW_cnf_struct.p_DisplayInterface;
 	p_tempSensor = ASW_cnf_struct.p_TempSensor; /* TODO : create the class here, not in ASW main function */

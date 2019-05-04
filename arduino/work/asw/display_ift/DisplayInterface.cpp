@@ -34,7 +34,7 @@
 
 #include "DisplayInterface.h"
 
-DisplayInterface::DisplayInterface()
+DisplayInterface::DisplayInterface(const T_LCD_conf_struct * LCD_init_cnf)
 {
 	uint8_t i;
 
@@ -43,7 +43,7 @@ DisplayInterface::DisplayInterface()
 	/* Instantiate new LCD driver and attach it to BSW structure */
 	if (BSW_cnf_struct.p_lcd == 0)
 	{
-		BSW_cnf_struct.p_lcd = new LCD(&LCD_init_cnf);
+		BSW_cnf_struct.p_lcd = new LCD(LCD_init_cnf);
 	}
 	p_lcd = BSW_cnf_struct.p_lcd;
 
