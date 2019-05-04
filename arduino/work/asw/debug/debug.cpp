@@ -57,7 +57,7 @@ UsartDebug::UsartDebug()
 	debug_state = INIT;
 }
 
-void UsartDebug::sendData(char* str)
+void UsartDebug::sendString(uint8_t* str)
 {
 	/* Call driver's transmission function to send the string str */
 	BSW_cnf_struct.p_usart->usart_sendString((uint8_t*)str);
@@ -97,40 +97,40 @@ void UsartDebug::DisplaySensors_task()
 
 	validity = ASW_cnf_struct.p_TempSensor->GetValidity();
 
-	ASW_cnf_struct.p_usartDebug->sendData((char*)"\n\nTemperature : ");
+	ASW_cnf_struct.p_usartDebug->sendString((uint8_t*)"\n\nTemperature : ");
 
 	if(validity)
 	{
 		ASW_cnf_struct.p_usartDebug->sendInteger(ASW_cnf_struct.p_TempSensor->GetTempInteger(),10);
-		ASW_cnf_struct.p_usartDebug->sendData((char*)".");
+		ASW_cnf_struct.p_usartDebug->sendString((uint8_t*)".");
 		ASW_cnf_struct.p_usartDebug->sendInteger(ASW_cnf_struct.p_TempSensor->GetTempDecimal(),10);
 	}
 	else
-		ASW_cnf_struct.p_usartDebug->sendData((char*)"invalid");
+		ASW_cnf_struct.p_usartDebug->sendString((uint8_t*)"invalid");
 
-	ASW_cnf_struct.p_usartDebug->sendData((char*)" degC\nHumidite : ");
+	ASW_cnf_struct.p_usartDebug->sendString((uint8_t*)" degC\nHumidite : ");
 
 	if(validity)
 	{
 		ASW_cnf_struct.p_usartDebug->sendInteger(ASW_cnf_struct.p_TempSensor->GetHumInteger(),10);
-		ASW_cnf_struct.p_usartDebug->sendData((char*)".");
+		ASW_cnf_struct.p_usartDebug->sendString((uint8_t*)".");
 		ASW_cnf_struct.p_usartDebug->sendInteger(ASW_cnf_struct.p_TempSensor->GetHumDecimal(),10);
 	}
 	else
-		ASW_cnf_struct.p_usartDebug->sendData((char*)"invalid");
+		ASW_cnf_struct.p_usartDebug->sendString((uint8_t*)"invalid");
 
-	ASW_cnf_struct.p_usartDebug->sendData((char*)" %");
+	ASW_cnf_struct.p_usartDebug->sendString((uint8_t*)" %");
 
 }
 
 void UsartDebug::DisplayCPULoad_task()
 {
-	ASW_cnf_struct.p_usartDebug->sendData((char*)"\n\nCharge CPU :\n");
-	ASW_cnf_struct.p_usartDebug->sendData((char*)"    Actuelle : ");
+	ASW_cnf_struct.p_usartDebug->sendString((uint8_t*)"\n\nCharge CPU :\n");
+	ASW_cnf_struct.p_usartDebug->sendString((uint8_t*)"    Actuelle : ");
 	ASW_cnf_struct.p_usartDebug->sendInteger(BSW_cnf_struct.p_cpuload->getCurrrentCPULoad(),10);
-	ASW_cnf_struct.p_usartDebug->sendData((char*)"\n    Moyenne : ");
+	ASW_cnf_struct.p_usartDebug->sendString((uint8_t*)"\n    Moyenne : ");
 	ASW_cnf_struct.p_usartDebug->sendInteger(BSW_cnf_struct.p_cpuload->getAverageCPULoad(),10);
-	ASW_cnf_struct.p_usartDebug->sendData((char*)"\n    Max : ");
+	ASW_cnf_struct.p_usartDebug->sendString((uint8_t*)"\n    Max : ");
 	ASW_cnf_struct.p_usartDebug->sendInteger(BSW_cnf_struct.p_cpuload->getMaxCPULoad(),10);
 }
 
@@ -143,7 +143,7 @@ void UsartDebug::activateDebugMode()
 {
 	debugModeActive_F = true;
 
-	ASW_cnf_struct.p_usartDebug->sendData((char*)"Debug actif!\n");
+	ASW_cnf_struct.p_usartDebug->sendString((uint8_t*)"Debug actif!\n");
 	ASW_cnf_struct.p_usartDebug->DebugModeManagement((uint8_t)0);
 }
 
@@ -153,7 +153,7 @@ void UsartDebug::DebugModeManagement(uint8_t rcv_char)
 	switch(debug_state)
 	{
 	case INIT:
-		ASW_cnf_struct.p_usartDebug->sendData((char*)str_debug_main_menu);
+		ASW_cnf_struct.p_usartDebug->sendString((uint8_t*)str_debug_main_menu);
 		debug_state = WAIT_INIT;
 		break;
 
@@ -161,25 +161,25 @@ void UsartDebug::DebugModeManagement(uint8_t rcv_char)
 		switch (rcv_char)
 		{
 		case 's':
-			ASW_cnf_struct.p_usartDebug->sendData((char*)"\nBye !\n");
+			ASW_cnf_struct.p_usartDebug->sendString((uint8_t*)"\nBye !\n");
 			debugModeActive_F = false;
 			debug_state = INIT;
 			break;
 
 		case '1':
 			debug_state = DISPLAY_DATA;
-			ASW_cnf_struct.p_usartDebug->sendData((char*)"\nOk, appuyer sur s pour arreter !\n");
+			ASW_cnf_struct.p_usartDebug->sendString((uint8_t*)"\nOk, appuyer sur s pour arreter !\n");
 			p_scheduler->addPeriodicTask((TaskPtr_t)(&UsartDebug::DisplaySensors_task), PERIOD_MS_TASK_DISPLAY_SENSORS);
 			break;
 
 		case '2':
 			debug_state = DISPLAY_CPU_LOAD;
-			ASW_cnf_struct.p_usartDebug->sendData((char*)"\nOk, appuyer sur s pour arreter !\n");
+			ASW_cnf_struct.p_usartDebug->sendString((uint8_t*)"\nOk, appuyer sur s pour arreter !\n");
 			p_scheduler->addPeriodicTask((TaskPtr_t)(&UsartDebug::DisplayCPULoad_task), PERIOD_MS_TASK_DISPLAY_CPU_LOAD);
 			break;
 
 		default:
-			ASW_cnf_struct.p_usartDebug->sendData((char*)"\nImpossible de faire ca... !\n");
+			ASW_cnf_struct.p_usartDebug->sendString((uint8_t*)"\nImpossible de faire ca... !\n");
 			break;
 		}
 		break;
@@ -188,10 +188,10 @@ void UsartDebug::DebugModeManagement(uint8_t rcv_char)
 		if (rcv_char == 's')
 		{
 			if (p_scheduler->removePeriodicTask(&UsartDebug::DisplaySensors_task) == false)
-				ASW_cnf_struct.p_usartDebug->sendData((char*)"Impossible de supprimer la tache...");
+				ASW_cnf_struct.p_usartDebug->sendString((uint8_t*)"Impossible de supprimer la tache...");
 
 			debug_state = WAIT_INIT;
-			ASW_cnf_struct.p_usartDebug->sendData((char*)str_debug_main_menu);
+			ASW_cnf_struct.p_usartDebug->sendString((uint8_t*)str_debug_main_menu);
 		}
 		break;
 
@@ -199,10 +199,10 @@ void UsartDebug::DebugModeManagement(uint8_t rcv_char)
 		if (rcv_char == 's')
 		{
 			if (p_scheduler->removePeriodicTask(&UsartDebug::DisplayCPULoad_task) == false)
-				ASW_cnf_struct.p_usartDebug->sendData((char*)"Impossible de supprimer la tache...");
+				ASW_cnf_struct.p_usartDebug->sendString((uint8_t*)"Impossible de supprimer la tache...");
 
 			debug_state = WAIT_INIT;
-			ASW_cnf_struct.p_usartDebug->sendData((char*)str_debug_main_menu);
+			ASW_cnf_struct.p_usartDebug->sendString((uint8_t*)str_debug_main_menu);
 		}
 		break;
 

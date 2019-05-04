@@ -13,7 +13,6 @@
 #define PERIOD_MS_TASK_DISPLAY_SENSORS  5000 /*!< Period for displaying temperature and humidity data */
 #define PERIOD_MS_TASK_DISPLAY_CPU_LOAD 5000 /*!< Period for displaying CPU load data */
 
-/* TODO : update class to no longer need to call bsw for strings */
 /* TODO : create a specific class for debug menu */
 
 /*!
@@ -63,6 +62,14 @@ public:
 	void sendBool(bool data);
 
 	/*!
+	 * @brief Send a string on USART link
+	 * @details This functions sends the requested string on USART link by calling driver's transmission function
+	 * @param [in] str Pointer to the string being sent
+	 * @return Nothing
+	 */
+	void sendString(uint8_t* str);
+
+	/*!
 	 * @brief Displays sensors data on usart link
 	 * @details This task sends sensors data (temperature and humidity) on usart link every 5 seconds
 	 * @return Nothing
@@ -106,14 +113,6 @@ public:
 	void DebugModeManagement(uint8_t rcv_char);
 
 private:
-
-	/*!
-	 * @brief Send a string on USART link
-	 * @details This functions sends the requested string on USART link by calling driver's transmission function
-	 * @param [in] str Pointer to the string being sent
-	 * @return Nothing
-	 */
-	void sendData(char* str);
 
 	debug_state_t debug_state;
 	bool debugModeActive_F; /*!< Debug mode activation flag */
