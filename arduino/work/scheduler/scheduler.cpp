@@ -37,22 +37,25 @@ void scheduler::launchPeriodicTasks()
 	/* First reset element pointer */
 	TasksLL_ptr->ResetElementPtr();
 
-	/* TODO : check if there is at least one task to launch */
-	/* Parse all tasks */
-	do
+	/* Check if there is at least one task to launch */
+	if(TasksLL_ptr->IsLLEmpty() == false)
 	{
-		cur_task = (Task_t*)(TasksLL_ptr->getCurrentElement());
-		/* If the task shall be launched at the current cycle */
-		if((pit_number % (cur_task->period / SW_PERIOD_MS)) == 0)
+		/* Parse all tasks */
+		do
 		{
-			task_nb++;
+			cur_task = (Task_t*)(TasksLL_ptr->getCurrentElement());
+			/* If the task shall be launched at the current cycle */
+			if((pit_number % (cur_task->period / SW_PERIOD_MS)) == 0)
+			{
+				task_nb++;
 
-			/* Launch the task */
-			(*cur_task->TaskPtr)();
+				/* Launch the task */
+				(*cur_task->TaskPtr)();
+			}
+
 		}
-
+		while(TasksLL_ptr->MoveToNextElement());
 	}
-	while(TasksLL_ptr->MoveToNextElement());
 
 	/* Compute CPU load */
 	BSW_cnf_struct.p_cpuload->ComputeCPULoad();
