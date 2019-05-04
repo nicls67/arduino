@@ -30,6 +30,12 @@ String::String(const uint8_t* str)
 
 }
 
+String::String()
+{
+	string = 0;
+	size = 0;
+}
+
 uint8_t String::ComputeStringSize(uint8_t* str)
 {
 	uint8_t size = 0;
@@ -43,7 +49,7 @@ uint8_t String::ComputeStringSize(uint8_t* str)
 	return size;
 }
 
-void String::append(uint8_t* str)
+void String::appendString(uint8_t* str)
 {
 	uint8_t new_size;
 	uint8_t* new_string;
@@ -56,9 +62,12 @@ void String::append(uint8_t* str)
 	new_string = (uint8_t*)malloc((size + new_size + 1) * sizeof(uint8_t));
 
 	/* Copy the old string at the beginning of the updated string */
-	for(i=0; i < size; i++)
+	if(size > 0)
 	{
-		new_string[i] = string[i];
+		for(i=0; i < size; i++)
+		{
+			new_string[i] = string[i];
+		}
 	}
 
 	/* Copy the new string after the old one */
@@ -68,11 +77,38 @@ void String::append(uint8_t* str)
 	}
 
 	/* Delete old string */
-	free(string);
+	if(size > 0)
+		free(string);
 
 	/* Switch pointer */
 	string = new_string;
 
 	/* Update string size */
 	size += new_size;
+}
+
+void String::appendInteger(uint16_t value, uint8_t base)
+{
+	uint8_t* int_str;
+
+	/* If the base in not between 2 and 36, 10 is used as default */
+	if((base > 36) && (base < 2))
+		base = 10;
+
+	/* First convert the integer value into a chain of characters */
+	int_str = (uint8_t*)malloc(17 * sizeof(uint8_t));
+	int_str = (uint8_t*)itoa(value, (char*)int_str, base);
+
+	/* Add the new characters to the string */
+	appendString(int_str);
+
+	free(int_str);
+}
+
+void String::Clear()
+{
+	if(size > 0)
+		free(string);
+
+	size = 0;
 }

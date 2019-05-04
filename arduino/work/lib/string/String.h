@@ -31,6 +31,14 @@ public:
 	String(const uint8_t* str);
 
 	/*!
+	 * @brief Class constructor
+	 * @details This function initializes the class with an empty string. The size is set to 0.
+	 *
+	 * @return Nothing
+	 */
+	String();
+
+	/*!
 	 * @brief String pointer get function
 	 * @details This function returns the pointer to the beginning of the string.
 	 *
@@ -53,13 +61,33 @@ public:
 	}
 
 	/*!
-	 * @brief New characters adding function
+	 * @brief String adding function
 	 * @details This functions adds the given string at the end of the main string. The string size is updated accordingly.
 	 *
 	 * @param [in] str New string to add
 	 * @return Nothing
 	 */
-	void append(uint8_t* str);
+	void appendString(uint8_t* str);
+
+	/*!
+	 * @brief Integer adding function
+	 * @details This functions adds the given integer at the end of the main string. The string size is updated accordingly.
+	 * 			The integer parameter is first converted into a chain of character according to the base and then added to the string.
+	 *
+	 * @param [in] value Integer to add
+	 * @param [in] base Base of computation of the integer (between 2 and 36)
+	 * @return Nothing
+	 */
+	void appendInteger(uint16_t value, uint8_t base);
+
+	/*!
+	 * @brief String clear function
+	 * @details This function clears the string. Size is set to 0 and the memory is freed.
+	 *
+	 * @return Nothing
+	 */
+	void Clear();
+
 
 private:
 
