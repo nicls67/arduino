@@ -9,6 +9,7 @@
 #include <avr/io.h>
 #include <stdlib.h>
 
+#include "../lib/string/String.h"
 
 #include "usart/usart.h"
 #include "timer/timer.h"

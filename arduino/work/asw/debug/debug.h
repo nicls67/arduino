@@ -44,7 +44,7 @@ public:
 
 	/*!
 	 * @brief Send a integer data on USART link
-	 * @details This functions sends the requested integer on USART link by calling driver's transmission function.
+	 * @details This function sends the requested integer on USART link by calling driver's transmission function.
 	 * 			The integer is first converted into a string and then sent
 	 * @param [in] data integer data to be sent
 	 * @param [in] base numerical base used to convert integer into string (between 2 and 36)
@@ -54,17 +54,27 @@ public:
 
 	/*!
 	* @brief Send a boolean data on USART link
-	* @details 	This functions sends the requested boolean on USART link by calling driver's transmission function.
-	* 			The boolean data is first converted into a string and then sent.
+	* @details 	This function sends the requested boolean on USART link by calling driver's transmission function.
+	* 			The boolean data is first converted into a string and then sent. The parameter isText defines if the data is converted into a string (true/false) or an integer (1/0).
 	* @param [in] data boolean data to be sent
+	* @param [in] isText String conversion configuration
 	* @return Nothing
 	*/
-	void sendBool(bool data);
+	void sendBool(bool data, bool isText);
 
 	/*!
 	 * @brief Send a string on USART link
-	 * @details This functions sends the requested string on USART link by calling driver's transmission function
+	 * @details This function sends the requested string on USART link by calling driver's transmission function
 	 * @param [in] str Pointer to the string being sent
+	 * @return Nothing
+	 */
+	void sendString(String* str);
+
+	/*!
+	 * @brief Send a chain of characters on USART link
+	 * @details This function sends the requested chain of characters on USART link by calling driver's transmission function.
+	 * 			The chain is first converted into a string object.
+	 * @param [in] str Pointer to the chain to send.
 	 * @return Nothing
 	 */
 	void sendString(uint8_t* str);

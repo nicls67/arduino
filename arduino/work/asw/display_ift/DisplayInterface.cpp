@@ -12,6 +12,7 @@
 #include <util/delay.h>
 
 #include "../../lib/LinkedList/LinkedList.h"
+#include "../../lib/string/String.h"
 #include "../../scheduler/scheduler.h"
 
 #include "../../bsw/usart/usart.h"
@@ -33,6 +34,7 @@
 #include "../asw.h"
 
 #include "DisplayInterface.h"
+
 
 DisplayInterface::DisplayInterface(const T_LCD_conf_struct * LCD_init_cnf)
 {

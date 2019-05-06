@@ -8,12 +8,15 @@
 
 
 #include <avr/io.h>
+
+#include "../../lib/string/String.h"
+
 #include "usart.h"
 
 
 usart::usart(uint16_t a_BaudRate)
 {
-	/* Set value of baud rate and then call harware initialization function */
+	/* Set value of baud rate and then call hardware initialization function */
 	BaudRate = a_BaudRate;
 	usart_init();
 }
@@ -41,24 +44,26 @@ void usart::usart_init()
 
 
 
-void usart::usart_sendString(uint8_t *str)
+void usart::usart_sendString(String *str)
 {
 	uint16_t i = 0;
+	uint8_t* data;
 
-	/* Check if input string is different of null */
-	if(str != 0)
+	/* Check if input string is not empty */
+	if(str->getSize() != 0)
 	{
+		data = str->getString();
 		/* Send each character of the string on usart bus */
-		while(str[i] != '\0')
+		for(i=0; i<str->getSize(); i++)
 		{
-			if(str[i]=='\n')
+			if(data[i]=='\n')
 				usart_transmit('\r');
 
-			usart_transmit(str[i]);
-			i++;
+			usart_transmit(data[i]);
 		}
 	}
 }
+
 
 inline void usart::setBaudRate(uint16_t a_BaudRate)
 {

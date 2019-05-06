@@ -11,6 +11,7 @@
 #include <avr/io.h>
 
 #include "../lib/LinkedList/LinkedList.h"
+#include "../lib/string/String.h"
 
 
 #include "../bsw/LCD/LCD.h"

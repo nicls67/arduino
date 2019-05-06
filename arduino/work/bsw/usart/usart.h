@@ -21,16 +21,18 @@ public:
 	 * @brief Class usart constructor
 	 * @details Initializes the class and call hardware initialization function
 	 * @param [in] a_BaudRate Desired Baud Rate (16 bit) - up to 57600
-	 *  @return Nothing.
+	 * @return Nothing.
 	 */
 	usart(uint16_t a_BaudRate);
 
-	/*! @brief Sending a string on USART link
-	 *  @details Just write data to the Serial link using usart_trabsmit function
+	/*! @brief Send a string on USART link
+	 *  @details This function writes the string object data to the serial link using usart_transmit function
 	 *  @param [in] str Pointer to the string being sent
 	 *  @return Nothing.
 	 */
-	void usart_sendString(uint8_t *str);
+	void usart_sendString(String *str);
+
+
 
 	/*!
 	 * @brief Setting baud rate

@@ -36,6 +36,11 @@ String::String()
 	size = 0;
 }
 
+String::~String()
+{
+	Clear();
+}
+
 uint8_t String::ComputeStringSize(uint8_t* str)
 {
 	uint8_t size = 0;
@@ -111,4 +116,22 @@ void String::Clear()
 		free(string);
 
 	size = 0;
+}
+
+void String::appendBool(bool data, bool isText)
+{
+	if(isText)
+	{
+		if(data)
+			appendString((uint8_t*)"true");
+		else
+			appendString((uint8_t*)"false");
+	}
+	else
+	{
+		if(data)
+			appendInteger(1,2);
+		else
+			appendInteger(0,2);
+	}
 }

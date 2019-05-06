@@ -10,6 +10,8 @@
 #include <util/delay.h>
 #include <avr/io.h>
 
+#include "../../lib/string/string.h"
+
 #include "../usart/usart.h"
 #include "../timer/timer.h"
 #include "../lcd/LCD.h"

@@ -13,6 +13,7 @@
 #include <stdlib.h>
 
 #include "../../lib/LinkedList/LinkedList.h"
+#include "../../lib/string/String.h"
 #include "../../scheduler/scheduler.h"
 
 #include "../../bsw/usart/usart.h"
@@ -33,14 +34,12 @@
 
 #include "../asw.h"
 
-
-
 #include "debug.h"
 
 /*!
  * @brief Main menu of debug mode
  */
-const char str_debug_main_menu[] =
+const uint8_t str_debug_main_menu[] =
 		"\n\n"
 		"Menu principal :  \n"
 		"1 : Afficher donnees capteurs\n"
@@ -57,10 +56,17 @@ UsartDebug::UsartDebug()
 	debug_state = INIT;
 }
 
-void UsartDebug::sendString(uint8_t* str)
+void UsartDebug::sendString(String* str)
 {
 	/* Call driver's transmission function to send the string str */
-	BSW_cnf_struct.p_usart->usart_sendString((uint8_t*)str);
+	BSW_cnf_struct.p_usart->usart_sendString(str);
+}
+
+void UsartDebug::sendString(uint8_t* str)
+{
+	String strToSend;
+	strToSend.appendString(str);
+	sendString(&strToSend);
 }
 
 void UsartDebug::sendInteger(uint16_t data, uint8_t base)
@@ -69,26 +75,20 @@ void UsartDebug::sendInteger(uint16_t data, uint8_t base)
 	if((base > 36) && (base < 2))
 		base = 10;
 
-	char* str = (char*)malloc(5* sizeof(char));
-	str = itoa(data, str, base);
+	String strToSend;
 
-	BSW_cnf_struct.p_usart->usart_sendString((uint8_t*)str);
+	strToSend.appendInteger(data, base);
 
-	free(str);
+	BSW_cnf_struct.p_usart->usart_sendString(&strToSend);
 }
 
-void UsartDebug::sendBool(bool data)
+void UsartDebug::sendBool(bool data, bool isText)
 {
-	uint8_t* str = (uint8_t*)malloc(2*sizeof(uint8_t));
+	String str;
 
-	if (data == true)
-		str = (uint8_t*)"1";
-	else
-		str = (uint8_t*)"0";
+	str.appendBool(data, isText);
 
-	BSW_cnf_struct.p_usart->usart_sendString(str);
-
-	free(str);
+	BSW_cnf_struct.p_usart->usart_sendString(&str);
 }
 
 void UsartDebug::DisplaySensors_task()

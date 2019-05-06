@@ -11,6 +11,7 @@
 #include <avr/io.h>
 
 #include "../lib/LinkedList/LinkedList.h"
+#include "../lib/string/String.h"
 #include "../lib/operators/operators.h"
 
 #include "../bsw/usart/usart.h"

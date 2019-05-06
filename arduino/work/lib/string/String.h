@@ -39,6 +39,14 @@ public:
 	String();
 
 	/*!
+	 * @brief Class destructor
+	 * @details This function frees the memory used to contain the string when the object is deleted
+	 *
+	 * @return Nothing
+	 */
+	~String();
+
+	/*!
 	 * @brief String pointer get function
 	 * @details This function returns the pointer to the beginning of the string.
 	 *
@@ -79,6 +87,18 @@ public:
 	 * @return Nothing
 	 */
 	void appendInteger(uint16_t value, uint8_t base);
+
+	/*!
+	 * @brief Boolean adding function
+	 * @details This functions adds the given boolean data at the end of the main string. The string size is updated accordingly.
+	 * 			According to the input parameter isText, the boolean parameter is converted into a string (true/false) or an integer (0/1).
+	 *
+	 * 	@param [in] data Boolean data to add
+	 * 	@param [in] isText Defines the conversion mode : text or integer
+	 *
+	 * 	@return Nothing
+	 */
+	void appendBool(bool data, bool isText);
 
 	/*!
 	 * @brief String clear function
