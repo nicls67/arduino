@@ -25,15 +25,15 @@
 
 #include "../../bsw/bsw.h"
 
-#include "../debug/debug.h"
+#include "../debug_ift/DebugInterface.h"
 #include "../TempSensor/TempSensor.h"
 #include "../display_ift/DisplayInterface.h"
 #include "../display_mgt/DisplayManagement.h"
 #include "../keepAliveLed/keepAliveLed.h"
-
 #include "../asw.h"
 
 #include "DisplayInterface.h"
+
 
 
 DisplayInterface::DisplayInterface(const T_LCD_conf_struct * LCD_init_cnf)

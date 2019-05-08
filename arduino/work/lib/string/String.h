@@ -10,8 +10,6 @@
 #ifndef WORK_LIB_STRING_STRING_H_
 #define WORK_LIB_STRING_STRING_H_
 
-/* TODO : update all classes that use string. They need to use this class now */
-
 /*!
  * @brief String management class
  * @details This class defines string object. It implements some functions to manage chains of characters.

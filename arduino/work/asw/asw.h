@@ -17,7 +17,7 @@
  */
 typedef struct
 {
-	UsartDebug* p_usartDebug; /*!< Pointer to USART debug object */
+	DebugInterface* p_DebugInterface; /*!< Pointer to USART debug interface object */
 	keepAliveLed* p_keepAliveLed; /*!< Pointer to keepAliveLed object */
 	TempSensor* p_TempSensor; /*!< Pointer to TempSensor object */
 	DisplayInterface* p_DisplayInterface; /*!< Pointer to DisplayInterface object */

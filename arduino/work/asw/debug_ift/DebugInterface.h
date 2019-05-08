@@ -31,16 +31,16 @@ typedef enum
  * @brief Class used for debugging on usart link
  * @details This class defines functions used for sending debug data on USART link.
  */
-class UsartDebug
+class DebugInterface
 {
 public:
 
 	/*!
-	 * @brief Class UsartDebug constructor
-	 * @details Initializes the class UsartDebug
+	 * @brief Class DebugInterface constructor
+	 * @details Initializes the class DebugInterface
 	 * @return Nothing
 	 */
-	UsartDebug();
+	DebugInterface();
 
 	/*!
 	 * @brief Send a integer data on USART link

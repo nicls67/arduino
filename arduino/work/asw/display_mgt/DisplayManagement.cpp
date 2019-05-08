@@ -17,13 +17,14 @@
 
 #include "../../bsw/LCD/LCD.h"
 
-#include "../debug/debug.h"
+#include "../debug_ift/DebugInterface.h"
 #include "../display_ift/DisplayInterface.h"
 #include "../keepAliveLed/keepAliveLed.h"
 #include "../TempSensor/TempSensor.h"
 #include "DisplayManagement.h"
 
 #include "../asw.h"
+
 
 
 

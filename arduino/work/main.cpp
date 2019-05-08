@@ -6,9 +6,35 @@
  *  @author nicls67
  */
 
+#include <stdlib.h>
+#include <avr/io.h>
+#include <util/delay.h>
+#include <avr/interrupt.h>
 
+#include "lib/LinkedList/LinkedList.h"
+#include "lib/string/String.h"
+
+#include "scheduler/scheduler.h"
+
+#include "bsw/usart/usart.h"
+#include "bsw/timer/timer.h"
+#include "bsw/lcd/LCD.h"
+#include "bsw/I2C/I2C.h"
+#include "bsw/dio/dio.h"
+#include "bsw/dht22/dht22.h"
+#include "bsw/cpuLoad/CpuLoad.h"
+
+#include "bsw/bsw.h"
+
+#include "asw/debug_ift/DebugInterface.h"
+#include "asw/TempSensor/TempSensor.h"
+#include "asw/display_ift/DisplayInterface.h"
+#include "asw/display_mgt/DisplayManagement.h"
+#include "asw/keepAliveLed/keepAliveLed.h"
+#include "asw/asw.h"
 
 #include "main.h"
+
 
 
 /*!
@@ -32,14 +58,14 @@ ISR(USART0_RX_vect)
 {
 	uint8_t data;
 
-	if(ASW_cnf_struct.p_usartDebug->isDebugModeActive() == true)
+	if(ASW_cnf_struct.p_DebugInterface->isDebugModeActive() == true)
 	{
 		data = BSW_cnf_struct.p_usart->usart_read();
-		ASW_cnf_struct.p_usartDebug->DebugModeManagement(data);
+		ASW_cnf_struct.p_DebugInterface->DebugModeManagement(data);
 	}
 	else if(BSW_cnf_struct.p_usart->usart_read() == 'a')
 	{
-		ASW_cnf_struct.p_usartDebug->activateDebugMode();
+		ASW_cnf_struct.p_DebugInterface->activateDebugMode();
 	}
 }
 
