@@ -98,6 +98,15 @@ public:
 	void appendBool(bool data, bool isText);
 
 	/*!
+	 * @brief Character adding function
+	 * @details This functions adds the given character at the end of the main string. The string size is updated by 1.
+	 *
+	 * @param [in] data 1-byte character to add
+	 * @return Nothing
+	 */
+	void appendChar(uint8_t data);
+
+	/*!
 	 * @brief String clear function
 	 * @details This function clears the string. Size is set to 0 and the memory is freed.
 	 *

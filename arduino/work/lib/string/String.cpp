@@ -135,3 +135,18 @@ void String::appendBool(bool data, bool isText)
 			appendInteger(0,2);
 	}
 }
+
+void String::appendChar(uint8_t data)
+{
+	uint8_t* char_str;
+
+	/* First convert the new character into a chain of characters */
+	char_str = (uint8_t*)malloc(2 * sizeof(uint8_t));
+	char_str[0] = data;
+	char_str[1] = '\0';
+
+	/* Add the new characters to the string */
+	appendString(char_str);
+
+	free(char_str);
+}

@@ -60,6 +60,8 @@ void DisplayManagement::DisplaySensorData_Task()
 		str.appendInteger((uint16_t)tempSensor_ptr->GetTempInteger(),10);
 		str.appendString((uint8_t*)".");
 		str.appendInteger((uint16_t)tempSensor_ptr->GetTempDecimal(),10);
+		str.appendString((uint8_t*)" ");
+		str.appendChar(161);
 	}
 	else
 		str.appendString((uint8_t*)"invalide");
@@ -76,6 +78,7 @@ void DisplayManagement::DisplaySensorData_Task()
 		str.appendInteger((uint16_t)tempSensor_ptr->GetHumInteger(),10);
 		str.appendString((uint8_t*)".");
 		str.appendInteger((uint16_t)tempSensor_ptr->GetHumDecimal(),10);
+		str.appendString((uint8_t*)" %");
 	}
 	else
 		str.appendString((uint8_t*)"invalide");
