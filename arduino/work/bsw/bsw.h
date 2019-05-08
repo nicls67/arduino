@@ -13,8 +13,8 @@
 
 /*
  * Definition of all configurable constants of BSW
+ * TODO : bitrate to be configured by user class, not here
  */
-#define USART_BAUDRATE (uint16_t)9600 /*!< usart connection to PC uses a baud rate of 9600 */
 #define I2C_BITRATE (uint32_t)100000 /*!< I2C bus bitrate is 100 kHz */
 
 /*!

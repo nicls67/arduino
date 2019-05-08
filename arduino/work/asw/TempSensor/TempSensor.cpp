@@ -9,7 +9,28 @@
 
 #include <avr/io.h>
 
-#include "TempSensor.h"
+#include "../../lib/LinkedList/LinkedList.h"
+#include "../../lib/string/String.h"
+#include "../../scheduler/scheduler.h"
+
+#include "../../bsw/usart/usart.h"
+#include "../../bsw/timer/timer.h"
+#include "../../bsw/lcd/LCD.h"
+#include "../../bsw/I2C/I2C.h"
+#include "../../bsw/dio/dio.h"
+#include "../../bsw/dht22/dht22.h"
+#include "../../bsw/cpuLoad/CpuLoad.h"
+
+#include "../../bsw/bsw.h"
+
+#include "../debug_ift/DebugInterface.h"
+#include "../debug_mgt/DebugManagement.h"
+#include "../TempSensor/TempSensor.h"
+#include "../display_ift/DisplayInterface.h"
+#include "../display_mgt/DisplayManagement.h"
+#include "../keepAliveLed/keepAliveLed.h"
+
+#include "../asw.h"
 
 #define PIT_BEFORE_INVALID 60
 

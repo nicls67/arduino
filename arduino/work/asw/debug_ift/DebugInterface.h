@@ -10,22 +10,9 @@
 #ifndef WORK_LIB_LOG_H_
 #define WORK_LIB_LOG_H_
 
-#define PERIOD_MS_TASK_DISPLAY_SENSORS  5000 /*!< Period for displaying temperature and humidity data */
-#define PERIOD_MS_TASK_DISPLAY_CPU_LOAD 5000 /*!< Period for displaying CPU load data */
 
-/* TODO : create a specific class for debug menu */
 
-/*!
- * @brief Defines the debug states
- */
-typedef enum
-{
-	INIT, /*!< Init state : display the main menu */
-	WAIT_INIT, /*!< Wait for a received character in init state */
-	DISPLAY_DATA, /*!< Display sensor data in continuous */
-	DISPLAY_CPU_LOAD, /*!< Display CPU load in continuous */
-
-}debug_state_t;
+#define USART_BAUDRATE (uint16_t)9600 /*!< usart connection to PC uses a baud rate of 9600 */
 
 /*!
  * @brief Class used for debugging on usart link
@@ -37,7 +24,7 @@ public:
 
 	/*!
 	 * @brief Class DebugInterface constructor
-	 * @details Initializes the class DebugInterface
+	 * @details Initializes the class DebugInterface. It creates a new instance of USART driver of needed.
 	 * @return Nothing
 	 */
 	DebugInterface();
@@ -79,53 +66,21 @@ public:
 	 */
 	void sendString(uint8_t* str);
 
-	/*!
-	 * @brief Displays sensors data on usart link
-	 * @details This task sends sensors data (temperature and humidity) on usart link every 5 seconds
-	 * @return Nothing
+	/*! @brief USART read function
+	 *  @details This function will read the last received byte on USART link
+	 *  @return Received byte
 	 */
-	static void DisplaySensors_task();
+	inline uint8_t read()
+	{
+		return usart_drv_ptr->usart_read();
+	}
 
-	/*!
-	 * @brief Displays CPU load data on usart link
-	 * @details This task sends CPU load data (current and average load) on usart link every 5 seconds
-	 * @return Nothing
-	 */
-	static void DisplayCPULoad_task();
 
-	/*!
-	 * @brief Check is debug mode is active or not
-	 * @details This function checks if debug mode is active or not.
-	 * @return TRUE is debug mode is active, FALSE otherwise
-	 */
-	bool isDebugModeActive();
-
-	/*!
-	 * @brief Activates debug mode
-	 * @details This function activates USART debug mode.
-	 * @return Nothing
-	 */
-	void activateDebugMode();
-
-	/*!
-	 *  @brief Management of debug mode
-	 *  @details This function manages the debug mode according to the following state machine :
-	 *  		 	  - init state : display main menu\n
-	 *  		 	  - WAIT_INIT state : handles user choice in main menu and selects next state\n
-	 *  		 	  - DISPLAY_DATA state : display sensor data periodically\n
-	 *  		 	  - DISPLAY CPU LOAD : display CPU load periodically\n\n
-	 *
-	 *  It is called each time a data is received on USART and debug mode is active.
-	 *
-	 *  @param [in] rcv_char 8 bits character received on USART
-	 *  @return Nothing
-	 */
-	void DebugModeManagement(uint8_t rcv_char);
 
 private:
 
-	debug_state_t debug_state;
-	bool debugModeActive_F; /*!< Debug mode activation flag */
+	usart* usart_drv_ptr; /*!< Pointer to USART driver object */
+
 
 };
 

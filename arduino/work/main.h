@@ -10,6 +10,6 @@
 #ifndef WORK_MAIN_H_
 #define WORK_MAIN_H_
 
-
+#define DEBUG_MODE
 
 #endif /* WORK_MAIN_H_ */

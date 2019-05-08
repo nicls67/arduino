@@ -26,6 +26,7 @@
 #include "../../bsw/bsw.h"
 
 #include "../debug_ift/DebugInterface.h"
+#include "../debug_mgt/DebugManagement.h"
 #include "../TempSensor/TempSensor.h"
 #include "../display_ift/DisplayInterface.h"
 #include "../display_mgt/DisplayManagement.h"
@@ -34,24 +35,18 @@
 #include "../asw.h"
 
 
-/*!
- * @brief Main menu of debug mode
- */
-const uint8_t str_debug_main_menu[] =
-		"\n\n"
-		"Menu principal :  \n"
-		"1 : Afficher donnees capteurs\n"
-		"2 : Afficher charge CPU\n"
-		"\n"
-		"s : Quitter debug\n";
+
 
 
 
 
 DebugInterface::DebugInterface()
 {
-	debugModeActive_F = false;
-	debug_state = INIT;
+	/* Create a new instance of USART driver if needed and attach it to the class */
+	if(BSW_cnf_struct.p_usart == 0)
+		BSW_cnf_struct.p_usart = new usart(USART_BAUDRATE);
+
+	usart_drv_ptr = BSW_cnf_struct.p_usart;
 }
 
 void DebugInterface::sendString(String* str)
@@ -89,121 +84,4 @@ void DebugInterface::sendBool(bool data, bool isText)
 	BSW_cnf_struct.p_usart->usart_sendString(&str);
 }
 
-void DebugInterface::DisplaySensors_task()
-{
-	bool validity;
 
-	validity = ASW_cnf_struct.p_TempSensor->GetValidity();
-
-	ASW_cnf_struct.p_DebugInterface->sendString((uint8_t*)"\n\nTemperature : ");
-
-	if(validity)
-	{
-		ASW_cnf_struct.p_DebugInterface->sendInteger(ASW_cnf_struct.p_TempSensor->GetTempInteger(),10);
-		ASW_cnf_struct.p_DebugInterface->sendString((uint8_t*)".");
-		ASW_cnf_struct.p_DebugInterface->sendInteger(ASW_cnf_struct.p_TempSensor->GetTempDecimal(),10);
-	}
-	else
-		ASW_cnf_struct.p_DebugInterface->sendString((uint8_t*)"invalid");
-
-	ASW_cnf_struct.p_DebugInterface->sendString((uint8_t*)" degC\nHumidite : ");
-
-	if(validity)
-	{
-		ASW_cnf_struct.p_DebugInterface->sendInteger(ASW_cnf_struct.p_TempSensor->GetHumInteger(),10);
-		ASW_cnf_struct.p_DebugInterface->sendString((uint8_t*)".");
-		ASW_cnf_struct.p_DebugInterface->sendInteger(ASW_cnf_struct.p_TempSensor->GetHumDecimal(),10);
-	}
-	else
-		ASW_cnf_struct.p_DebugInterface->sendString((uint8_t*)"invalid");
-
-	ASW_cnf_struct.p_DebugInterface->sendString((uint8_t*)" %");
-
-}
-
-void DebugInterface::DisplayCPULoad_task()
-{
-	ASW_cnf_struct.p_DebugInterface->sendString((uint8_t*)"\n\nCharge CPU :\n");
-	ASW_cnf_struct.p_DebugInterface->sendString((uint8_t*)"    Actuelle : ");
-	ASW_cnf_struct.p_DebugInterface->sendInteger(BSW_cnf_struct.p_cpuload->getCurrrentCPULoad(),10);
-	ASW_cnf_struct.p_DebugInterface->sendString((uint8_t*)"\n    Moyenne : ");
-	ASW_cnf_struct.p_DebugInterface->sendInteger(BSW_cnf_struct.p_cpuload->getAverageCPULoad(),10);
-	ASW_cnf_struct.p_DebugInterface->sendString((uint8_t*)"\n    Max : ");
-	ASW_cnf_struct.p_DebugInterface->sendInteger(BSW_cnf_struct.p_cpuload->getMaxCPULoad(),10);
-}
-
-bool DebugInterface::isDebugModeActive()
-{
-	return debugModeActive_F;
-}
-
-void DebugInterface::activateDebugMode()
-{
-	debugModeActive_F = true;
-
-	ASW_cnf_struct.p_DebugInterface->sendString((uint8_t*)"Debug actif!\n");
-	ASW_cnf_struct.p_DebugInterface->DebugModeManagement((uint8_t)0);
-}
-
-void DebugInterface::DebugModeManagement(uint8_t rcv_char)
-{
-	/* switch on debug state */
-	switch(debug_state)
-	{
-	case INIT:
-		ASW_cnf_struct.p_DebugInterface->sendString((uint8_t*)str_debug_main_menu);
-		debug_state = WAIT_INIT;
-		break;
-
-	case WAIT_INIT:
-		switch (rcv_char)
-		{
-		case 's':
-			ASW_cnf_struct.p_DebugInterface->sendString((uint8_t*)"\nBye !\n");
-			debugModeActive_F = false;
-			debug_state = INIT;
-			break;
-
-		case '1':
-			debug_state = DISPLAY_DATA;
-			ASW_cnf_struct.p_DebugInterface->sendString((uint8_t*)"\nOk, appuyer sur s pour arreter !\n");
-			p_scheduler->addPeriodicTask((TaskPtr_t)(&DebugInterface::DisplaySensors_task), PERIOD_MS_TASK_DISPLAY_SENSORS);
-			break;
-
-		case '2':
-			debug_state = DISPLAY_CPU_LOAD;
-			ASW_cnf_struct.p_DebugInterface->sendString((uint8_t*)"\nOk, appuyer sur s pour arreter !\n");
-			p_scheduler->addPeriodicTask((TaskPtr_t)(&DebugInterface::DisplayCPULoad_task), PERIOD_MS_TASK_DISPLAY_CPU_LOAD);
-			break;
-
-		default:
-			ASW_cnf_struct.p_DebugInterface->sendString((uint8_t*)"\nImpossible de faire ca... !\n");
-			break;
-		}
-		break;
-
-	case DISPLAY_DATA:
-		if (rcv_char == 's')
-		{
-			if (p_scheduler->removePeriodicTask(&DebugInterface::DisplaySensors_task) == false)
-				ASW_cnf_struct.p_DebugInterface->sendString((uint8_t*)"Impossible de supprimer la tache...");
-
-			debug_state = WAIT_INIT;
-			ASW_cnf_struct.p_DebugInterface->sendString((uint8_t*)str_debug_main_menu);
-		}
-		break;
-
-	case DISPLAY_CPU_LOAD:
-		if (rcv_char == 's')
-		{
-			if (p_scheduler->removePeriodicTask(&DebugInterface::DisplayCPULoad_task) == false)
-				ASW_cnf_struct.p_DebugInterface->sendString((uint8_t*)"Impossible de supprimer la tache...");
-
-			debug_state = WAIT_INIT;
-			ASW_cnf_struct.p_DebugInterface->sendString((uint8_t*)str_debug_main_menu);
-		}
-		break;
-
-	}
-
-}

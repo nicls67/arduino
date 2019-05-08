@@ -27,6 +27,7 @@
 #include "bsw/bsw.h"
 
 #include "asw/debug_ift/DebugInterface.h"
+#include "asw/debug_mgt/DebugManagement.h"
 #include "asw/TempSensor/TempSensor.h"
 #include "asw/display_ift/DisplayInterface.h"
 #include "asw/display_mgt/DisplayManagement.h"
@@ -35,7 +36,7 @@
 
 #include "main.h"
 
-
+/* TODO : create a specific file for interrupt management */
 
 /*!
  * @brief Main software interrupt
@@ -56,16 +57,23 @@ ISR(TIMER1_COMPA_vect)
  */
 ISR(USART0_RX_vect)
 {
-	uint8_t data;
+	bool quit = false;
 
-	if(ASW_cnf_struct.p_DebugInterface->isDebugModeActive() == true)
+	/* If the debug mode is started */
+	if(ASW_cnf_struct.p_DebugManagement != 0)
 	{
-		data = BSW_cnf_struct.p_usart->usart_read();
-		ASW_cnf_struct.p_DebugInterface->DebugModeManagement(data);
+		/* TODO : debugModeManagement function could make the read operation by herself */
+		quit = ASW_cnf_struct.p_DebugManagement->DebugModeManagement(ASW_cnf_struct.p_DebugInterface->read());
 	}
-	else if(BSW_cnf_struct.p_usart->usart_read() == 'a')
+	else if(ASW_cnf_struct.p_DebugInterface->read() == 'a')
 	{
-		ASW_cnf_struct.p_DebugInterface->activateDebugMode();
+		ASW_cnf_struct.p_DebugManagement = new DebugManagement();
+	}
+
+	if(quit)
+	{
+		free(ASW_cnf_struct.p_DebugManagement);
+		ASW_cnf_struct.p_DebugManagement = 0;
 	}
 }
 

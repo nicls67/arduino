@@ -22,6 +22,7 @@ typedef struct
 	TempSensor* p_TempSensor; /*!< Pointer to TempSensor object */
 	DisplayInterface* p_DisplayInterface; /*!< Pointer to DisplayInterface object */
 	DisplayManagement* p_DisplayManagement; /*!< Pointer to DisplayManagement object */
+	DebugManagement* p_DebugManagement; /*!< Pointer to the DebugManagement object */
 }
 T_ASW_cnf_struct;
 
