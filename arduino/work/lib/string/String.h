@@ -92,11 +92,10 @@ public:
 	 * @brief Boolean adding function
 	 * @details This functions adds the given boolean data at the end of the main string. The string size is updated accordingly.
 	 * 			According to the input parameter isText, the boolean parameter is converted into a string (true/false) or an integer (0/1).
+	 * @param [in] data Boolean data to add
+	 * @param [in] isText Defines the conversion mode : text or integer
 	 *
-	 * 	@param [in] data Boolean data to add
-	 * 	@param [in] isText Defines the conversion mode : text or integer
-	 *
-	 * 	@return Nothing
+	 * @return Nothing
 	 */
 	void appendBool(bool data, bool isText);
 
