@@ -82,6 +82,14 @@ public:
 	bool ClearLine(uint8_t line);
 
 	/*!
+	 * @brief Screen cleaning function
+	 * @details This functions clears the entire display. It marks all lines as empty and deletes the linked list.
+	 *
+	 * @return Nothing
+	 */
+	void ClearFullScreen();
+
+	/*!
 	 * @brief Empty line get function
 	 * @details This function answers if the line given in parameter is empty or not, according to the table isLineEmpty[]
 	 *

@@ -180,9 +180,12 @@ bool DisplayInterface::ClearLine(uint8_t line)
 	 * we don't care, the function will only return false */
 	dummy = LL_shift_data_ptr->RemoveElement((CompareFctPtr_t)&DisplayInterface::LLElementCompare, (void*)&line);
 
-	/* Check if there is still some lines to shift, if no, remove the periodic task */
-	if(LL_shift_data_ptr->IsLLEmpty())
+	/* Check if there is still some lines to shift, if no, remove the periodic task and delete linked list */
+	if((LL_shift_data_ptr->IsLLEmpty()) && (LL_shift_data_ptr != 0))
+	{
 		dummy = p_scheduler->removePeriodicTask((TaskPtr_t)(&DisplayInterface::shiftLine_task));
+		free(LL_shift_data_ptr);
+	}
 
 	/* Find DDRAM address of the start of the requested line */
 	p_lcd->SetDDRAMAddress(FindFirstCharAddr(line));
@@ -196,6 +199,22 @@ bool DisplayInterface::ClearLine(uint8_t line)
 	lineEmptyTab[line] = true;
 
 	return true;
+}
+
+void DisplayInterface::ClearFullScreen()
+{
+	uint8_t i;
+
+	/* Call driver's clear command */
+	p_lcd->command(LCD_CMD_CLEAR_DISPLAY);
+
+	/* Set all lines as empty */
+	for(i=0; i<LCD_SIZE_NB_LINES; i++)
+		lineEmptyTab[i] = true;
+
+	/* Delete linked list */
+	if(LL_shift_data_ptr != 0)
+		free(LL_shift_data_ptr);
 }
 
 bool DisplayInterface::IsLineEmpty(uint8_t line)
