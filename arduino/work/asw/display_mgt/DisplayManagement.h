@@ -15,11 +15,14 @@
 #define DISPLAY_MGT_LINE_TEMP 0 /*!< Current temperature is displayed on line 0 */
 #define DISPLAY_MGT_LINE_HUM 1 /*!< Current humidity is displayed on line 1 */
 
+#define DISPLAY_MGT_I2C_BITRATE (uint32_t)100000 /*!< I2C bus bitrate is 100 kHz */
+
 /*!
  * @brief LCD configuration structure
  * @details This structure defines the initial configuration of the LCD screen.
  */
 const T_LCD_conf_struct LCD_init_cnf = {
+	DISPLAY_MGT_I2C_BITRATE,
 	DISPLAY_MGT_LCD_I2C_ADDR,
 	LCD_CNF_BACKLIGHT_ON,
 	LCD_CNF_TWO_LINE,

@@ -10,13 +10,6 @@
 #define WORK_BSW_BSW_H_
 
 
-
-/*
- * Definition of all configurable constants of BSW
- * TODO : bitrate to be configured by user class, not here
- */
-#define I2C_BITRATE (uint32_t)100000 /*!< I2C bus bitrate is 100 kHz */
-
 /*!
  * @brief BSW configuration structure
  * @details This structure contains all pointers to instanced drivers objects

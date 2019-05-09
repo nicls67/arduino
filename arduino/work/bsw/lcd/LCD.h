@@ -122,17 +122,21 @@ typedef enum
 }
 T_LCD_ram_area;
 
+/*!
+ *  @brief Structure defining LCD configuration
+ */
 typedef struct
 {
-	uint8_t i2c_addr;
-	bool backlight_en;
-	bool lineNumber_cnf;
-	bool fontType_cnf;
-	bool display_en;
-	bool cursor_en;
-	bool cursorBlink_en;
-	bool entryModeDir;
-	bool entryModeShift;
+	uint32_t i2c_bitrate; /*!< I2C bitrate needed by the LCD screen */
+	uint8_t i2c_addr; /*!< I2C address if the screen */
+	bool backlight_en; /*!< Screen backlight enable flag */
+	bool lineNumber_cnf; /*!< Screen line number configuration (1 or 2 lines) */
+	bool fontType_cnf; /*!< Font configuration */
+	bool display_en; /*!< Screen display enable flag */
+	bool cursor_en; /*!< Screen cursor enable flag */
+	bool cursorBlink_en; /*!< Screen cursor blinking enable flag */
+	bool entryModeDir; /*!< Entry mode direction configuration */
+	bool entryModeShift; /*!< Entry mode shift configuration */
 }
 T_LCD_conf_struct;
 
@@ -148,6 +152,7 @@ public:
 	/*!
 	 * @brief LCD class constructor
 	 * @details This constructor function initializes the class LCD and calls screen configuration function.
+	 * 			It also creates a new instance of the I2C driver if needed.
 	 *
 	 * @param [in] init_conf Initial configuration structure
 	 * @return Nothing
@@ -325,6 +330,8 @@ private:
 	bool cnfEntryModeDir; /*!< Entry mode direction configuration : 1 = cursor moves to right when DDRAM address is incremented, 0 = cursor moves to left when DDRAM address is incremented */
 	bool cnfEntryModeShift; /*!< Entry mode configuration : 0 = no display shift is performed after a DDRAM read, 1 = a shift is performed */
 	uint8_t cnfI2C_addr; /*!< I2C address of the LCD screen */
+
+	I2C* i2c_drv_ptr; /*!< Pointer to the I2C driver object */
 
 	uint8_t ddram_addr; /*!< Screen DDRAM address */
 

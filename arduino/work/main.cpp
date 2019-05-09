@@ -18,8 +18,8 @@
 
 #include "bsw/usart/usart.h"
 #include "bsw/timer/timer.h"
-#include "bsw/lcd/LCD.h"
 #include "bsw/I2C/I2C.h"
+#include "bsw/lcd/LCD.h"
 #include "bsw/dio/dio.h"
 #include "bsw/dht22/dht22.h"
 #include "bsw/cpuLoad/CpuLoad.h"

@@ -14,8 +14,8 @@
 
 #include "../usart/usart.h"
 #include "../timer/timer.h"
-#include "../lcd/LCD.h"
 #include "../I2C/I2C.h"
+#include "../lcd/LCD.h"
 #include "../dio/dio.h"
 #include "../dht22/dht22.h"
 #include "../cpuLoad/CpuLoad.h"
@@ -28,6 +28,12 @@ LCD::LCD(const T_LCD_conf_struct* init_conf)
 {
 	/* Initialize class variables */
 	ddram_addr = 0;
+
+	/* Create new instance of I2C driver if needed */
+	if(BSW_cnf_struct.p_i2c == 0)
+		BSW_cnf_struct.p_i2c = new I2C(init_conf->i2c_bitrate);
+
+	i2c_drv_ptr = BSW_cnf_struct.p_i2c;
 
 	/* Screen default configuration */
 	ConfigureBacklight(init_conf->backlight_en);
@@ -51,13 +57,13 @@ void LCD::write4bits(uint8_t data)
 
 	/* Configure backlight pin and set EN pin */
 	data |= (backlight_enable << BACKLIGHT_PIN) + (1 << EN_PIN);
-	dummy = BSW_cnf_struct.p_i2c->writeByte(&data);
+	dummy = i2c_drv_ptr->writeByte(&data);
 
 	_delay_us(1);
 
 	/* Clear enable pin */
 	data &= ~(1 << EN_PIN);
-	dummy = BSW_cnf_struct.p_i2c->writeByte(&data);
+	dummy = i2c_drv_ptr->writeByte(&data);
 
 	_delay_us(50);
 }
@@ -77,7 +83,7 @@ void LCD::InitializeScreen()
 {
 	uint8_t data;
 
-	BSW_cnf_struct.p_i2c->setTxAddress(cnfI2C_addr);
+	i2c_drv_ptr->setTxAddress(cnfI2C_addr);
 
 	/* Wait for 30ms after power on */
 	_delay_us(30000);

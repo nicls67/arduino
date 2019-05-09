@@ -14,6 +14,7 @@
 #include "../lib/string/String.h"
 
 #include "../bsw/usart/usart.h"
+#include "../bsw/I2C/I2C.h"
 #include "../bsw/LCD/LCD.h"
 
 #include "debug_ift/DebugInterface.h"
