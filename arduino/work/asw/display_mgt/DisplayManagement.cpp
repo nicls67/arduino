@@ -34,21 +34,40 @@
 
 #include "../asw.h"
 
+/* TODO : center welcome message */
 
 
-
-DisplayManagement::DisplayManagement() {
-
+DisplayManagement::DisplayManagement()
+{
 	/* Create display interface object */
 	if (ASW_cnf_struct.p_DisplayInterface == 0)
 		ASW_cnf_struct.p_DisplayInterface = new DisplayInterface(&LCD_init_cnf);
 
 	p_display_ift = ASW_cnf_struct.p_DisplayInterface;
+
 	p_tempSensor = ASW_cnf_struct.p_TempSensor; /* TODO : create the class here, not in ASW main function */
+
+	/* Display welcome message on 2nd line */
+	String str;
+	str.appendString((uint8_t*)welcomeMessageString);
+	p_display_ift->DisplayFullLine(str.getString(), str.getSize(), 1, NORMAL);
+
+	p_scheduler->addPeriodicTask((TaskPtr_t)&DisplayManagement::RemoveWelcomeMessage_Task, DISPLAY_MGT_PERIOD_TASK_SENSOR);
+
+}
+
+void DisplayManagement::RemoveWelcomeMessage_Task()
+{
+	DisplayInterface * ift_ptr = ASW_cnf_struct.p_DisplayManagement->GetIftPointer();
+
+	/* Clear the screen */
+	ift_ptr->ClearFullScreen();
+
+	/* Remove itself from scheduler */
+	p_scheduler->removePeriodicTask((TaskPtr_t)&DisplayManagement::RemoveWelcomeMessage_Task);
 
 	/* Add periodic task in scheduler */
 	p_scheduler->addPeriodicTask((TaskPtr_t)&DisplayManagement::DisplaySensorData_Task, DISPLAY_MGT_PERIOD_TASK_SENSOR);
-
 }
 
 void DisplayManagement::DisplaySensorData_Task()

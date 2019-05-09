@@ -10,8 +10,11 @@
 #ifndef WORK_ASW_DISPLAY_MGT_DISPLAYMANAGEMENT_H_
 #define WORK_ASW_DISPLAY_MGT_DISPLAYMANAGEMENT_H_
 
-#define DISPLAY_MGT_LCD_I2C_ADDR 0x27
+#define DISPLAY_MGT_LCD_I2C_ADDR 0x27 /*!< I2C address of the screen */
+
 #define DISPLAY_MGT_PERIOD_TASK_SENSOR 5000 /*!< Display is updated every 5s */
+#define DISPLAY_MGT_PERIOD_WELCOME_MSG_REMOVAL DISPLAY_MGT_PERIOD_TASK_SENSOR /*!< Time after which one the welcome message is removed */
+
 #define DISPLAY_MGT_LINE_TEMP 0 /*!< Current temperature is displayed on line 0 */
 #define DISPLAY_MGT_LINE_HUM 1 /*!< Current humidity is displayed on line 1 */
 
@@ -35,6 +38,7 @@ const T_LCD_conf_struct LCD_init_cnf = {
 };
 
 
+const uint8_t welcomeMessageString[] = "Bienvenue !";
 const uint8_t tempDisplayString[] = "Temperature : "; /*!< String used for temperature display */
 const uint8_t humidityDisplayString[] = "Humidite : "; /*!< String used for humidity display */
 
@@ -89,6 +93,16 @@ public:
 	{
 		return p_tempSensor;
 	}
+
+	/*!
+	 * @brief End of welcome message task
+	 * @details This task clears the welcome message from the screen and start periodic display of sensor data.
+	 * 			This task shall be added in scheduler when the welcome message is displayed on screen.
+	 * 			As it shall be called only once, the task removes itself from the scheduler after the first call.
+	 *
+	 * 	@return Nothing
+	 */
+	static void RemoveWelcomeMessage_Task();
 
 private:
 
