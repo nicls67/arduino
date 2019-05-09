@@ -31,6 +31,14 @@ public:
 	LinkedList();
 
 	/*!
+	 * @brief Class destructor
+	 * @details This function deletes the linked list
+	 *
+	 * @return Nothing
+	 */
+	~LinkedList();
+
+	/*!
 	 * @brief Add an new element to the list
 	 * @details This function adds a new element at the end of the list. The data pointer to attach to the element is given in parameter
 	 *
@@ -101,8 +109,8 @@ private:
 	}
 	T_LL_element;
 
-	T_LL_element* firstElement;
-	T_LL_element* curElement_ptr;
+	T_LL_element* firstElement; /*!< Pointer to the first element of the list */
+	T_LL_element* curElement_ptr; /*!< Pointer to the current element of the list */
 };
 
 

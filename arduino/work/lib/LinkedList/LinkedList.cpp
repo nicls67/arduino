@@ -7,12 +7,33 @@
  * @author nicls67
  */
 
+#include <stdlib.h>
+#include <avr/io.h>
+
 #include "LinkedList.h"
 
 LinkedList::LinkedList()
 {
 	firstElement = 0;
 	curElement_ptr = 0;
+}
+
+LinkedList::~LinkedList()
+{
+	T_LL_element* prev = firstElement;
+	T_LL_element* cur = firstElement;
+
+	/* Delete all elements of the list */
+	if(IsLLEmpty() == false)
+	{
+		while(cur != 0)
+		{
+			free(prev->data_ptr);
+			free(prev);
+			prev = cur;
+			cur = cur->nextElement;
+		}
+	}
 }
 
 void LinkedList::AttachNewElement(void* data_ptr)
