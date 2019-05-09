@@ -62,8 +62,7 @@ ISR(USART0_RX_vect)
 	/* If the debug mode is started */
 	if(ASW_cnf_struct.p_DebugManagement != 0)
 	{
-		/* TODO : debugModeManagement function could make the read operation by herself */
-		quit = ASW_cnf_struct.p_DebugManagement->DebugModeManagement(ASW_cnf_struct.p_DebugInterface->read());
+		quit = ASW_cnf_struct.p_DebugManagement->DebugModeManagement();
 	}
 	else if(ASW_cnf_struct.p_DebugInterface->read() == 'a')
 	{

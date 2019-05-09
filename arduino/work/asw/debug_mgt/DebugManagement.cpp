@@ -109,9 +109,11 @@ void DebugManagement::DisplayCPULoad_task()
 }
 
 
-bool DebugManagement::DebugModeManagement(uint8_t rcv_char)
+bool DebugManagement::DebugModeManagement()
 {
 	bool quit = false;
+
+	uint8_t rcv_char = debug_ift_ptr->read();
 
 	/* switch on debug state */
 	switch(debug_state)

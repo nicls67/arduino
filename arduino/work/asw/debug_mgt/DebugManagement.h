@@ -61,12 +61,11 @@ public:
 	 *  		 	  - DISPLAY_DATA state : display sensor data periodically\n
 	 *  		 	  - DISPLAY CPU LOAD : display CPU load periodically\n\n
 	 *
-	 *  It is called each time a data is received on USART and debug mode is active.
+	 *  		 It is called each time a data is received on USART and debug mode is active.
 	 *
-	 *  @param [in] rcv_char 8 bits character received on USART
 	 *  @return True if the debug mode shall be closed, false otherwise
 	 */
-	bool DebugModeManagement(uint8_t rcv_char);
+	bool DebugModeManagement();
 
 	/*!
 	 * @brief Interface pointer get function
