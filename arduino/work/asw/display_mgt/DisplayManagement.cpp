@@ -45,7 +45,7 @@ DisplayManagement::DisplayManagement()
 
 	p_display_ift = ASW_cnf_struct.p_DisplayInterface;
 
-	p_tempSensor = ASW_cnf_struct.p_TempSensor; /* TODO : create the class here, not in ASW main function */
+	p_tempSensor = ASW_cnf_struct.p_TempSensor;
 
 	/* Display welcome message on 2nd line */
 	String str;

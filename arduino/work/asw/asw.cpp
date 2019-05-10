@@ -36,7 +36,8 @@ T_ASW_cnf_struct ASW_cnf_struct;
 
 void asw_init()
 {
-	/* TODO : class initialization should be done in the user class, not every time in ASW */
+	/* TODO : create a configuration to manage which service should be launched or not */
+	/* TODO : DEBUG MODE shall be defined by a IO pin */
 #ifdef DEBUG_MODE
 	ASW_cnf_struct.p_DebugInterface = new DebugInterface();
 #else
