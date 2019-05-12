@@ -10,6 +10,9 @@
 #ifndef WORK_ASW_DISPLAY_IFT_DISPLAYINTERFACE_H_
 #define WORK_ASW_DISPLAY_IFT_DISPLAYINTERFACE_H_
 
+/* TODO : if a line overlaps on the next one, when clearing this line, clear also the next one */
+/* TODO : if a line is in line shift mode and a line update is requested also in line shift, the shift process shall not be reset */
+/* TODO : Welcome message shall be centered */
 
 /*!
  * @brief Modes for line display
@@ -32,16 +35,28 @@ T_DisplayInterface_LineDisplayMode;
  */
 typedef struct
 {
-	uint8_t* str_start_ptr;
-	uint8_t* str_cur_ptr;
-	uint8_t size;
-	uint8_t line;
-	uint8_t temporization;
+	String* str_ptr; /*!< Pointer to the start address of the string */
+	uint8_t* str_cur_ptr; /*!< Pointer to the address of the first displayed character */
+	uint8_t temporization; /*!< Shifting period */
 }
 T_Display_shift_data;
 
+/*!
+ * @brief Structure containing display data
+ * @details This structure contains all data used for screen display
+ */
+typedef struct
+{
+	bool isEmpty; /*!< Flag indicating if the line is empty or not */
+	T_DisplayInterface_LineDisplayMode mode; /*!< Current display mode */
+	T_Display_shift_data shift_data; /*!< Shift data for the current line */
+	uint8_t display_str[LCD_SIZE_NB_CHAR_PER_LINE]; /*!< Current string displayed on the screen */
+}
+T_display_data;
+
+
 #define DISPLAY_LINE_SHIFT_PERIOD_MS 500 /*!< In "line shift" mode for line display, line is shifted every 500 ms */
-#define DISPLAY_LINE_SHIFT_TEMPO_TIME 6 /*!< In "line shift" mode for line display, a temporization of 3 periods is added at the end and the beginning of the lines */
+#define DISPLAY_LINE_SHIFT_TEMPO_TIME 6 /*!< In "line shift" mode for line display, a temporization of 6 periods is added at the end and the beginning of the lines */
 
 
 /*!
@@ -70,11 +85,12 @@ public:
 	 * @param [in] mode Display mode
 	 * @return True if the line has been correctly displayed, false otherwise
 	 */
-	bool DisplayFullLine(uint8_t* str, uint8_t size, uint8_t line, T_DisplayInterface_LineDisplayMode mode);
+	bool DisplayFullLine(uint8_t* str, uint8_t size, uint8_t line, T_DisplayInterface_LineDisplayMode mode = NORMAL, bool isCallRecursive = false);
 
 	/*!
 	 * @brief Line clearing function
-	 * @details This function clears the requested line. It sets the corresponding DDRAM addresses to the ASCII value of space character
+	 * @details This function clears the requested line. It sets the corresponding DDRAM addresses to the ASCII value of space character.
+	 * 			If it was the last line with a display shift in progress, it removes the periodic task from the scheduler.
 	 *
 	 * @param [in] line Line to clear
 	 * @return True if the line has been cleared, false otherwise
@@ -83,7 +99,7 @@ public:
 
 	/*!
 	 * @brief Screen cleaning function
-	 * @details This functions clears the entire display. It marks all lines as empty and deletes the linked list.
+	 * @details This functions clears the entire display. It uses the ClearLine function on every line of the screen.
 	 *
 	 * @return Nothing
 	 */
@@ -99,18 +115,6 @@ public:
 	bool IsLineEmpty(uint8_t line);
 
 	/*!
-	 * @brief Linked list comparison function
-	 * @details This function is called by the linked list class to compare one element of the list to a given element.
-	 * 			In the class DisplayInterface, the LLElement is a shift data pointer (containing a line number inside it), and the compareElement a line number.
-	 * 			The comparison will be done between the two function pointer.
-	 *
-	 * @param [in] LLElement Pointer to the linked list element
-	 * @param [in] CompareElement Pointer to the element to the compare
-	 * @return True if both elements are identical, false otherwise
-	 */
-	static bool LLElementCompare(void* LLElement, void* CompareElement);
-
-	/*!
 	 * @brief Line shifting periodic task
 	 * @details This function is called periodically by the scheduler. It shifts all the lines in line shifting mode and updates the data structures.
 	 *
@@ -119,22 +123,22 @@ public:
 	static void shiftLine_task();
 
 	/*!
-	 * @brief Linked list shift data get function
-	 * @details This function returns the pointer to the shift data linked list.
+	 * @brief Display data get function
+	 * @details This function returns a pointer to the display data structure.
 	 *
-	 * @return Pointer to linked list
+	 * @return Pointer to display data structure.
 	 */
-	inline LinkedList* getLLShiftDataPtr()
+	inline T_display_data* getDisplayDataPtr()
 	{
-		return LL_shift_data_ptr;
+		return display_data;
 	}
 
 private:
 
 	LCD* p_lcd; /*!< Pointer to the attached LCD driver object */
 	uint32_t dummy; /*!< Needed for data alignment */
-	bool lineEmptyTab[LCD_SIZE_NB_LINES]; /*!< Table indicating whether a line is empty or not (true = line empty, false = line not empty */
-	LinkedList* LL_shift_data_ptr; /*!< Linked list containing data for line shifting, each element of the list corresponds to a line of the screen */
+	T_display_data display_data[LCD_SIZE_NB_LINES]; /*!< Screen display data */
+	bool isShiftInProgress; /*!< Flag indicating ih a shift is in progress on any line */
 
 	/*!
 	 * @brief Finds start address of a line.
@@ -144,6 +148,25 @@ private:
 	 * @return Address in DDRAM of the first character of the line
 	 */
 	uint8_t FindFirstCharAddr(uint8_t line);
+
+	/*!
+	 * @brief Line refresh function
+	 * @details This function refreshes the display on the requested line. It computes the screen RAM address and writes the string to display into the screen RAM.
+	 * 			It shall be called everytime the string in display data structure is updated.
+	 *
+	 * @param [in] line Line to refresh
+	 * @return Nothing
+	 */
+	void RefreshLine(uint8_t line);
+
+	/*!
+	 * @brief String data clearing structure
+	 * @details This function clears the string contained in the display data structure. It sets all characters to space character.
+	 *
+	 * @param [in] line Line to clear
+	 * @return Nothing
+	 */
+	void ClearStringInDataStruct(uint8_t line);
 };
 
 

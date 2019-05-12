@@ -50,19 +50,27 @@ DisplayInterface::DisplayInterface(const T_LCD_conf_struct * LCD_init_cnf)
 	}
 	p_lcd = BSW_cnf_struct.p_lcd;
 
-	/* All lines are empty at startup (LCD driver has cleared the screen) */
-	for (i=0; i<LCD_SIZE_NB_LINES; i++)
-		lineEmptyTab[i] = true;
+	/* Initialize display data */
+	for(i = 0; i < LCD_SIZE_NB_LINES; i++)
+	{
+		display_data[i].mode = NORMAL;
+		display_data[i].isEmpty = true;
 
-	/* Linked list is not created yet */
-	LL_shift_data_ptr = 0;
+		ClearStringInDataStruct(i);
+
+		display_data[i].shift_data.str_cur_ptr = 0;
+		display_data[i].shift_data.str_ptr = 0;
+		display_data[i].shift_data.temporization = 0;
+
+	}
+
+	isShiftInProgress = false;
 
 }
 
-bool DisplayInterface::DisplayFullLine(uint8_t* str, uint8_t size, uint8_t line, T_DisplayInterface_LineDisplayMode mode)
+bool DisplayInterface::DisplayFullLine(uint8_t* str, uint8_t size, uint8_t line, T_DisplayInterface_LineDisplayMode mode, bool isCallRecursive)
 {
 	uint8_t i;
-	T_Display_shift_data* LLElement = 0;
 
 	/* Check that the line number is correct, if it's incorrect, exit the function */
 	if (line >= LCD_SIZE_NB_LINES)
@@ -75,57 +83,87 @@ bool DisplayInterface::DisplayFullLine(uint8_t* str, uint8_t size, uint8_t line,
 	else if ((size > LCD_SIZE_NB_CHAR_PER_LINE) && (mode == NORMAL))
 		mode = LINE_SHIFT;
 
-	/* Find DDRAM address of the start of the requested line */
-	p_lcd->SetDDRAMAddress(FindFirstCharAddr(line));
+	if(isCallRecursive == false)
+	{
+		/* Clear the line to avoid issues in case a line shift is in progress on this line */
+		ClearLine(line);
+
+		/* Update data */
+		display_data[line].mode = mode;
+		display_data[line].isEmpty = false;
+	}
 
 	switch (mode)
 	{
 	case NORMAL:
-		/* Write each character on the screen */
+	default:
+		/* Clear data structure */
+		ClearStringInDataStruct(line);
+
+		/* Write each character in data structure */
 		for (i=0; i<size; i++)
-		{
-			p_lcd->WriteInRam(str[i], LCD_DATA_DDRAM);
-		}
-		lineEmptyTab[line] = false;
+			display_data[line].display_str[i] = str[i];
+
+		/* Refresh line */
+		RefreshLine(line);
 		break;
 
 	case LINE_SHIFT:
 		/* First write the line in normal mode */
-		DisplayFullLine(str, LCD_SIZE_NB_CHAR_PER_LINE, line, NORMAL);
+		DisplayFullLine(str, LCD_SIZE_NB_CHAR_PER_LINE, line, NORMAL, true);
 
-		/* Create the linked list for shifting data if it doesn't exist */
-		if (LL_shift_data_ptr == 0)
-			LL_shift_data_ptr = new LinkedList();
+		/* Update shift data structure */
+		display_data[line].shift_data.str_ptr = new String((const uint8_t*)str);
+		display_data[line].shift_data.str_cur_ptr = display_data[line].shift_data.str_ptr->getString();
+		display_data[line].shift_data.temporization = DISPLAY_LINE_SHIFT_TEMPO_TIME;
 
-		/* Create a new element in the linked list for this line */
-		LLElement = new T_Display_shift_data;
-		LLElement->line = line;
-		LLElement->size = size;
-		LLElement->str_start_ptr = str;
-		LLElement->str_cur_ptr = str;
-		LLElement->temporization = DISPLAY_LINE_SHIFT_TEMPO_TIME;
-		LL_shift_data_ptr->AttachNewElement((void*)LLElement);
+		/* If no shift is in progress on another line, add periodic task to scheduler */
+		if(isShiftInProgress == false)
+		{
+			p_scheduler->addPeriodicTask((TaskPtr_t)(&DisplayInterface::shiftLine_task), DISPLAY_LINE_SHIFT_PERIOD_MS);
+			isShiftInProgress = true;
+		}
 
-		/* Then add periodic task to scheduler to shift display */
-		p_scheduler->addPeriodicTask((TaskPtr_t)(&DisplayInterface::shiftLine_task), DISPLAY_LINE_SHIFT_PERIOD_MS);
 		break;
 
 	case GO_TO_NEXT_LINE:
+		/* Compute size for the overlapped line */
 		size -= LCD_SIZE_NB_CHAR_PER_LINE;
 
-		/* Write each character on the screen */
+		/* Write each character in data structure */
 		for (i=0; i<LCD_SIZE_NB_CHAR_PER_LINE; i++)
-		{
-			p_lcd->WriteInRam(str[i], LCD_DATA_DDRAM);
-		}
-		lineEmptyTab[line] = false;
+			display_data[line].display_str[i] = str[i];
+
+		/* Refresh line */
+		RefreshLine(line);
 
 		/* Call the function recursively to display the remaining characters on the next line */
-		DisplayFullLine(&str[LCD_SIZE_NB_CHAR_PER_LINE], size, line + 1, GO_TO_NEXT_LINE);
+		DisplayFullLine(&str[LCD_SIZE_NB_CHAR_PER_LINE], size, line + 1, GO_TO_NEXT_LINE, true);
 		break;
 	}
 
 	return true;
+}
+
+void DisplayInterface::RefreshLine(uint8_t line)
+{
+	uint8_t i;
+
+	/* Find DDRAM address of the start of the requested line */
+	p_lcd->SetDDRAMAddress(FindFirstCharAddr(line));
+
+	/* Write each character on the screen */
+	for (i=0; i<LCD_SIZE_NB_CHAR_PER_LINE; i++)
+		p_lcd->WriteInRam(display_data[line].display_str[i], LCD_DATA_DDRAM);
+
+}
+
+void DisplayInterface::ClearStringInDataStruct(uint8_t line)
+{
+	uint8_t i;
+
+	for (i=0; i<LCD_SIZE_NB_CHAR_PER_LINE; i++)
+		display_data[line].display_str[i] = ' ';
 }
 
 uint8_t DisplayInterface::FindFirstCharAddr(uint8_t line)
@@ -176,27 +214,30 @@ bool DisplayInterface::ClearLine(uint8_t line)
 	if (line >= LCD_SIZE_NB_LINES)
 		return false;
 
-	/* Remove the line from the linked list, if this line was not a shifted line,
-	 * we don't care, the function will only return false */
-	dummy = LL_shift_data_ptr->RemoveElement((CompareFctPtr_t)&DisplayInterface::LLElementCompare, (void*)&line);
+	/* Set line mode to NORMAL */
+	display_data[line].mode = NORMAL;
 
-	/* Check if there is still some lines to shift, if no, remove the periodic task and delete linked list */
-	if((LL_shift_data_ptr->IsLLEmpty()) && (LL_shift_data_ptr != 0))
+	/* Check if there is still some lines to shift, if no, remove the periodic task */
+	isShiftInProgress = false;
+
+	for(i=0; i<LCD_SIZE_NB_LINES; i++)
 	{
+		if(display_data[i].mode == LINE_SHIFT)
+		{
+			isShiftInProgress = true;
+			free(display_data[line].shift_data.str_ptr);
+		}
+	}
+
+	if(isShiftInProgress == false)
 		dummy = p_scheduler->removePeriodicTask((TaskPtr_t)(&DisplayInterface::shiftLine_task));
-		free(LL_shift_data_ptr);
-	}
 
-	/* Find DDRAM address of the start of the requested line */
-	p_lcd->SetDDRAMAddress(FindFirstCharAddr(line));
+	/* Mark line as empty */
+	display_data[line].isEmpty = true;
 
-	/* Set data to ' ' (space character) in DDRAM */
-	for (i=0; i<LCD_SIZE_NB_CHAR_PER_LINE; i++)
-	{
-		p_lcd->WriteInRam(' ', LCD_DATA_DDRAM);
-	}
-
-	lineEmptyTab[line] = true;
+	/* Clear string in data structure and refresh display */
+	ClearStringInDataStruct(line);
+	RefreshLine(line);
 
 	return true;
 }
@@ -205,16 +246,8 @@ void DisplayInterface::ClearFullScreen()
 {
 	uint8_t i;
 
-	/* Call driver's clear command */
-	p_lcd->command(LCD_CMD_CLEAR_DISPLAY);
-
-	/* Set all lines as empty */
 	for(i=0; i<LCD_SIZE_NB_LINES; i++)
-		lineEmptyTab[i] = true;
-
-	/* Delete linked list */
-	if(LL_shift_data_ptr != 0)
-		free(LL_shift_data_ptr);
+		ClearLine(i);
 }
 
 bool DisplayInterface::IsLineEmpty(uint8_t line)
@@ -223,61 +256,57 @@ bool DisplayInterface::IsLineEmpty(uint8_t line)
 	if (line >= LCD_SIZE_NB_LINES)
 		return true;
 
-	return lineEmptyTab[line];
-}
-
-bool DisplayInterface::LLElementCompare(void* LLElement, void* CompareElement)
-{
-	T_Display_shift_data* display_shift_data_ptr = (T_Display_shift_data*)LLElement;
-	uint8_t line = *((uint8_t*)CompareElement);
-
-	if(display_shift_data_ptr->line == line)
-		return true;
-	else
-		return false;
+	return display_data[line].isEmpty;
 }
 
 void DisplayInterface::shiftLine_task()
 {
-	LinkedList* LL_ptr = ASW_cnf_struct.p_DisplayInterface->getLLShiftDataPtr();
-	T_Display_shift_data* data_ptr;
-
-	/* Go the the beginning of the chain */
-	LL_ptr->ResetElementPtr();
+	T_display_data* display_data_ptr = ASW_cnf_struct.p_DisplayInterface->getDisplayDataPtr();
+	T_Display_shift_data* display_shift_data_ptr;
+	uint8_t i;
 
 	/* Process all lines of the screen */
-	do
+	for(i=0; i<LCD_SIZE_NB_LINES; i++)
 	{
-		/* Update data structure */
-		data_ptr = (T_Display_shift_data*)LL_ptr->getCurrentElement();
-
-		/* Increment pointer and if we are at the end of the line, go back at the beginning */
-		if (data_ptr->str_cur_ptr >= (data_ptr->str_start_ptr + data_ptr->size - LCD_SIZE_NB_CHAR_PER_LINE))
+		/* Check if the line shall be shifted */
+		if(display_data_ptr[i].mode == LINE_SHIFT)
 		{
-			if(data_ptr->temporization == 0)
+			/* Update shift data pointer */
+			display_shift_data_ptr = &(display_data_ptr[i].shift_data);
+
+			ASW_cnf_struct.p_DebugInterface->sendInteger((uint16_t)display_shift_data_ptr->str_ptr->getString(),10);
+			ASW_cnf_struct.p_DebugInterface->sendString((uint8_t*)" ");
+			ASW_cnf_struct.p_DebugInterface->sendInteger((uint16_t)display_shift_data_ptr->str_cur_ptr,10);
+			ASW_cnf_struct.p_DebugInterface->sendString((uint8_t*)"\n");
+
+			/* Increment pointer and if we are at the end of the line, go back at the beginning */
+			if (display_shift_data_ptr->str_cur_ptr >= (display_shift_data_ptr->str_ptr->getString() + display_shift_data_ptr->str_ptr->getSize() - LCD_SIZE_NB_CHAR_PER_LINE))
 			{
-				data_ptr->str_cur_ptr = data_ptr->str_start_ptr;
-				data_ptr->temporization = DISPLAY_LINE_SHIFT_TEMPO_TIME;
+				if(display_shift_data_ptr->temporization == 0)
+				{
+					display_shift_data_ptr->str_cur_ptr = display_shift_data_ptr->str_ptr->getString();
+					display_shift_data_ptr->temporization = DISPLAY_LINE_SHIFT_TEMPO_TIME;
+				}
+				else
+					display_shift_data_ptr->temporization--;
+			}
+			else if(display_shift_data_ptr->str_cur_ptr == display_shift_data_ptr->str_ptr->getString())
+			{
+				if(display_shift_data_ptr->temporization == 0)
+				{
+					display_shift_data_ptr->str_cur_ptr ++;
+					display_shift_data_ptr->temporization = DISPLAY_LINE_SHIFT_TEMPO_TIME;
+				}
+				else
+					display_shift_data_ptr->temporization--;
 			}
 			else
-				data_ptr->temporization--;
-		}
-		else if(data_ptr->str_cur_ptr == data_ptr->str_start_ptr)
-		{
-			if(data_ptr->temporization == 0)
-			{
-				data_ptr->str_cur_ptr ++;
-				data_ptr->temporization = DISPLAY_LINE_SHIFT_TEMPO_TIME;
-			}
-			else
-				data_ptr->temporization--;
-		}
-		else
-			data_ptr->str_cur_ptr ++;
+				display_shift_data_ptr->str_cur_ptr ++;
 
-		/* Display the line */
-		ASW_cnf_struct.p_DisplayInterface->DisplayFullLine(data_ptr->str_cur_ptr, LCD_SIZE_NB_CHAR_PER_LINE, data_ptr->line, NORMAL);
+			/* Display the line */
+			ASW_cnf_struct.p_DisplayInterface->DisplayFullLine(display_shift_data_ptr->str_cur_ptr, LCD_SIZE_NB_CHAR_PER_LINE, i, NORMAL, true);
+		}
+
 	}
-	while(LL_ptr->MoveToNextElement());
 
 }
