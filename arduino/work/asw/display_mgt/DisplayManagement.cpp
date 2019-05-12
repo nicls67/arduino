@@ -52,7 +52,7 @@ DisplayManagement::DisplayManagement()
 	str.appendString((uint8_t*)welcomeMessageString);
 	p_display_ift->DisplayFullLine(str.getString(), str.getSize(), 1, NORMAL);
 
-	p_scheduler->addPeriodicTask((TaskPtr_t)&DisplayManagement::RemoveWelcomeMessage_Task, DISPLAY_MGT_PERIOD_TASK_SENSOR);
+	p_scheduler->addPeriodicTask((TaskPtr_t)&DisplayManagement::RemoveWelcomeMessage_Task, DISPLAY_MGT_PERIOD_WELCOME_MSG_REMOVAL);
 
 }
 
