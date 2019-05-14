@@ -11,7 +11,6 @@
 #define WORK_ASW_DISPLAY_IFT_DISPLAYINTERFACE_H_
 
 /* TODO : if a line overlaps on the next one, when clearing this line, clear also the next one */
-/* TODO : if a line is in line shift mode and a line update is requested also in line shift, the shift process shall not be reset */
 /* TODO : Welcome message shall be centered */
 
 /*!

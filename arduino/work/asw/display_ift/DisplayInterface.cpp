@@ -83,6 +83,23 @@ bool DisplayInterface::DisplayFullLine(uint8_t* str, uint8_t size, uint8_t line,
 	else if ((size > LCD_SIZE_NB_CHAR_PER_LINE) && (mode == NORMAL))
 		mode = LINE_SHIFT;
 
+	/* If the requested mode is LINE SHIFT and the line is already in LINE SHIFT mode,
+	 * do not execute the function completely : only the string in shift data structure shall be updated */
+	if((mode == LINE_SHIFT) && (display_data[line].mode == LINE_SHIFT))
+	{
+		display_data[line].shift_data.str_ptr->Clear();
+		display_data[line].shift_data.str_ptr->appendString(str);
+
+		/* The address of the string may have changed, replace pointer inside the range */
+		if(display_data[line].shift_data.str_cur_ptr > (display_data[line].shift_data.str_ptr->getString() + display_data[line].shift_data.str_ptr->getSize() - LCD_SIZE_NB_CHAR_PER_LINE))
+			display_data[line].shift_data.str_cur_ptr = display_data[line].shift_data.str_ptr->getString() + display_data[line].shift_data.str_ptr->getSize();
+		else if (display_data[line].shift_data.str_cur_ptr < display_data[line].shift_data.str_ptr->getString())
+			display_data[line].shift_data.str_cur_ptr = display_data[line].shift_data.str_ptr->getString();
+
+		return true;
+	}
+
+	/* If the function is called from outside the class, update display data */
 	if(isCallRecursive == false)
 	{
 		/* Clear the line to avoid issues in case a line shift is in progress on this line */
@@ -273,11 +290,6 @@ void DisplayInterface::shiftLine_task()
 		{
 			/* Update shift data pointer */
 			display_shift_data_ptr = &(display_data_ptr[i].shift_data);
-
-			ASW_cnf_struct.p_DebugInterface->sendInteger((uint16_t)display_shift_data_ptr->str_ptr->getString(),10);
-			ASW_cnf_struct.p_DebugInterface->sendString((uint8_t*)" ");
-			ASW_cnf_struct.p_DebugInterface->sendInteger((uint16_t)display_shift_data_ptr->str_cur_ptr,10);
-			ASW_cnf_struct.p_DebugInterface->sendString((uint8_t*)"\n");
 
 			/* Increment pointer and if we are at the end of the line, go back at the beginning */
 			if (display_shift_data_ptr->str_cur_ptr >= (display_shift_data_ptr->str_ptr->getString() + display_shift_data_ptr->str_ptr->getSize() - LCD_SIZE_NB_CHAR_PER_LINE))
