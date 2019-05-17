@@ -10,8 +10,6 @@
 #ifndef WORK_ASW_DISPLAY_IFT_DISPLAYINTERFACE_H_
 #define WORK_ASW_DISPLAY_IFT_DISPLAYINTERFACE_H_
 
-/* TODO : if a line overlaps on the next one, when clearing this line, clear also the next one */
-
 /*!
  * @brief Modes for line display
  * @details This enumeration defines the available modes for the line display functionality :\n

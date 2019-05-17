@@ -85,6 +85,9 @@ bool DisplayInterface::DisplayFullLine(uint8_t* str, uint8_t size, uint8_t line,
 	/* If there are too many characters and mode is NORMAL, switch mode to LINE_SHIFT */
 	else if ((size > LCD_SIZE_NB_CHAR_PER_LINE) && (mode == NORMAL))
 		mode = LINE_SHIFT;
+	/* If next line mode is requested and we are on the last line, switch mode to line shift */
+	else if((mode == GO_TO_NEXT_LINE) && (line == LCD_SIZE_NB_LINES - 1))
+		mode = LINE_SHIFT;
 
 
 
@@ -141,7 +144,11 @@ bool DisplayInterface::DisplayFullLine(uint8_t* str, uint8_t size, uint8_t line,
 		break;
 
 	case GO_TO_NEXT_LINE:
-		/*TODO : rework next line mode */
+		/* First write the first characters normally */
+		updateLineAndRefresh(str, LCD_SIZE_NB_CHAR_PER_LINE, line);
+
+		/* Call the function recursively to write the remaining characters on the next lines */
+		DisplayFullLine(&str[LCD_SIZE_NB_CHAR_PER_LINE], size - LCD_SIZE_NB_CHAR_PER_LINE, line + 1, GO_TO_NEXT_LINE, alignment);
 		break;
 	}
 
@@ -227,11 +234,14 @@ uint8_t DisplayInterface::FindFirstCharAddr(uint8_t line)
 bool DisplayInterface::ClearLine(uint8_t line)
 {
 	uint8_t i;
-	bool dummy;
+	bool dummy, isNextLineMode = false;
 
 	/* Check that the line number is correct, if it's incorrect, exit the function */
 	if (line >= LCD_SIZE_NB_LINES)
 		return false;
+
+	if(display_data[line].mode == GO_TO_NEXT_LINE)
+		isNextLineMode = true;
 
 	/* Set line mode to NORMAL */
 	display_data[line].mode = NORMAL;
@@ -257,6 +267,10 @@ bool DisplayInterface::ClearLine(uint8_t line)
 	/* Clear string in data structure and refresh display */
 	ClearStringInDataStruct(line);
 	RefreshLine(line);
+
+	/* If the line was in next line mode, clear also the next line */
+	if(isNextLineMode)
+		ClearLine(line + 1);
 
 	return true;
 }
