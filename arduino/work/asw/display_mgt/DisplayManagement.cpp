@@ -34,7 +34,7 @@
 
 #include "../asw.h"
 
-/* TODO : center welcome message */
+/* TODO : fasten sensor display */
 
 
 DisplayManagement::DisplayManagement()
@@ -50,7 +50,7 @@ DisplayManagement::DisplayManagement()
 	/* Display welcome message on 2nd line */
 	String str;
 	str.appendString((uint8_t*)welcomeMessageString);
-	p_display_ift->DisplayFullLine(str.getString(), str.getSize(), 1, NORMAL);
+	p_display_ift->DisplayFullLine(str.getString(), str.getSize(), 1, NORMAL, CENTER);
 
 	p_scheduler->addPeriodicTask((TaskPtr_t)&DisplayManagement::RemoveWelcomeMessage_Task, DISPLAY_MGT_PERIOD_WELCOME_MSG_REMOVAL);
 
