@@ -66,6 +66,14 @@ public:
 	 */
 	void sendString(uint8_t* str);
 
+	/*!
+	 * @brief Send a single character on USART link
+	 * @details This function sends the requested character on USART link by calling driver's transmission function.
+	 * @param [in] chr Character to send.
+	 * @return Nothing
+	 */
+	void sendChar(uint8_t chr);
+
 	/*! @brief USART read function
 	 *  @details This function will read the last received byte on USART link
 	 *  @return Received byte

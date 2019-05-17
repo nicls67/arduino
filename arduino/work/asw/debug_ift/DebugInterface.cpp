@@ -62,6 +62,11 @@ void DebugInterface::sendString(uint8_t* str)
 	sendString(&strToSend);
 }
 
+void DebugInterface::sendChar(uint8_t chr)
+{
+	BSW_cnf_struct.p_usart->usart_sendByte(chr);
+}
+
 void DebugInterface::sendInteger(uint16_t data, uint8_t base)
 {
 	/* If the base in not between 2 and 36, 10 is used as default */

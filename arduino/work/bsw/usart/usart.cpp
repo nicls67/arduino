@@ -64,6 +64,11 @@ void usart::usart_sendString(String *str)
 	}
 }
 
+void usart::usart_sendByte(uint8_t data)
+{
+	usart_transmit(data);
+}
+
 
 inline void usart::setBaudRate(uint16_t a_BaudRate)
 {

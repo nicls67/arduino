@@ -32,7 +32,12 @@ public:
 	 */
 	void usart_sendString(String *str);
 
-
+	/*! @brief Send a single byte on USART link
+	 *  @details This function writes the given byte to the serial link using usart_transmit function
+	 *  @param [in] data Data byte being sent
+	 *  @return Nothing.
+	 */
+	void usart_sendByte(uint8_t data);
 
 	/*!
 	 * @brief Setting baud rate
