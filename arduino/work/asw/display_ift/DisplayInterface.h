@@ -11,7 +11,6 @@
 #define WORK_ASW_DISPLAY_IFT_DISPLAYINTERFACE_H_
 
 /* TODO : if a line overlaps on the next one, when clearing this line, clear also the next one */
-/* TODO : Welcome message shall be centered */
 
 /*!
  * @brief Modes for line display
@@ -27,6 +26,19 @@ typedef enum
 	GO_TO_NEXT_LINE
 }
 T_DisplayInterface_LineDisplayMode;
+
+/*!
+ * @brief Alignment mode for line display
+ * @details This enumeration defines the possible alignment mode for the text displayed.
+ *   		It is only used when the display mode is NORMAL or GO_TO_NEXT_LINE.
+ */
+typedef enum
+{
+	LEFT, /*!< Text is aligned left */
+	CENTER, /*!< Text is centered */
+	RIGHT /*!< Text is aligned right */
+}
+T_DisplayInterface_LineAlignment;
 
 /*!
  * @brief Structure containing shift data
@@ -48,6 +60,7 @@ typedef struct
 {
 	bool isEmpty; /*!< Flag indicating if the line is empty or not */
 	T_DisplayInterface_LineDisplayMode mode; /*!< Current display mode */
+	T_DisplayInterface_LineAlignment alignment; /*!< Line alignment */
 	T_Display_shift_data shift_data; /*!< Shift data for the current line */
 	uint8_t display_str[LCD_SIZE_NB_CHAR_PER_LINE]; /*!< Current string displayed on the screen */
 }
@@ -82,9 +95,10 @@ public:
 	 * @param [in] size Size of the string to display
 	 * @param [in] line Index of the line where the string shall be displayed
 	 * @param [in] mode Display mode
+	 * @param [in] alignment Requested alignment for the line
 	 * @return True if the line has been correctly displayed, false otherwise
 	 */
-	bool DisplayFullLine(uint8_t* str, uint8_t size, uint8_t line, T_DisplayInterface_LineDisplayMode mode = NORMAL, bool isCallRecursive = false);
+	bool DisplayFullLine(uint8_t* str, uint8_t size, uint8_t line, T_DisplayInterface_LineDisplayMode mode = NORMAL, T_DisplayInterface_LineAlignment alignment = LEFT);
 
 	/*!
 	 * @brief Line clearing function
@@ -132,12 +146,26 @@ public:
 		return display_data;
 	}
 
+	/*!
+	 * @brief Text alignment function
+	 * @details This function updates the text alignment on the requested line.
+	 * 			It calls the private function setLineAlignment to update data structure and then refreshes the display.
+	 * 			Nothing is done if the requested alignment is the same than the current one, if the line is empty or if the line is in line shift mode.
+	 *
+	 * @param [in] line Requested line to update
+	 * @param [in] alignment Requested alignment for the text
+	 * @return Nothing
+	 */
+	void setLineAlignmentAndRefresh(uint8_t line, T_DisplayInterface_LineAlignment alignment);
+
+
+
 private:
 
 	LCD* p_lcd; /*!< Pointer to the attached LCD driver object */
 	uint32_t dummy; /*!< Needed for data alignment */
 	T_display_data display_data[LCD_SIZE_NB_LINES]; /*!< Screen display data */
-	bool isShiftInProgress; /*!< Flag indicating ih a shift is in progress on any line */
+	bool isShiftInProgress; /*!< Flag indicating if a shift is in progress on any line */
 
 	/*!
 	 * @brief Finds start address of a line.
@@ -166,6 +194,28 @@ private:
 	 * @return Nothing
 	 */
 	void ClearStringInDataStruct(uint8_t line);
+
+	/*!
+	 * @brief Text alignment setting function
+	 * @details This function updates the text alignment on the requested line.
+	 * 			The string in the data structure is updated with the new alignment. The alignment parameter in the data structure shall be updated before calling this function.
+	 *
+	 * @param [in] line Line to update
+	 * @return Nothing
+	 */
+	void setLineAlignment(uint8_t line);
+
+	/*!
+	 * @brief Line data string update function
+	 * @details This function updates the data string and refreshes the display. The string is aligned according to the given parameter.
+	 *
+	 * @param [in] str Pointer to the string to display
+	 * @param [in] size Size of the string
+	 * @param [in] line Line to update
+	 *
+	 * @return Nothing
+	 */
+	void updateLineAndRefresh(uint8_t* str, uint8_t size, uint8_t line);
 };
 
 

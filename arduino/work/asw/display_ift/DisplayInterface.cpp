@@ -55,6 +55,7 @@ DisplayInterface::DisplayInterface(const T_LCD_conf_struct * LCD_init_cnf)
 	{
 		display_data[i].mode = NORMAL;
 		display_data[i].isEmpty = true;
+		display_data[i].alignment = LEFT;
 
 		ClearStringInDataStruct(i);
 
@@ -68,12 +69,14 @@ DisplayInterface::DisplayInterface(const T_LCD_conf_struct * LCD_init_cnf)
 
 }
 
-bool DisplayInterface::DisplayFullLine(uint8_t* str, uint8_t size, uint8_t line, T_DisplayInterface_LineDisplayMode mode, bool isCallRecursive)
+bool DisplayInterface::DisplayFullLine(uint8_t* str, uint8_t size, uint8_t line, T_DisplayInterface_LineDisplayMode mode, T_DisplayInterface_LineAlignment alignment)
 {
-	uint8_t i;
-
 	/* Check that the line number is correct, if it's incorrect, exit the function */
 	if (line >= LCD_SIZE_NB_LINES)
+		return false;
+
+	/* Size can't be zero */
+	if(size == 0)
 		return false;
 
 	/* If all characters can be displayed on one line, switch mode to NORMAL */
@@ -83,9 +86,22 @@ bool DisplayInterface::DisplayFullLine(uint8_t* str, uint8_t size, uint8_t line,
 	else if ((size > LCD_SIZE_NB_CHAR_PER_LINE) && (mode == NORMAL))
 		mode = LINE_SHIFT;
 
+
+
+	/* If the line is already configured in line shift mode, do not update display data, the shift is already in progress */
+	if(display_data[line].mode != LINE_SHIFT)
+	{
+		/* Clear the line to avoid issues in case a line shift is in progress on this line */
+		ClearLine(line);
+
+		/* Update data */
+		display_data[line].mode = mode;
+		display_data[line].isEmpty = false;
+		display_data[line].alignment = alignment;
+	}
 	/* If the requested mode is LINE SHIFT and the line is already in LINE SHIFT mode,
 	 * do not execute the function completely : only the string in shift data structure shall be updated */
-	if((mode == LINE_SHIFT) && (display_data[line].mode == LINE_SHIFT))
+	else if(mode == LINE_SHIFT)
 	{
 		display_data[line].shift_data.str_ptr->Clear();
 		display_data[line].shift_data.str_ptr->appendString(str);
@@ -99,35 +115,16 @@ bool DisplayInterface::DisplayFullLine(uint8_t* str, uint8_t size, uint8_t line,
 		return true;
 	}
 
-	/* If the function is called from outside the class, update display data */
-	if(isCallRecursive == false)
-	{
-		/* Clear the line to avoid issues in case a line shift is in progress on this line */
-		ClearLine(line);
-
-		/* Update data */
-		display_data[line].mode = mode;
-		display_data[line].isEmpty = false;
-	}
-
 	switch (mode)
 	{
 	case NORMAL:
 	default:
-		/* Clear data structure */
-		ClearStringInDataStruct(line);
-
-		/* Write each character in data structure */
-		for (i=0; i<size; i++)
-			display_data[line].display_str[i] = str[i];
-
-		/* Refresh line */
-		RefreshLine(line);
+		updateLineAndRefresh(str, size, line);
 		break;
 
 	case LINE_SHIFT:
-		/* First write the line in normal mode */
-		DisplayFullLine(str, LCD_SIZE_NB_CHAR_PER_LINE, line, NORMAL, true);
+		/* First write the first characters normally */
+		updateLineAndRefresh(str, LCD_SIZE_NB_CHAR_PER_LINE, line);
 
 		/* Update shift data structure */
 		display_data[line].shift_data.str_ptr = new String((const uint8_t*)str);
@@ -144,22 +141,27 @@ bool DisplayInterface::DisplayFullLine(uint8_t* str, uint8_t size, uint8_t line,
 		break;
 
 	case GO_TO_NEXT_LINE:
-		/* Compute size for the overlapped line */
-		size -= LCD_SIZE_NB_CHAR_PER_LINE;
-
-		/* Write each character in data structure */
-		for (i=0; i<LCD_SIZE_NB_CHAR_PER_LINE; i++)
-			display_data[line].display_str[i] = str[i];
-
-		/* Refresh line */
-		RefreshLine(line);
-
-		/* Call the function recursively to display the remaining characters on the next line */
-		DisplayFullLine(&str[LCD_SIZE_NB_CHAR_PER_LINE], size, line + 1, GO_TO_NEXT_LINE, true);
+		/*TODO : rework next line mode */
 		break;
 	}
 
 	return true;
+}
+
+void DisplayInterface::updateLineAndRefresh(uint8_t* str, uint8_t size, uint8_t line)
+{
+	uint8_t i;
+
+	/* Write each character in data structure */
+	for (i=0; i<size; i++)
+		display_data[line].display_str[i] = str[i];
+
+	/* Update alignment */
+	if(size < LCD_SIZE_NB_CHAR_PER_LINE)
+		setLineAlignment(line);
+
+	/* Refresh line */
+	RefreshLine(line);
 }
 
 void DisplayInterface::RefreshLine(uint8_t line)
@@ -316,9 +318,146 @@ void DisplayInterface::shiftLine_task()
 				display_shift_data_ptr->str_cur_ptr ++;
 
 			/* Display the line */
-			ASW_cnf_struct.p_DisplayInterface->DisplayFullLine(display_shift_data_ptr->str_cur_ptr, LCD_SIZE_NB_CHAR_PER_LINE, i, NORMAL, true);
+			ASW_cnf_struct.p_DisplayInterface->DisplayFullLine(display_shift_data_ptr->str_cur_ptr, LCD_SIZE_NB_CHAR_PER_LINE, i);
 		}
 
 	}
 
+}
+
+
+void DisplayInterface::setLineAlignment(uint8_t line)
+{
+	uint8_t char_idx, new_str_idx, new_str_idx_mem, first_char_idx, last_char_idx, size;
+	uint8_t tmp_str[LCD_SIZE_NB_CHAR_PER_LINE];
+
+	uint8_t* str = display_data[line].display_str;
+
+	switch(display_data[line].alignment)
+	{
+	case LEFT:
+	default:
+		/* Find the first character displayed */
+		char_idx = 0;
+		while((str[char_idx] == ' ') && (char_idx < LCD_SIZE_NB_CHAR_PER_LINE))
+			char_idx++;
+
+		/* No character have been found or the string is already aligned */
+		if((char_idx >= LCD_SIZE_NB_CHAR_PER_LINE) || (char_idx == 0))
+			return;
+
+		/* Create the new string in a temporary table */
+		for(new_str_idx = 0; new_str_idx < (LCD_SIZE_NB_CHAR_PER_LINE - char_idx); new_str_idx++)
+			tmp_str[new_str_idx] = str[char_idx + new_str_idx];
+
+		/* Complete the string with spaces */
+		for(new_str_idx = (LCD_SIZE_NB_CHAR_PER_LINE - char_idx); new_str_idx < LCD_SIZE_NB_CHAR_PER_LINE; new_str_idx++)
+			tmp_str[new_str_idx] = ' ';
+
+		/* Copy the result in the displayed string */
+		for(char_idx = 0; char_idx < LCD_SIZE_NB_CHAR_PER_LINE; char_idx++)
+			str[char_idx] = tmp_str[char_idx];
+
+		break;
+
+	case CENTER:
+		/* Find the first character displayed */
+		first_char_idx = 0;
+		while((str[first_char_idx] == ' ') && (first_char_idx < LCD_SIZE_NB_CHAR_PER_LINE))
+			first_char_idx++;
+
+		/* No character have been found */
+		if(first_char_idx >= LCD_SIZE_NB_CHAR_PER_LINE)
+			return;
+
+		/* Find the last character displayed */
+		last_char_idx = LCD_SIZE_NB_CHAR_PER_LINE - 1;
+		while((str[last_char_idx] == ' ') && (last_char_idx >= first_char_idx))
+			last_char_idx--;
+
+		/* If all the line is written no alignment is needed */
+		if ((first_char_idx == 0) && (last_char_idx == LCD_SIZE_NB_CHAR_PER_LINE - 1))
+			return;
+
+		/* Compute the number of displayed characters */
+		size = last_char_idx - first_char_idx + 1;
+
+		/* Compute the start position of the string */
+		new_str_idx = (LCD_SIZE_NB_CHAR_PER_LINE - size) / 2;
+
+		/* Fill the start of the string with spaces */
+		for(char_idx = 0; char_idx < new_str_idx; char_idx++)
+			tmp_str[char_idx] = ' ';
+
+		/* Copy the string */
+		for(char_idx = new_str_idx; char_idx <= new_str_idx + size; char_idx++)
+			tmp_str[char_idx] = str[first_char_idx + char_idx - new_str_idx];
+
+		/* Fill the end of the line with spaces */
+		for(char_idx = new_str_idx + size + 1; char_idx < LCD_SIZE_NB_CHAR_PER_LINE; char_idx++)
+			tmp_str[char_idx] = ' ';
+
+		/* Copy the result in the displayed string */
+		for(char_idx = 0; char_idx < LCD_SIZE_NB_CHAR_PER_LINE; char_idx++)
+			str[char_idx] = tmp_str[char_idx];
+
+		break;
+
+	case RIGHT:
+		/* Find the first character displayed */
+		char_idx = 0;
+		while((str[char_idx] == ' ') && (char_idx < LCD_SIZE_NB_CHAR_PER_LINE))
+			char_idx++;
+
+		/* No character have been found */
+		if(char_idx >= LCD_SIZE_NB_CHAR_PER_LINE)
+			return;
+		/* Find the first space character after the text */
+		else
+		{
+			while((str[char_idx] != ' ') && (char_idx < LCD_SIZE_NB_CHAR_PER_LINE))
+				char_idx++;
+
+			/* The text goes until the end of the screen, no alignment is needed */
+			if(char_idx >= LCD_SIZE_NB_CHAR_PER_LINE)
+				return;
+		}
+
+		/* Fill the start of the line with spaces */
+		for(new_str_idx = 0; new_str_idx < (LCD_SIZE_NB_CHAR_PER_LINE - char_idx); new_str_idx++)
+			tmp_str[new_str_idx] = ' ';
+
+		new_str_idx_mem = new_str_idx;
+
+		/* Copy the text in the temporary table */
+		for(new_str_idx = (LCD_SIZE_NB_CHAR_PER_LINE - char_idx); new_str_idx < LCD_SIZE_NB_CHAR_PER_LINE; new_str_idx++)
+			tmp_str[new_str_idx] = str[new_str_idx - new_str_idx_mem];
+
+		/* Copy the result in the displayed string */
+		for(char_idx = 0; char_idx < LCD_SIZE_NB_CHAR_PER_LINE; char_idx++)
+			str[char_idx] = tmp_str[char_idx];
+
+
+		break;
+	}
+
+}
+
+
+void DisplayInterface::setLineAlignmentAndRefresh(uint8_t line, T_DisplayInterface_LineAlignment alignment)
+{
+	/* If the line is in line shift mode, do nothing
+	 * Changes are made only if the new alignment is different than the current one
+	 * If the line is empty, do nothing */
+	if((display_data[line].mode != LINE_SHIFT)
+			&& (alignment != display_data[line].alignment)
+			&& (display_data[line].isEmpty == false))
+	{
+		/* Update data structure */
+		display_data[line].alignment = alignment;
+
+		/* Update string and refresh display */
+		setLineAlignment(line);
+		RefreshLine(line);
+	}
 }
