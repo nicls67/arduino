@@ -95,6 +95,17 @@ public:
 	 */
 	static bool LLElementCompare(void* LLElement, void* CompareElement);
 
+	/*!
+	 * @brief Task period update function
+	 * @details This function updates the period of the given task. The task is never stopped during the process, only the period value is updated.
+	 *
+	 * @param [in] task_ptr Pointer of the task to update
+	 * @param [in] period New period of the task
+	 *
+	 * @return True if the update has been correctly done, false otherwise
+	 */
+	bool updateTaskPeriod(TaskPtr_t task_ptr, uint16_t period);
+
 private:
 
 
