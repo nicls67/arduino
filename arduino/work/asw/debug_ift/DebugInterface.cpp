@@ -89,4 +89,8 @@ void DebugInterface::sendBool(bool data, bool isText)
 	BSW_cnf_struct.p_usart->usart_sendString(&str);
 }
 
-
+void DebugInterface::nextLine()
+{
+	sendChar((uint8_t)'\n');
+	sendChar((uint8_t)'\r');
+}

@@ -74,14 +74,23 @@ public:
 	 */
 	void sendChar(uint8_t chr);
 
-	/*! @brief USART read function
-	 *  @details This function will read the last received byte on USART link
-	 *  @return Received byte
+	/*!
+	 * @brief USART read function
+	 * @details This function will read the last received byte on USART link
+	 * @return Received byte
 	 */
 	inline uint8_t read()
 	{
 		return usart_drv_ptr->usart_read();
 	}
+
+	/*!
+	 * @brief Go to next line function
+	 * @details This function goes to the next line on the console display. It sends the two characters \n and \r on the USART line.
+	 *
+	 * @return Nothing
+	 */
+	void nextLine();
 
 
 
