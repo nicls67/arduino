@@ -34,8 +34,6 @@
 
 #include "../asw.h"
 
-/* TODO : fasten sensor display */
-
 
 DisplayManagement::DisplayManagement()
 {
@@ -45,6 +43,10 @@ DisplayManagement::DisplayManagement()
 
 	p_display_ift = ASW_cnf_struct.p_DisplayInterface;
 
+	/* Check if temperature sensor object is already created and create one of needed */
+	if(ASW_cnf_struct.p_TempSensor == 0)
+		ASW_cnf_struct.p_TempSensor = new TempSensor();
+
 	p_tempSensor = ASW_cnf_struct.p_TempSensor;
 
 	/* Display welcome message on 2nd line */
@@ -53,6 +55,10 @@ DisplayManagement::DisplayManagement()
 	p_display_ift->DisplayFullLine(str.getString(), str.getSize(), 1, NORMAL, CENTER);
 
 	p_scheduler->addPeriodicTask((TaskPtr_t)&DisplayManagement::RemoveWelcomeMessage_Task, DISPLAY_MGT_PERIOD_WELCOME_MSG_REMOVAL);
+
+	/* Update temperature sensor task period to match display period */
+	if(p_tempSensor->getTaskPeriod() > DISPLAY_MGT_PERIOD_TASK_SENSOR)
+		p_tempSensor->updateTaskPeriod(DISPLAY_MGT_PERIOD_TASK_SENSOR);
 
 }
 
