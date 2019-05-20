@@ -39,7 +39,8 @@ void asw_init()
 	/* TODO : create a configuration to manage which service should be launched or not */
 	/* TODO : DEBUG MODE shall be defined by a IO pin */
 #ifdef DEBUG_MODE
-	ASW_cnf_struct.p_DebugInterface = new DebugInterface();
+	if(ASW_cnf_struct.p_DebugInterface == 0)
+		ASW_cnf_struct.p_DebugInterface = new DebugInterface();
 #else
 	ASW_cnf_struct.p_DebugInterface = 0;
 #endif
@@ -48,9 +49,12 @@ void asw_init()
 
 	ASW_cnf_struct.p_keepAliveLed = new keepAliveLed();
 
-	ASW_cnf_struct.p_TempSensor = new TempSensor();
+	if(ASW_cnf_struct.p_TempSensor == 0)
+		ASW_cnf_struct.p_TempSensor = new TempSensor();
 
 	ASW_cnf_struct.p_DisplayInterface = 0;
-	ASW_cnf_struct.p_DisplayManagement = new DisplayManagement();
+
+	if(ASW_cnf_struct.p_DisplayManagement == 0)
+		ASW_cnf_struct.p_DisplayManagement = new DisplayManagement();
 
 }
