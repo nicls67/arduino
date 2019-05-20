@@ -96,6 +96,18 @@ public:
 	 */
 	bool IsLLEmpty();
 
+	/*!
+	 * @brief Element finding function
+	 * @details This function finds the given element reference_ptr inside the chain. The comparison between the elements of the chain and the reference element is done using the given comparison function.
+	 *
+	 * @param [in] comparisonFct_ptr Pointer to the comparison function
+	 * @param [in] reference_ptr Pointer to the element to find in the chain
+	 * @param [out] chainElement_ptr Pointer to pointer to the found element
+	 *
+	 * @return True if the element has been found in the chain, false otherwise
+	 */
+	bool FindElement(CompareFctPtr_t comparisonFct_ptr, void* reference_ptr, void** chainElement_ptr);
+
 
 private:
 	/*!
