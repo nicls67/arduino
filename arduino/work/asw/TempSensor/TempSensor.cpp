@@ -44,8 +44,10 @@ TempSensor::TempSensor()
 	validity = false;
 	valid_pit = 0;
 
+	task_period = PERIOD_MS_TASK_TEMP_SENSOR;
+
 	/* Add task to scheduler */
-	p_scheduler->addPeriodicTask((TaskPtr_t)(&TempSensor::readTempSensor_task), PERIOD_MS_TASK_TEMP_SENSOR);
+	p_scheduler->addPeriodicTask((TaskPtr_t)(&TempSensor::readTempSensor_task), task_period);
 }
 
 void TempSensor::readTempSensor_task()
@@ -94,4 +96,11 @@ bool TempSensor::getTemp(uint16_t* temp)
 {
 	*temp = valid_temp;
 	return validity;
+}
+
+bool TempSensor::updateTaskPeriod(uint16_t period)
+{
+	task_period = period;
+	return p_scheduler->updateTaskPeriod((TaskPtr_t)(&TempSensor::readTempSensor_task), task_period);
+
 }

@@ -135,6 +135,26 @@ public:
 		return validity;
 	}
 
+	/*!
+	 * @brief Task period update
+	 * @details This function updates the period of the temperature task.
+	 *
+	 * @param [in] period New period of the task
+	 * @return True if the period has been updated, false otherwise
+	 */
+	bool updateTaskPeriod(uint16_t period);
+
+	/*!
+	 * @brief Task period get function
+	 * @details This function returns the period of the sensor task
+	 *
+	 * @return Period of the task (ms)
+	 */
+	inline uint16_t getTaskPeriod()
+	{
+		return task_period;
+	}
+
 private:
 
 	uint16_t read_temperature; /*!< Raw value of temperature read from DHT22 (= real temperature *10) */
@@ -146,6 +166,8 @@ private:
 
 	uint16_t valid_temp; /*!< Valid value of temperature */
 	uint16_t valid_hum; /*!< Valid value of humidity */
+
+	uint16_t task_period; /*!< Task period */
 };
 
 
