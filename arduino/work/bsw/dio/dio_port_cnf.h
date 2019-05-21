@@ -39,6 +39,9 @@
  */
 #define PORTB_CNF_PORTB (uint8_t)0b11000000
 
-
+#define PORT_A 0  /*!< PORTA index */
+#define PORT_B 1  /*!< PORTB index */
+#define PORT_C 2  /*!< PORTC index */
+#define PORT_D 3  /*!< PORTD index */
 
 #endif /* WORK_BSW_DIO_DIO_PORT_CNF_H_ */

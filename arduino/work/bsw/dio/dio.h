@@ -9,7 +9,8 @@
 #ifndef WORK_BSW_DIO_DIO_H_
 #define WORK_BSW_DIO_DIO_H_
 
-
+#include "dio_port_cnf.h"
+#include "dio_reg_atm2560.h"
 
 #define PORT_CNF_OUT 1 /*!< Pin is configured as output */
 #define PORT_CNF_IN  0 /*!< Pin is configured as input */
@@ -17,11 +18,6 @@
 #define ENCODE_PORT(port, pin)  (uint8_t)((((uint8_t)(port & 0xF)) << 3) | (uint8_t)(pin & 0x7)) /*!< Macro used to encode port and pin indexes into one single byte */
 #define DECODE_PORT(portcode)   (uint8_t)((portcode >> 3) & 0xF) /*!< Macro used to extract port index */
 #define DECODE_PIN(portcode)    (uint8_t)(portcode & 0x7) /*!< Macro used to extract pin index */
-
-#define PORT_A 0  /*!< PORTA index */
-#define PORT_B 1  /*!< PORTB index */
-#define PORT_C 2  /*!< PORTC index */
-#define PORT_D 3  /*!< PORTD index */
 
 
 /*!
