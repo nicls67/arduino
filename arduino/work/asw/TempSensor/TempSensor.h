@@ -22,7 +22,7 @@ public:
 
 	/*!
 	 * @brief Class constructor
-	 * @details This function initializes all data of the class TempSensor
+	 * @details This function initializes all data of the class TempSensor. If needed, it creates a new instance of the DHT22 sensor object. It also adds the periodic task in the scheduler.
 	 * @return Nothing
 	 */
 	TempSensor();
