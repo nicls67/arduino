@@ -13,7 +13,7 @@
 
 /* TODO : make a more generic class for 1-wire communication, and maybe if needed a specific class for dht22 which will use this 1-wire class */
 
-#define DHT22_PORT ENCODE_PORT(PORT_B, 6) /*!< DHT22 is connected to port PB6 */
+
 
 /*!
  * @brief DHT 22 driver class
@@ -25,11 +25,12 @@ class dht22
 public:
 
 	/*!
-	 * @brief dht22 class constructor
-	 * @details Initializes the class dht22
+	 * @brief dht22 class constructor.
+	 * @details Initializes the class dht22.
+	 * @param [in] port Encoded configuration of the port used for 1-wire communication.
 	 * @return Nothing
 	 */
-	dht22();
+	dht22(uint8_t port);
 
 	/*!
 	 * @brief Reads the data from DHT22
@@ -43,6 +44,9 @@ public:
 	bool read(uint16_t* raw_humidity, uint16_t* raw_temperature);
 
 private:
+
+	uint8_t dht22_port; /*!< Variable containing the port used for 1-wire communication */
+	dio* p_dio; /*!< Pointer to the DIO object */
 
 	/*!
 	 * @brief Initializes the communication

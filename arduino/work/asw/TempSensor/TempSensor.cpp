@@ -46,7 +46,7 @@ TempSensor::TempSensor()
 
 	/* Create new instance of DHT22 sensor object */
 	if(BSW_cnf_struct.p_dht22 == 0)
-		BSW_cnf_struct.p_dht22 = new dht22();
+		BSW_cnf_struct.p_dht22 = new dht22(DHT22_PORT);
 
 	task_period = PERIOD_MS_TASK_TEMP_SENSOR;
 

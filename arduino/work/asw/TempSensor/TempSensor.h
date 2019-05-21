@@ -12,6 +12,8 @@
 
 #define PERIOD_MS_TASK_TEMP_SENSOR 5000 /*!< Period for reading temperature data */
 
+#define DHT22_PORT ENCODE_PORT(PORT_B, 6) /*!< DHT22 is connected to port PB6 */
+
 /*!
  * @brief Class for temperature sensor
  * @details This class defines all functions used to read data from temperature sensor and monotor it
