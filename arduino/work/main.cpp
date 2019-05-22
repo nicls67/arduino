@@ -59,21 +59,25 @@ ISR(USART0_RX_vect)
 {
 	bool quit = false;
 
-	/* If the debug mode is started */
-	if(ASW_cnf_struct.p_DebugManagement != 0)
+	if(isDebugModeActivated)
 	{
-		quit = ASW_cnf_struct.p_DebugManagement->DebugModeManagement();
-	}
-	else if(ASW_cnf_struct.p_DebugInterface->read() == 'a')
-	{
-		ASW_cnf_struct.p_DebugManagement = new DebugManagement();
+		/* If the debug mode is started */
+		if(ASW_cnf_struct.p_DebugManagement != 0)
+		{
+			quit = ASW_cnf_struct.p_DebugManagement->DebugModeManagement();
+		}
+		else if(ASW_cnf_struct.p_DebugInterface->read() == 'a')
+		{
+			ASW_cnf_struct.p_DebugManagement = new DebugManagement();
+		}
+
+		if(quit)
+		{
+			free(ASW_cnf_struct.p_DebugManagement);
+			ASW_cnf_struct.p_DebugManagement = 0;
+		}
 	}
 
-	if(quit)
-	{
-		free(ASW_cnf_struct.p_DebugManagement);
-		ASW_cnf_struct.p_DebugManagement = 0;
-	}
 }
 
 /*!

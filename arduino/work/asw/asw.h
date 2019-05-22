@@ -27,11 +27,13 @@ typedef struct
 T_ASW_cnf_struct;
 
 extern T_ASW_cnf_struct ASW_cnf_struct; /*!< ASW configuration structure */
+extern bool isDebugModeActivated; /*!< Flag indicating if the debug mode is activated or not */
 
 
 /*! @brief Initialization of ASW
- *  @details This function instantiates all applicative objects.
- *           The addresses of objects are then stored in ASW_cnf_struct structure.
+ *  @details This function instantiates all applicative objects. Some objects are not created by this function but directly by the upper-level class.
+ *           The addresses of objects are then stored in ASW_cnf_struct structure.\n
+ *           The debug interface obkect is created only if the debug pin is set to logical high level.\n
  *           This function shall be called after BSW initialization function.
  *  @return Nothing
  */

@@ -14,8 +14,14 @@
 #include "../lib/string/String.h"
 
 #include "../bsw/usart/usart.h"
+#include "../bsw/timer/timer.h"
 #include "../bsw/I2C/I2C.h"
-#include "../bsw/LCD/LCD.h"
+#include "../bsw/lcd/LCD.h"
+#include "../bsw/dio/dio.h"
+#include "../bsw/dht22/dht22.h"
+#include "../bsw/cpuLoad/CpuLoad.h"
+
+#include "../bsw/bsw.h"
 
 #include "debug_ift/DebugInterface.h"
 #include "debug_mgt/DebugManagement.h"
@@ -29,21 +35,32 @@
 #include "asw.h"
 
 
-
+#define DEBUG_ACTIVE_PORT ENCODE_PORT(PORT_B, 4) /*!< Debug activation pin is port PB6 */
 
 T_ASW_cnf_struct ASW_cnf_struct;
+bool isDebugModeActivated;
 
 
 void asw_init()
 {
 	/* TODO : create a configuration to manage which service should be launched or not */
-	/* TODO : DEBUG MODE shall be defined by a IO pin */
-#ifdef DEBUG_MODE
-	if(ASW_cnf_struct.p_DebugInterface == 0)
-		ASW_cnf_struct.p_DebugInterface = new DebugInterface();
-#else
-	ASW_cnf_struct.p_DebugInterface = 0;
-#endif
+
+	/* Debug interface is activated only if the port is set to level HIGH */
+	if(BSW_cnf_struct.p_dio->dio_getPort(DEBUG_ACTIVE_PORT) == true)
+	{
+		isDebugModeActivated = true;
+
+		if(ASW_cnf_struct.p_DebugInterface == 0)
+			ASW_cnf_struct.p_DebugInterface = new DebugInterface();
+
+		ASW_cnf_struct.p_DebugInterface->sendString((uint8_t*)"Mode debug actif !");
+	}
+	else
+	{
+		isDebugModeActivated = false;
+		ASW_cnf_struct.p_DebugInterface = 0;
+	}
+
 
 	ASW_cnf_struct.p_DebugManagement = 0;
 

@@ -17,7 +17,7 @@
  *          PB1 : N/A\n
  *          PB2 : N/A\n
  *          PB3 : N/A\n
- *          PB4 : N/A\n
+ *          PB4 : IN\n
  *          PB5 : N/A\n
  *          PB6 : OUT\n
  *          PB7 : OUT\n
@@ -26,18 +26,18 @@
 
 /*!
  * @brief Defines the configuration of PORTB register
- * @details This constant defines the initial value of IO pins for PORT B. It will configure register PORTB.
- * 			Pins configured as input shall not be configured here.\n
+ * @details This constant defines the initial state of IO pins for PORT B. It will configure register PORTB.
+ * 			For outputs pins, it defines the initial level (high or low). For input pins, it defines if the pins is configured as high-Z or pull-up.\n
  *          PB0 : N/A\n
  *          PB1 : N/A\n
  *          PB2 : N/A\n
  *          PB3 : N/A\n
- *          PB4 : N/A\n
+ *          PB4 : Pull-up\n
  *          PB5 : N/A\n
  *          PB6 : HIGH\n
  *          PB7 : HIGH\n
  */
-#define PORTB_CNF_PORTB (uint8_t)0b11000000
+#define PORTB_CNF_PORTB (uint8_t)0b11010000
 
 #define PORT_A 0  /*!< PORTA index */
 #define PORT_B 1  /*!< PORTB index */

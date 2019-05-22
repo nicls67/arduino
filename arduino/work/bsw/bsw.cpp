@@ -25,12 +25,13 @@ T_BSW_cnf_struct BSW_cnf_struct;
 
 void bsw_init()
 {
-	BSW_cnf_struct.p_usart = 0;
 	BSW_cnf_struct.p_dio = new dio();
 	BSW_cnf_struct.p_timer = new timer();
-	BSW_cnf_struct.p_dht22 = 0;
 	BSW_cnf_struct.p_cpuload = new CpuLoad(); /* TODO : Create a configuration (scheduler ?) to manage if cpu load is needed or not */
+
 	BSW_cnf_struct.p_i2c = 0;
 	BSW_cnf_struct.p_lcd = 0;
+	BSW_cnf_struct.p_usart = 0;
+	BSW_cnf_struct.p_dht22 = 0;
 }
 
