@@ -36,49 +36,7 @@
 
 #include "main.h"
 
-/* TODO : create a specific file for interrupt management */
 
-/*!
- * @brief Main software interrupt
- * @details This function handles the interrupt raised by Timer #1. It wakes up the software every 500 ms to perform applications.
- * @return Nothing
- */
-ISR(TIMER1_COMPA_vect)
-{
-	p_scheduler->launchPeriodicTasks();
-}
-
-
-/*!
- * @brief USART Rx Complete interrupt
- * @details This function handles the interrupt raised when a frame has been received by USART. If debug mode mode is active, it calls debug mode management function.
- * 			If inactive, it calls debug mode activation function if the received character is 'a'
- * @return Nothing
- */
-ISR(USART0_RX_vect)
-{
-	bool quit = false;
-
-	if(isDebugModeActivated)
-	{
-		/* If the debug mode is started */
-		if(ASW_cnf_struct.p_DebugManagement != 0)
-		{
-			quit = ASW_cnf_struct.p_DebugManagement->DebugModeManagement();
-		}
-		else if(ASW_cnf_struct.p_DebugInterface->read() == 'a')
-		{
-			ASW_cnf_struct.p_DebugManagement = new DebugManagement();
-		}
-
-		if(quit)
-		{
-			free(ASW_cnf_struct.p_DebugManagement);
-			ASW_cnf_struct.p_DebugManagement = 0;
-		}
-	}
-
-}
 
 /*!
  * @brief Background task of program
