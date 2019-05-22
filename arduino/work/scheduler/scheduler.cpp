@@ -132,8 +132,6 @@ bool scheduler::updateTaskPeriod(TaskPtr_t task_ptr, uint16_t period)
 	/* Find the task into the task chain */
 	TaskFound = TasksLL_ptr->FindElement((CompareFctPtr_t)&scheduler::LLElementCompare, (void*)task_ptr, (void**)&task_data_ptr);
 
-	ASW_cnf_struct.p_DebugInterface->sendInteger((uint16_t)task_data_ptr,16);
-
 	if(TaskFound)
 		task_data_ptr->period = period;
 
