@@ -14,8 +14,6 @@
 #include "lib/LinkedList/LinkedList.h"
 #include "lib/string/String.h"
 
-#include "scheduler/scheduler.h"
-
 #include "bsw/usart/usart.h"
 #include "bsw/timer/timer.h"
 #include "bsw/I2C/I2C.h"
@@ -25,6 +23,8 @@
 #include "bsw/cpuLoad/CpuLoad.h"
 
 #include "bsw/bsw.h"
+
+#include "scheduler/scheduler.h"
 
 #include "asw/debug_ift/DebugInterface.h"
 #include "asw/debug_mgt/DebugManagement.h"
@@ -36,7 +36,9 @@
 
 #include "main.h"
 
+#define DEBUG_ACTIVE_PORT ENCODE_PORT(PORT_B, 4) /*!< Debug activation pin is port PB6 */
 
+bool isDebugModeActivated;
 
 /*!
  * @brief Background task of program
@@ -45,12 +47,19 @@
  */
 int main( void )
 {
+	/* Initialize BSW */
+	bsw_init();
+
+	/* Debug interface is activated only if the port is set to level HIGH */
+	if(BSW_cnf_struct.p_dio->dio_getPort(DEBUG_ACTIVE_PORT) == true)
+		isDebugModeActivated = true;
+	else
+		isDebugModeActivated = false;
 
 	/* Initialize scheduler */
 	p_scheduler = new scheduler();
 
-	/* Initialize all classes */
-	bsw_init();
+	/* Initialize ASW */
 	asw_init();
 
 	/* Enable interrupts */

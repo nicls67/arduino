@@ -33,7 +33,10 @@
 
 #include "../asw/asw.h"
 
+#include "../main.h"
+
 #include "scheduler.h"
+
 
 scheduler* p_scheduler; /*!< Pointer to scheduler object */
 
@@ -41,6 +44,12 @@ scheduler::scheduler()
 {
 	/* Initialize task configuration structure */
 	TasksLL_ptr = new LinkedList();
+
+	/* Initialize CPU load computation */
+	if(isDebugModeActivated && (BSW_cnf_struct.p_cpuload == 0))
+	{
+		BSW_cnf_struct.p_cpuload = new CpuLoad();
+	}
 
 	/* Initialize counter to 1, then the tasks are not started at first PIT to avoid HW initialization issue */
 	pit_number = 1;
@@ -78,7 +87,8 @@ void scheduler::launchPeriodicTasks()
 	}
 
 	/* Compute CPU load */
-	BSW_cnf_struct.p_cpuload->ComputeCPULoad();
+	if(BSW_cnf_struct.p_cpuload != 0)
+		BSW_cnf_struct.p_cpuload->ComputeCPULoad();
 
 	/* Increment counter */
 	pit_number++;
