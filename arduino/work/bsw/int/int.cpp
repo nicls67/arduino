@@ -36,8 +36,6 @@
 
 #include "../../asw/asw.h"
 
-#include "../../main.h"
-
 /*!
  * @brief Main software interrupt
  * @details This function handles the interrupt raised by Timer #1. It wakes up the software every 500 ms to perform applications.

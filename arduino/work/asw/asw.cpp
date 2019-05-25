@@ -35,25 +35,31 @@
 #include "asw.h"
 
 
-
+#define DEBUG_ACTIVE_PORT ENCODE_PORT(PORT_B, 4) /*!< Debug activation pin is port PB6 */
 
 T_ASW_cnf_struct ASW_cnf_struct;
-
+bool isDebugModeActivated;
 
 
 void asw_init()
 {
 	/* TODO : create a configuration to manage which service should be launched or not */
 
-	if(isDebugModeActivated)
+	/* Debug interface is activated only if the port is set to level HIGH */
+	if(BSW_cnf_struct.p_dio->dio_getPort(DEBUG_ACTIVE_PORT) == true)
 	{
+		isDebugModeActivated = true;
+
 		if(ASW_cnf_struct.p_DebugInterface == 0)
 			ASW_cnf_struct.p_DebugInterface = new DebugInterface();
 
-		ASW_cnf_struct.p_DebugInterface->sendString((uint8_t*)"\nMode debug actif !\n");
+		ASW_cnf_struct.p_DebugInterface->sendString((uint8_t*)"Mode debug actif !");
 	}
 	else
+	{
+		isDebugModeActivated = false;
 		ASW_cnf_struct.p_DebugInterface = 0;
+	}
 
 
 	ASW_cnf_struct.p_DebugManagement = 0;

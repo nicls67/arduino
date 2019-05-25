@@ -10,6 +10,6 @@
 #ifndef WORK_MAIN_H_
 #define WORK_MAIN_H_
 
-extern bool isDebugModeActivated; /*!< Flag indicating if the debug mode is activated or not */
+#define DEBUG_MODE
 
 #endif /* WORK_MAIN_H_ */

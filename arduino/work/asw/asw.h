@@ -27,7 +27,7 @@ typedef struct
 T_ASW_cnf_struct;
 
 extern T_ASW_cnf_struct ASW_cnf_struct; /*!< ASW configuration structure */
-
+extern bool isDebugModeActivated; /*!< Flag indicating if the debug mode is activated or not */
 
 
 /*! @brief Initialization of ASW
