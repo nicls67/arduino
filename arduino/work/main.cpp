@@ -40,6 +40,8 @@
 
 bool isDebugModeActivated;
 
+/* TODO : Remove ASW and BSW cnf structures to avoid using too many includes */
+
 /*!
  * @brief Background task of program
  * @details This function initializes all the software and then goes into an infinite loop.
