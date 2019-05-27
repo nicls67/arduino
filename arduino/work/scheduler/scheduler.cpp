@@ -54,6 +54,8 @@ scheduler::scheduler()
 	/* Initialize counter to 1, then the tasks are not started at first PIT to avoid HW initialization issue */
 	pit_number = 1;
 
+	task_count = 0;
+
 	/* Configure timer for periodic interrupt */
 	BSW_cnf_struct.p_timer->configureTimer1(PRESCALER_PERIODIC_TIMER, TIMER_CTC_VALUE);
 }
@@ -110,6 +112,8 @@ void scheduler::addPeriodicTask(TaskPtr_t task_ptr, uint16_t a_period)
 	new_task->period = a_period;
 
 	TasksLL_ptr->AttachNewElement((void*)new_task);
+
+	task_count++;
 }
 
 uint32_t scheduler::getPitNumber()
@@ -120,7 +124,14 @@ uint32_t scheduler::getPitNumber()
 
 bool scheduler::removePeriodicTask(TaskPtr_t task_ptr)
 {
-	return TasksLL_ptr->RemoveElement((CompareFctPtr_t)&scheduler::LLElementCompare, (void*)task_ptr);
+	bool result;
+
+	result = TasksLL_ptr->RemoveElement((CompareFctPtr_t)&scheduler::LLElementCompare, (void*)task_ptr);
+
+	if(result)
+		task_count--;
+
+	return result;
 }
 
 bool scheduler::LLElementCompare(void* LLElement, void* CompareElement)

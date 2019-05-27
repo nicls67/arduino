@@ -106,6 +106,17 @@ public:
 	 */
 	bool updateTaskPeriod(TaskPtr_t task_ptr, uint16_t period);
 
+	/*!
+	 * @brief Task count get function.
+	 * @details This function returns the current number of tasks managed by scheduler.
+	 *
+	 * @return Number of tasks
+	 */
+	inline uint8_t getTaskCount()
+	{
+		return task_count;
+	}
+
 private:
 
 
@@ -121,6 +132,8 @@ private:
 		uint16_t period; /*!< Period of the task */
 	}
 	Task_t;
+
+	uint8_t task_count; /*!< Number of task in scheduler */
 
 	LinkedList* TasksLL_ptr; /*!< Pointer to the linked list object containing the tasks */
 
