@@ -10,7 +10,7 @@
 #ifndef WORK_ASW_DEBUG_MGT_DEBUGMANAGEMENT_H_
 #define WORK_ASW_DEBUG_MGT_DEBUGMANAGEMENT_H_
 
-#define PERIOD_MS_TASK_DISPLAY_SENSORS  5000 /*!< Period for displaying temperature and humidity data */
+#define PERIOD_MS_TASK_DISPLAY_DEBUG_DATA  5000 /*!< Period for displaying temperature and humidity data */
 #define PERIOD_MS_TASK_DISPLAY_CPU_LOAD 5000 /*!< Period for displaying CPU load data */
 
 /*!
@@ -18,10 +18,7 @@
  */
 typedef enum
 {
-	INIT, /*!< Init state : main menu has been displayed, wait for a received character */
-	DISPLAY_DATA, /*!< Display sensor data in continuous */
-	DISPLAY_CPU_LOAD, /*!< Display CPU load in continuous */
-
+	MAIN_MENU, /*!< Init state : main menu is displayed */
 }debug_state_t;
 
 /*!
@@ -41,25 +38,16 @@ public:
 	DebugManagement();
 
 	/*!
-	 * @brief Displays sensors data on usart link
-	 * @details This task sends sensors data (temperature and humidity) on usart link every 5 seconds
+	 * @brief Displays periodic data on usart link
+	 * @details This task displays the menu and periodic data (temperature, humidity and CPU load) on usart screen.
 	 * @return Nothing
 	 */
-	static void DisplaySensors_task();
-
-	/*!
-	 * @brief Displays CPU load data on usart link
-	 * @details This task sends CPU load data (current and average load) on usart link every 5 seconds
-	 * @return Nothing
-	 */
-	static void DisplayCPULoad_task();
+	static void DisplayPeriodicData_task();
 
 	/*!
 	 *  @brief Management of debug mode
-	 *  @details This function manages the debug mode according to the following state machine :
-	 *  		 	  - INIT state : handles user choice in main menu and selects next state\n
-	 *  		 	  - DISPLAY_DATA state : display sensor data periodically\n
-	 *  		 	  - DISPLAY CPU LOAD : display CPU load periodically\n\n
+	 *  @details This function manages the debug menu according to the following state machine :
+	 *  		 	  - MAIN_MENU state : handles user choice in main menu and selects next state\n
 	 *
 	 *  		 It is called each time a data is received on USART and debug mode is active.
 	 *
@@ -78,11 +66,44 @@ public:
 		return debug_ift_ptr;
 	}
 
+	/*!
+	 * @brief Menu string get function
+	 * @details This function returns the pointer to the menu string to display
+	 * @return Menu string pointer
+	 */
+	inline uint8_t* getMenuStringPtr()
+	{
+		return menu_string_ptr;
+	}
+
+	/*!
+	 * @brief Info string get function
+	 * @details This function returns the pointer to the info string to display
+	 * @return Info string pointer
+	 */
+	inline uint8_t* getInfoStringPtr()
+	{
+		return info_string_ptr;
+	}
+
+	/*!
+	 * @brief Info message setting function
+	 * @details This functions sets the info message pointer to the given string address
+	 * @param [in] addr String address
+	 * @return Nothing
+	 */
+	inline void setInfoStringPtr(uint8_t* addr)
+	{
+		info_string_ptr = addr;
+	}
+
 private:
 
 	DebugInterface* debug_ift_ptr; /*!< Pointer to the debug interface object, which is used to send data on usart link */
+	uint8_t* menu_string_ptr; /*!< Pointer to the current menu string to display */
+	uint8_t* info_string_ptr; /*!< Pointer to the info message to display */
+	debug_state_t menu_state; /*!< Current debug state */
 
-	debug_state_t debug_state; /*!< Current debug state */
 };
 
 #endif /* WORK_ASW_DEBUG_MGT_DEBUGMANAGEMENT_H_ */

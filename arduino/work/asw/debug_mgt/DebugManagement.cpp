@@ -33,18 +33,22 @@
 
 #include "../asw.h"
 
-/* TODO : clear display before sending a string in the menu */
-
 /*!
  * @brief Main menu of debug mode
  */
 const uint8_t str_debug_main_menu[] =
-		"\n\n"
 		"Menu principal :  \n"
-		"1 : Afficher donnees capteurs\n"
-		"2 : Afficher charge CPU\n"
-		"\n"
-		"s : Quitter debug\n";
+		"    s : Quitter debug\n";
+
+/*!
+ * @brief Info menu empty string
+ */
+const uint8_t str_debug_info_message_empty[] = "\n";
+
+/*!
+ * @brief Info menu string in case a wrong selection has been performed
+ */
+const uint8_t str_debug_info_message_wrong_selection[] = "Impossible de faire ca... !\n";
 
 
 DebugManagement::DebugManagement()
@@ -55,21 +59,43 @@ DebugManagement::DebugManagement()
 
 	ASW_cnf_struct.p_DebugInterface = debug_ift_ptr;
 
-	/* initialize debug menu */
-	debug_state = INIT;
+	/* initialize menu */
+	menu_state = MAIN_MENU;
+	menu_string_ptr = (uint8_t*)str_debug_main_menu;
+	info_string_ptr = (uint8_t*)str_debug_info_message_empty;
 
-	/* Send main menu string */
-	debug_ift_ptr->sendString((uint8_t*)str_debug_main_menu);
+	/* TODO : menu shall appear faster on the screen, not after one period */
+
+	/* Start display of data periodically */
+	p_scheduler->addPeriodicTask((TaskPtr_t)(&DebugManagement::DisplayPeriodicData_task), PERIOD_MS_TASK_DISPLAY_DEBUG_DATA);
 }
 
-void DebugManagement::DisplaySensors_task()
+void DebugManagement::DisplayPeriodicData_task()
 {
 	bool validity;
-	DebugInterface* ift_ptr = ASW_cnf_struct.p_DebugManagement->getIftPtr();
+	DebugManagement* mgt_ptr = ASW_cnf_struct.p_DebugManagement;
+	DebugInterface* ift_ptr = mgt_ptr->getIftPtr();
 
+	/* Clear the screen */
+	ift_ptr->sendChar('\f');
+
+	/* First write menu */
+	ift_ptr->sendString(mgt_ptr->getMenuStringPtr());
+
+	/* Skip 1 line */
+	ift_ptr->nextLine();
+
+	/* Write info message */
+	ift_ptr->sendString(mgt_ptr->getInfoStringPtr());
+
+	/* Skip 1 line */
+	ift_ptr->nextLine();
+
+	/* Write sensor data */
 	validity = ASW_cnf_struct.p_TempSensor->GetValidity();
 
-	ift_ptr->sendString((uint8_t*)"\n\nTemperature : ");
+	ift_ptr->sendString((uint8_t*)"Donnees capteurs :\n");
+	ift_ptr->sendString((uint8_t*)"    Temperature : ");
 
 	if(validity)
 	{
@@ -80,7 +106,7 @@ void DebugManagement::DisplaySensors_task()
 	else
 		ift_ptr->sendString((uint8_t*)"invalid");
 
-	ift_ptr->sendString((uint8_t*)" degC\nHumidite : ");
+	ift_ptr->sendString((uint8_t*)" degC\n    Humidite : ");
 
 	if(validity)
 	{
@@ -91,22 +117,32 @@ void DebugManagement::DisplaySensors_task()
 	else
 		ift_ptr->sendString((uint8_t*)"invalid");
 
-	ift_ptr->sendString((uint8_t*)" %");
+	ift_ptr->sendString((uint8_t*)" %\n");
+
+	/* Skip 1 line */
+	ift_ptr->nextLine();
+
+	/* Write CPU load data */
+	if(BSW_cnf_struct.p_cpuload !=0)
+	{
+		ift_ptr->sendString((uint8_t*)"Charge CPU :\n");
+		ift_ptr->sendString((uint8_t*)"    Actuelle : ");
+		ift_ptr->sendInteger(BSW_cnf_struct.p_cpuload->getCurrrentCPULoad(),10);
+		ift_ptr->sendString((uint8_t*)"\n    Moyenne : ");
+		ift_ptr->sendInteger(BSW_cnf_struct.p_cpuload->getAverageCPULoad(),10);
+		ift_ptr->sendString((uint8_t*)"\n    Max : ");
+		ift_ptr->sendInteger(BSW_cnf_struct.p_cpuload->getMaxCPULoad(),10);
+	}
+	else
+	{
+		ift_ptr->sendString((uint8_t*)"Charge CPU non disponible\n");
+	}
+
+	mgt_ptr->setInfoStringPtr((uint8_t*)str_debug_info_message_empty);
 
 }
 
-void DebugManagement::DisplayCPULoad_task()
-{
-	DebugInterface* ift_ptr = ASW_cnf_struct.p_DebugManagement->getIftPtr();
 
-	ift_ptr->sendString((uint8_t*)"\n\nCharge CPU :\n");
-	ift_ptr->sendString((uint8_t*)"    Actuelle : ");
-	ift_ptr->sendInteger(BSW_cnf_struct.p_cpuload->getCurrrentCPULoad(),10);
-	ift_ptr->sendString((uint8_t*)"\n    Moyenne : ");
-	ift_ptr->sendInteger(BSW_cnf_struct.p_cpuload->getAverageCPULoad(),10);
-	ift_ptr->sendString((uint8_t*)"\n    Max : ");
-	ift_ptr->sendInteger(BSW_cnf_struct.p_cpuload->getMaxCPULoad(),10);
-}
 
 
 bool DebugManagement::DebugModeManagement()
@@ -115,58 +151,29 @@ bool DebugManagement::DebugModeManagement()
 
 	uint8_t rcv_char = debug_ift_ptr->read();
 
-	/* switch on debug state */
-	switch(debug_state)
+	/* switch on menu state */
+	switch(menu_state)
 	{
-	case INIT:
+	case MAIN_MENU:
 		switch (rcv_char)
 		{
 		case 's':
-			debug_ift_ptr->sendString((uint8_t*)"\nBye !\n");
+			debug_ift_ptr->sendString((uint8_t*)"\fBye !");
+			p_scheduler->removePeriodicTask((TaskPtr_t)&DebugManagement::DisplayPeriodicData_task);
 			quit = true;
 			break;
 
-		case '1':
-			debug_state = DISPLAY_DATA;
-			debug_ift_ptr->sendString((uint8_t*)"\nOk, appuyer sur s pour arreter !\n");
-			p_scheduler->addPeriodicTask((TaskPtr_t)(&DebugManagement::DisplaySensors_task), PERIOD_MS_TASK_DISPLAY_SENSORS);
-			break;
-
-		case '2':
-			debug_state = DISPLAY_CPU_LOAD;
-			debug_ift_ptr->sendString((uint8_t*)"\nOk, appuyer sur s pour arreter !\n");
-			p_scheduler->addPeriodicTask((TaskPtr_t)(&DebugManagement::DisplayCPULoad_task), PERIOD_MS_TASK_DISPLAY_CPU_LOAD);
-			break;
-
 		default:
-			debug_ift_ptr->sendString((uint8_t*)"\nImpossible de faire ca... !\n");
+			info_string_ptr = (uint8_t*)str_debug_info_message_wrong_selection;
 			break;
-		}
-		break;
-
-	case DISPLAY_DATA:
-		if (rcv_char == 's')
-		{
-			if (p_scheduler->removePeriodicTask(&DebugManagement::DisplaySensors_task) == false)
-				debug_ift_ptr->sendString((uint8_t*)"Impossible de supprimer la tache...");
-
-			debug_state = INIT;
-			debug_ift_ptr->sendString((uint8_t*)str_debug_main_menu);
-		}
-		break;
-
-	case DISPLAY_CPU_LOAD:
-		if (rcv_char == 's')
-		{
-			if (p_scheduler->removePeriodicTask(&DebugManagement::DisplayCPULoad_task) == false)
-				debug_ift_ptr->sendString((uint8_t*)"Impossible de supprimer la tache...");
-
-			debug_state = INIT;
-			debug_ift_ptr->sendString((uint8_t*)str_debug_main_menu);
 		}
 		break;
 
 	}
+
+	/* Force display update */
+	if(!quit)
+		DebugManagement::DisplayPeriodicData_task();
 
 	return quit;
 

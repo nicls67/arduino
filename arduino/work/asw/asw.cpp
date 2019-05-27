@@ -50,7 +50,7 @@ void asw_init()
 		if(ASW_cnf_struct.p_DebugInterface == 0)
 			ASW_cnf_struct.p_DebugInterface = new DebugInterface();
 
-		ASW_cnf_struct.p_DebugInterface->sendString((uint8_t*)"\nMode debug actif !\n");
+		ASW_cnf_struct.p_DebugInterface->sendString((uint8_t*)"\fMode debug actif !\n");
 	}
 	else
 		ASW_cnf_struct.p_DebugInterface = 0;
