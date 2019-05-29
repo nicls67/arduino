@@ -39,10 +39,17 @@ public:
 
 	/*!
 	 * @brief Displays periodic data on usart link
-	 * @details This task displays the menu and periodic data (temperature, humidity and CPU load) on usart screen.
+	 * @details This task displays the menu and periodic data (temperature, humidity and CPU load) on usart screen. It only calls the function DisplayData.
 	 * @return Nothing
 	 */
 	static void DisplayPeriodicData_task();
+
+	/*!
+	 * @brief Displays data on usart link
+	 * @details This task displays the menu and periodic data (temperature, humidity and CPU load) on usart screen.
+	 * @return Nothing
+	 */
+	void DisplayData();
 
 	/*!
 	 *  @brief Management of debug mode
