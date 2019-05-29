@@ -49,14 +49,12 @@ DisplayManagement::DisplayManagement()
 
 	p_tempSensor = ASW_cnf_struct.p_TempSensor;
 
-	/* TODO : welcome message removed temporarily, was causing reset */
 	/* Display welcome message on 2nd line */
-	//String str;
-	//str.appendString((uint8_t*)welcomeMessageString);
-	//p_display_ift->DisplayFullLine(str.getString(), str.getSize(), 1, NORMAL, CENTER);
+	String str;
+	str.appendString((uint8_t*)welcomeMessageString);
+	p_display_ift->DisplayFullLine(str.getString(), str.getSize(), 1, NORMAL, CENTER);
 
-	//p_scheduler->addPeriodicTask((TaskPtr_t)&DisplayManagement::RemoveWelcomeMessage_Task, DISPLAY_MGT_PERIOD_WELCOME_MSG_REMOVAL);
-	p_scheduler->addPeriodicTask((TaskPtr_t)&DisplayManagement::DisplaySensorData_Task, DISPLAY_MGT_PERIOD_TASK_SENSOR);
+	p_scheduler->addPeriodicTask((TaskPtr_t)&DisplayManagement::RemoveWelcomeMessage_Task, DISPLAY_MGT_PERIOD_WELCOME_MSG_REMOVAL);
 
 	/* Update temperature sensor task period to match display period */
 	if(p_tempSensor->getTaskPeriod() > DISPLAY_MGT_PERIOD_TASK_SENSOR)
@@ -77,6 +75,7 @@ void DisplayManagement::RemoveWelcomeMessage_Task()
 	/* Add periodic task in scheduler */
 	p_scheduler->addPeriodicTask((TaskPtr_t)&DisplayManagement::DisplaySensorData_Task, DISPLAY_MGT_PERIOD_TASK_SENSOR);
 
+	ASW_cnf_struct.p_DebugInterface->sendString((uint8_t*)"fin ");
 }
 
 void DisplayManagement::DisplaySensorData_Task()
