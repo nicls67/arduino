@@ -87,6 +87,7 @@ bool LinkedList::RemoveElement(CompareFctPtr_t comparisonFct_ptr, void* referenc
 {
 	T_LL_element* cur_element = firstElement;
 	T_LL_element* prev_element = firstElement;
+	bool ret_val;
 
 	/* First find the element into the chain */
 	while ((cur_element != 0) && (comparisonFct_ptr(cur_element->data_ptr, reference_ptr) == false))
@@ -97,17 +98,33 @@ bool LinkedList::RemoveElement(CompareFctPtr_t comparisonFct_ptr, void* referenc
 
 	/* If pointer is equal to 0, the requested element does not exist, exit the function */
 	if (cur_element == 0)
-		return false;
-
-	/* The element exists, remove it from chain */
-	if (cur_element == firstElement)
-		firstElement = cur_element->nextElement;
+		ret_val = false;
 	else
-		prev_element->nextElement = cur_element->nextElement;
+	{
+		/* The element exists, remove it from chain */
+		if (cur_element == firstElement)
+		{
+			firstElement = cur_element->nextElement;
 
-	delete cur_element;
+			/* If we try to delete the current element of the chain, update the value of the pointer */
+			if(cur_element == curElement_ptr)
+				curElement_ptr = firstElement;
+		}
+		else
+		{
+			prev_element->nextElement = cur_element->nextElement;
 
-	return true;
+			/* If we try to delete the current element of the chain, update the value of the pointer */
+			if(cur_element == curElement_ptr)
+				curElement_ptr = prev_element;
+		}
+
+		delete cur_element;
+
+		ret_val = true;
+	}
+
+	return ret_val;
 }
 
 bool LinkedList::MoveToNextElement()
