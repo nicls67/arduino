@@ -66,16 +66,17 @@ void DisplayManagement::RemoveWelcomeMessage_Task()
 {
 	DisplayInterface * ift_ptr = ASW_cnf_struct.p_DisplayManagement->GetIftPointer();
 
-	/* Clear the screen */
-	ift_ptr->ClearFullScreen();
-
 	/* Remove itself from scheduler */
 	p_scheduler->removePeriodicTask((TaskPtr_t)&DisplayManagement::RemoveWelcomeMessage_Task);
 
 	/* Add periodic task in scheduler */
 	p_scheduler->addPeriodicTask((TaskPtr_t)&DisplayManagement::DisplaySensorData_Task, DISPLAY_MGT_PERIOD_TASK_SENSOR);
 
-	ASW_cnf_struct.p_DebugInterface->sendString((uint8_t*)"fin ");
+	/* Clear the screen */
+	ift_ptr->ClearFullScreen();
+
+	/* Call sensor data task manually to avoid a blank screen until the task is called by the scheduler */
+	DisplayManagement::DisplaySensorData_Task();
 }
 
 void DisplayManagement::DisplaySensorData_Task()
