@@ -21,7 +21,9 @@ class CpuLoad
 public:
 	/*!
 	 * @brief CpuLoad class constructor
-	 * @details This function initializes class CpuLoad
+	 * @details This function initializes class CpuLoad. It also creates a new object of Timer class in case it is still not created.
+	 * 			Normally the CpuLoad class is used by the scheduler object, which should create the Timer object.
+	 * 			Thus the initialization of Timer object in CpuLoad class should not be needed. We still do the check here to avoid any issue with null pointer.
 	 *
 	 * @return Nothing
 	 */

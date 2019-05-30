@@ -36,6 +36,8 @@
 CpuLoad::CpuLoad()
 {
 	uint8_t i;
+
+	/* Initialize class members */
 	current_load = 0;
 	avg_load = 0;
 	sample_cnt = 0;
@@ -45,6 +47,10 @@ CpuLoad::CpuLoad()
 
 	for(i=0;i<NB_OF_SAMPLES;i++)
 		sample_mem[i] = 0;
+
+	/* Create timer object if it is still not initialized */
+	if(BSW_cnf_struct.p_timer == 0)
+		BSW_cnf_struct.p_timer = new timer();
 }
 
 void CpuLoad::ComputeCPULoad()
