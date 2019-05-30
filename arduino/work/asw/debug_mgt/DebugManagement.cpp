@@ -176,7 +176,7 @@ bool DebugManagement::DebugModeManagement()
 
 	/* Force display update */
 	if(!quit)
-		DebugManagement::DisplayPeriodicData_task();
+		DisplayData();
 
 	return quit;
 
