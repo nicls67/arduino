@@ -24,11 +24,11 @@
 
 #include "../bsw/bsw.h"
 
+#include "../asw/TempSensor/TempSensor.h"
 #include "../asw/debug_ift/DebugInterface.h"
 #include "../asw/debug_mgt/DebugManagement.h"
 #include "../asw/display_ift/DisplayInterface.h"
 #include "../asw/keepAliveLed/keepAliveLed.h"
-#include "../asw/TempSensor/TempSensor.h"
 #include "../asw/display_mgt/DisplayManagement.h"
 
 #include "../asw/asw.h"

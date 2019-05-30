@@ -24,14 +24,16 @@
 
 #include "../../bsw/bsw.h"
 
+#include "../TempSensor/TempSensor.h"
 #include "../debug_ift/DebugInterface.h"
 #include "../debug_mgt/DebugManagement.h"
-#include "../TempSensor/TempSensor.h"
 #include "../display_ift/DisplayInterface.h"
 #include "../display_mgt/DisplayManagement.h"
 #include "../keepAliveLed/keepAliveLed.h"
 
 #include "../asw.h"
+
+#include "../../main.h"
 
 /*!
  * @brief Main menu of debug mode
@@ -54,10 +56,16 @@ const uint8_t str_debug_info_message_wrong_selection[] = "Impossible de faire ca
 DebugManagement::DebugManagement()
 {
 	/* Create a new interface object if needed and attach it to the class */
-	if(debug_ift_ptr == 0)
-		debug_ift_ptr = new DebugInterface();
+	if(ASW_cnf_struct.p_DebugInterface == 0)
+		ASW_cnf_struct.p_DebugInterface = new DebugInterface();
 
-	ASW_cnf_struct.p_DebugInterface = debug_ift_ptr;
+	debug_ift_ptr = ASW_cnf_struct.p_DebugInterface;
+
+	/* Create temperature sensor object if needed */
+	if(ASW_init_cnf.isTempSensorActivated && (ASW_cnf_struct.p_TempSensor == 0))
+		ASW_cnf_struct.p_TempSensor = new TempSensor();
+
+	tempSensor_ptr = ASW_cnf_struct.p_TempSensor;
 
 	/* initialize menu */
 	menu_state = MAIN_MENU;
@@ -91,32 +99,37 @@ void DebugManagement::DisplayData()
 	debug_ift_ptr->nextLine();
 
 	/* Write sensor data */
-	validity = ASW_cnf_struct.p_TempSensor->GetValidity();
-
-	debug_ift_ptr->sendString((uint8_t*)"Donnees capteurs :\n");
-	debug_ift_ptr->sendString((uint8_t*)"    Temperature : ");
-
-	if(validity)
+	if(tempSensor_ptr != 0)
 	{
-		debug_ift_ptr->sendInteger(ASW_cnf_struct.p_TempSensor->GetTempInteger(),10);
-		debug_ift_ptr->sendString((uint8_t*)".");
-		debug_ift_ptr->sendInteger(ASW_cnf_struct.p_TempSensor->GetTempDecimal(),10);
+		validity = tempSensor_ptr->GetValidity();
+
+		debug_ift_ptr->sendString((uint8_t*)"Donnees capteurs :\n");
+		debug_ift_ptr->sendString((uint8_t*)"    Temperature : ");
+
+		if(validity)
+		{
+			debug_ift_ptr->sendInteger(tempSensor_ptr->GetTempInteger(),10);
+			debug_ift_ptr->sendString((uint8_t*)".");
+			debug_ift_ptr->sendInteger(tempSensor_ptr->GetTempDecimal(),10);
+		}
+		else
+			debug_ift_ptr->sendString((uint8_t*)"invalid");
+
+		debug_ift_ptr->sendString((uint8_t*)" degC\n    Humidite : ");
+
+		if(validity)
+		{
+			debug_ift_ptr->sendInteger(tempSensor_ptr->GetHumInteger(),10);
+			debug_ift_ptr->sendString((uint8_t*)".");
+			debug_ift_ptr->sendInteger(tempSensor_ptr->GetHumDecimal(),10);
+		}
+		else
+			debug_ift_ptr->sendString((uint8_t*)"invalid");
+
+		debug_ift_ptr->sendString((uint8_t*)" %\n");
 	}
 	else
-		debug_ift_ptr->sendString((uint8_t*)"invalid");
-
-	debug_ift_ptr->sendString((uint8_t*)" degC\n    Humidite : ");
-
-	if(validity)
-	{
-		debug_ift_ptr->sendInteger(ASW_cnf_struct.p_TempSensor->GetHumInteger(),10);
-		debug_ift_ptr->sendString((uint8_t*)".");
-		debug_ift_ptr->sendInteger(ASW_cnf_struct.p_TempSensor->GetHumDecimal(),10);
-	}
-	else
-		debug_ift_ptr->sendString((uint8_t*)"invalid");
-
-	debug_ift_ptr->sendString((uint8_t*)" %\n");
+		debug_ift_ptr->sendString((uint8_t*)"Le capteur de temperature est desactive...\n");
 
 	/* Skip 1 line */
 	debug_ift_ptr->nextLine();

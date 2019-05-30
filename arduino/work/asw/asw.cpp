@@ -23,9 +23,9 @@
 
 #include "../bsw/bsw.h"
 
+#include "TempSensor/TempSensor.h"
 #include "debug_ift/DebugInterface.h"
 #include "debug_mgt/DebugManagement.h"
-#include "TempSensor/TempSensor.h"
 #include "display_ift/DisplayInterface.h"
 #include "display_mgt/DisplayManagement.h"
 #include "keepAliveLed/keepAliveLed.h"
@@ -41,6 +41,15 @@ T_ASW_cnf_struct ASW_cnf_struct;
 
 void asw_init()
 {
+	/* Temperature sensor activation */
+	if(ASW_init_cnf.isTempSensorActivated)
+	{
+		if(ASW_cnf_struct.p_TempSensor == 0)
+			ASW_cnf_struct.p_TempSensor = new TempSensor();
+	}
+	else
+		ASW_cnf_struct.p_TempSensor = 0;
+
 	/* Creation of debug services */
 	if(isDebugModeActivated)
 	{
@@ -60,15 +69,6 @@ void asw_init()
 		ASW_cnf_struct.p_keepAliveLed = new keepAliveLed();
 	else
 		ASW_cnf_struct.p_keepAliveLed = 0;
-
-	/* Temperature sensor activation */
-	if(ASW_init_cnf.isTempSensorActivated)
-	{
-		if(ASW_cnf_struct.p_TempSensor == 0)
-			ASW_cnf_struct.p_TempSensor = new TempSensor();
-	}
-	else
-		ASW_cnf_struct.p_TempSensor = 0;
 
 	/* Display interface is created by Display management class */
 	ASW_cnf_struct.p_DisplayInterface = 0;

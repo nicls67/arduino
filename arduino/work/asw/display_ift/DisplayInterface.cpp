@@ -25,9 +25,9 @@
 
 #include "../../bsw/bsw.h"
 
+#include "../TempSensor/TempSensor.h"
 #include "../debug_ift/DebugInterface.h"
 #include "../debug_mgt/DebugManagement.h"
-#include "../TempSensor/TempSensor.h"
 #include "../display_ift/DisplayInterface.h"
 #include "../display_mgt/DisplayManagement.h"
 #include "../keepAliveLed/keepAliveLed.h"
