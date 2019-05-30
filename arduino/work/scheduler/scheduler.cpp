@@ -45,6 +45,10 @@ scheduler::scheduler()
 	/* Initialize task configuration structure */
 	TasksLL_ptr = new LinkedList();
 
+	/* Create Timer object of needed */
+	if(BSW_cnf_struct.p_timer == 0)
+		BSW_cnf_struct.p_timer = new timer();
+
 	/* Initialize CPU load computation */
 	if(isDebugModeActivated && (BSW_cnf_struct.p_cpuload == 0))
 	{
@@ -54,6 +58,7 @@ scheduler::scheduler()
 	/* Initialize counter to 1, then the tasks are not started at first PIT to avoid HW initialization issue */
 	pit_number = 1;
 
+	/* No task exists now */
 	task_count = 0;
 
 	/* Configure timer for periodic interrupt */

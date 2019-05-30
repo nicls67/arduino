@@ -26,8 +26,8 @@ T_BSW_cnf_struct BSW_cnf_struct;
 void bsw_init()
 {
 	BSW_cnf_struct.p_dio = new dio();
-	BSW_cnf_struct.p_timer = new timer();
 
+	BSW_cnf_struct.p_timer = 0;
 	BSW_cnf_struct.p_cpuload = 0;
 	BSW_cnf_struct.p_i2c = 0;
 	BSW_cnf_struct.p_lcd = 0;
