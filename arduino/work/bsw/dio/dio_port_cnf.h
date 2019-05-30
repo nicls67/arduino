@@ -35,9 +35,9 @@
  *          PB4 : Pull-up\n
  *          PB5 : N/A\n
  *          PB6 : HIGH\n
- *          PB7 : HIGH\n
+ *          PB7 : LOW\n
  */
-#define PORTB_CNF_PORTB (uint8_t)0b11010000
+#define PORTB_CNF_PORTB (uint8_t)0b01010000
 
 #define PORT_A 0  /*!< PORTA index */
 #define PORT_B 1  /*!< PORTB index */
