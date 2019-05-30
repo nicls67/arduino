@@ -30,21 +30,18 @@
 #include "display_mgt/DisplayManagement.h"
 #include "keepAliveLed/keepAliveLed.h"
 
-#include "../main.h"
-
 #include "asw.h"
 
-
+#include "../main.h"
 
 
 T_ASW_cnf_struct ASW_cnf_struct;
 
-
+/* TODO : what should be done if temperature sensor is not activated? Currently the display management activates it anyway */
 
 void asw_init()
 {
-	/* TODO : create a configuration to manage which service should be launched or not */
-
+	/* Creation of debug services */
 	if(isDebugModeActivated)
 	{
 		if(ASW_cnf_struct.p_DebugInterface == 0)
@@ -55,17 +52,34 @@ void asw_init()
 	else
 		ASW_cnf_struct.p_DebugInterface = 0;
 
-
+	/* Debug management object is created on user request by USART interrupt */
 	ASW_cnf_struct.p_DebugManagement = 0;
 
-	ASW_cnf_struct.p_keepAliveLed = new keepAliveLed();
+	/* LED activation */
+	if(ASW_init_cnf.isLEDActivated)
+		ASW_cnf_struct.p_keepAliveLed = new keepAliveLed();
+	else
+		ASW_cnf_struct.p_keepAliveLed = 0;
 
-	if(ASW_cnf_struct.p_TempSensor == 0)
-		ASW_cnf_struct.p_TempSensor = new TempSensor();
+	/* Temperature sensor activation */
+	if(ASW_init_cnf.isTempSensorActivated)
+	{
+		if(ASW_cnf_struct.p_TempSensor == 0)
+			ASW_cnf_struct.p_TempSensor = new TempSensor();
+	}
+	else
+		ASW_cnf_struct.p_TempSensor = 0;
 
+	/* Display interface is created by Display management class */
 	ASW_cnf_struct.p_DisplayInterface = 0;
 
-	if(ASW_cnf_struct.p_DisplayManagement == 0)
-		ASW_cnf_struct.p_DisplayManagement = new DisplayManagement();
+	/* Display activation */
+	if(ASW_init_cnf.isDisplayActivated)
+	{
+		if(ASW_cnf_struct.p_DisplayManagement == 0)
+			ASW_cnf_struct.p_DisplayManagement = new DisplayManagement();
+	}
+	else
+		ASW_cnf_struct.p_DisplayManagement = 0;
 
 }

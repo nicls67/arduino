@@ -26,6 +26,19 @@ typedef struct
 }
 T_ASW_cnf_struct;
 
+/*!
+ * @brief ASW initialization configuration structure
+ * @details This structure is used to define which ASW services shall be started at SW start-up.
+ */
+typedef struct
+{
+	bool isDebugActivated; /*!< Debug services activation flag */
+	bool isLEDActivated; /*!< Keep-alive LED activation flag */
+	bool isTempSensorActivated; /*!< Temperature sensor activation flag */
+	bool isDisplayActivated; /*!< LCD display activation flag */
+}
+T_ASW_init_cnf;
+
 extern T_ASW_cnf_struct ASW_cnf_struct; /*!< ASW configuration structure */
 
 

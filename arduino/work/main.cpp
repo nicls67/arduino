@@ -40,7 +40,16 @@
 
 bool isDebugModeActivated;
 
+const T_ASW_init_cnf ASW_init_cnf =
+{
+	true, 	/* Debug services*/
+	true, 	/* LED */
+	true, 	/* Temperature sensor */
+	true  	/* Display */
+};
+
 /* TODO : Remove ASW and BSW cnf structures to avoid using too many includes */
+/* TODO : add CPU load activation in ASW init structure */
 
 /*!
  * @brief Background task of program
@@ -52,8 +61,8 @@ int main( void )
 	/* Initialize BSW */
 	bsw_init();
 
-	/* Debug interface is activated only if the port is set to level HIGH */
-	if(BSW_cnf_struct.p_dio->dio_getPort(DEBUG_ACTIVE_PORT) == true)
+	/* Debug interface is activated only if the port is set to level HIGH and debug services are needed */
+	if((BSW_cnf_struct.p_dio->dio_getPort(DEBUG_ACTIVE_PORT) == true) && ASW_init_cnf.isDebugActivated)
 		isDebugModeActivated = true;
 	else
 		isDebugModeActivated = false;
