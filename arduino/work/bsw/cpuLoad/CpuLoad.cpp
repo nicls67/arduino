@@ -64,7 +64,8 @@ void CpuLoad::ComputeCPULoad()
 		sample_cnt++;
 
 	/* Compute average load */
-	avg_load = (last_sum_value - sample_mem[sample_idx] + current_load) / sample_cnt;
+	last_sum_value = last_sum_value - sample_mem[sample_idx] + current_load;
+	avg_load = last_sum_value / sample_cnt;
 
 	/* Memorize the value */
 	sample_mem[sample_idx] = current_load;
