@@ -37,7 +37,7 @@
 
 T_ASW_cnf_struct ASW_cnf_struct;
 
-/* TODO : what should be done if temperature sensor is not activated? Currently the display management activates it anyway */
+/* TODO : check what happens if sensor value is invalid */
 
 void asw_init()
 {

@@ -41,6 +41,7 @@ const T_LCD_conf_struct LCD_init_cnf = {
 const uint8_t welcomeMessageString[] = "Bienvenue !";
 const uint8_t tempDisplayString[] = "Temperature : "; /*!< String used for temperature display */
 const uint8_t humidityDisplayString[] = "Humidite : "; /*!< String used for humidity display */
+const uint8_t noSensorDisplayString[] = "Capteur de temperature desactive"; /*!< String used in case temperature sensor is deactivated */
 
 /*!
  * @brief Display management class

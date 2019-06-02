@@ -34,6 +34,8 @@
 
 #include "../asw.h"
 
+#include "../../main.h"
+
 
 DisplayManagement::DisplayManagement()
 {
@@ -44,7 +46,7 @@ DisplayManagement::DisplayManagement()
 	p_display_ift = ASW_cnf_struct.p_DisplayInterface;
 
 	/* Check if temperature sensor object is already created and create one of needed */
-	if(ASW_cnf_struct.p_TempSensor == 0)
+	if(ASW_init_cnf.isTempSensorActivated && (ASW_cnf_struct.p_TempSensor == 0))
 		ASW_cnf_struct.p_TempSensor = new TempSensor();
 
 	p_tempSensor = ASW_cnf_struct.p_TempSensor;
@@ -88,39 +90,46 @@ void DisplayManagement::DisplaySensorData_Task()
 	displayIft_ptr = ASW_cnf_struct.p_DisplayManagement->GetIftPointer();
 	tempSensor_ptr = ASW_cnf_struct.p_DisplayManagement->GetTempSensorPtr();
 
-	/* Display temperature */
-	String str(tempDisplayString);
-
-	/* If sensor data are valid */
-	if(tempSensor_ptr->GetValidity())
+	if(tempSensor_ptr !=0)
 	{
-		str.appendInteger((uint16_t)tempSensor_ptr->GetTempInteger(),10);
-		str.appendString((uint8_t*)".");
-		str.appendInteger((uint16_t)tempSensor_ptr->GetTempDecimal(),10);
-		str.appendString((uint8_t*)" ");
-		str.appendChar(161);
+		/* Display temperature */
+		String str(tempDisplayString);
+
+		/* If sensor data are valid */
+		if(tempSensor_ptr->GetValidity())
+		{
+			str.appendInteger((uint16_t)tempSensor_ptr->GetTempInteger(),10);
+			str.appendString((uint8_t*)".");
+			str.appendInteger((uint16_t)tempSensor_ptr->GetTempDecimal(),10);
+			str.appendString((uint8_t*)" ");
+			str.appendChar(161);
+		}
+		else
+			str.appendString((uint8_t*)"invalide");
+
+		displayIft_ptr->DisplayFullLine(str.getString(), str.getSize(), DISPLAY_MGT_LINE_TEMP, LINE_SHIFT);
+
+		/* Display humidity */
+		str.Clear();
+		str.appendString((uint8_t*)humidityDisplayString);
+
+		/* If sensor data are valid */
+		if(tempSensor_ptr->GetValidity())
+		{
+			str.appendInteger((uint16_t)tempSensor_ptr->GetHumInteger(),10);
+			str.appendString((uint8_t*)".");
+			str.appendInteger((uint16_t)tempSensor_ptr->GetHumDecimal(),10);
+			str.appendString((uint8_t*)" %");
+		}
+		else
+			str.appendString((uint8_t*)"invalide");
+
+		displayIft_ptr->DisplayFullLine(str.getString(), str.getSize(), DISPLAY_MGT_LINE_HUM, LINE_SHIFT);
 	}
 	else
-		str.appendString((uint8_t*)"invalide");
+		displayIft_ptr->DisplayFullLine((uint8_t*)noSensorDisplayString, sizeof(noSensorDisplayString)/sizeof(uint8_t), DISPLAY_MGT_LINE_TEMP, LINE_SHIFT);
 
-	displayIft_ptr->DisplayFullLine(str.getString(), str.getSize(), DISPLAY_MGT_LINE_TEMP, LINE_SHIFT);
 
-	/* Display humidity */
-	str.Clear();
-	str.appendString((uint8_t*)humidityDisplayString);
-
-	/* If sensor data are valid */
-	if(tempSensor_ptr->GetValidity())
-	{
-		str.appendInteger((uint16_t)tempSensor_ptr->GetHumInteger(),10);
-		str.appendString((uint8_t*)".");
-		str.appendInteger((uint16_t)tempSensor_ptr->GetHumDecimal(),10);
-		str.appendString((uint8_t*)" %");
-	}
-	else
-		str.appendString((uint8_t*)"invalide");
-
-	displayIft_ptr->DisplayFullLine(str.getString(), str.getSize(), DISPLAY_MGT_LINE_HUM, LINE_SHIFT);
 
 
 }
