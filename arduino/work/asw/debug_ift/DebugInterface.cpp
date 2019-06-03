@@ -1,5 +1,5 @@
 /*!
- * @file debug.cpp
+ * @file DebugInterface.cpp
  *
  * @brief This file defines classes for log and debug data transmission on USART link
  *

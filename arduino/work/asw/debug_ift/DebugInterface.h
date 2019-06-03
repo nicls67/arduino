@@ -1,5 +1,5 @@
 /*!
- * @file debug.h
+ * @file DebugInterface.h
  *
  * @brief Header file for debug and logging functions
  *

@@ -1,5 +1,5 @@
 /*!
- * @file dio_reg.h
+ * @file dio_reg_atm2560.h
  *
  * @brief Defines DIO register addresses for ATMEGA2560
  *

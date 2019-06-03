@@ -1,5 +1,5 @@
 /*!
- * @file LinkedList.c
+ * @file LinkedList.cpp
  *
  * @brief Linked List library source file
  *

@@ -35,7 +35,6 @@ const T_ASW_init_cnf ASW_init_cnf =
 	true  	/* Display */
 };
 
-/* TODO : Remove ASW and BSW cnf structures to avoid using too many includes */
 /* TODO : add the possibility to activate/deactivate ASW functions dynamically in debug menu */
 
 /*!
