@@ -14,12 +14,10 @@
 #include "../lib/string/String.h"
 
 #include "../bsw/usart/usart.h"
-#include "../bsw/timer/timer.h"
 #include "../bsw/I2C/I2C.h"
 #include "../bsw/lcd/LCD.h"
 #include "../bsw/dio/dio.h"
 #include "../bsw/dht22/dht22.h"
-#include "../bsw/cpuLoad/CpuLoad.h"
 
 #include "../bsw/bsw.h"
 
@@ -34,9 +32,6 @@
 
 #include "../main.h"
 
-
-T_ASW_cnf_struct ASW_cnf_struct;
-
 /* TODO : check what happens if sensor value is invalid */
 
 void asw_init()
@@ -44,42 +39,42 @@ void asw_init()
 	/* Temperature sensor activation */
 	if(ASW_init_cnf.isTempSensorActivated)
 	{
-		if(ASW_cnf_struct.p_TempSensor == 0)
-			ASW_cnf_struct.p_TempSensor = new TempSensor();
+		if(p_global_ASW_TempSensor == 0)
+			p_global_ASW_TempSensor = new TempSensor();
 	}
 	else
-		ASW_cnf_struct.p_TempSensor = 0;
+		p_global_ASW_TempSensor = 0;
 
 	/* Creation of debug services */
 	if(isDebugModeActivated)
 	{
-		if(ASW_cnf_struct.p_DebugInterface == 0)
-			ASW_cnf_struct.p_DebugInterface = new DebugInterface();
+		if(p_global_ASW_DebugInterface == 0)
+			p_global_ASW_DebugInterface = new DebugInterface();
 
-		ASW_cnf_struct.p_DebugInterface->sendString((uint8_t*)"\fMode debug actif !\n");
+		p_global_ASW_DebugInterface->sendString((uint8_t*)"\fMode debug actif !\n");
 	}
 	else
-		ASW_cnf_struct.p_DebugInterface = 0;
+		p_global_ASW_DebugInterface = 0;
 
 	/* Debug management object is created on user request by USART interrupt */
-	ASW_cnf_struct.p_DebugManagement = 0;
+	p_global_ASW_DebugManagement = 0;
 
 	/* LED activation */
 	if(ASW_init_cnf.isLEDActivated)
-		ASW_cnf_struct.p_keepAliveLed = new keepAliveLed();
+		p_global_ASW_keepAliveLed = new keepAliveLed();
 	else
-		ASW_cnf_struct.p_keepAliveLed = 0;
+		p_global_ASW_keepAliveLed = 0;
 
 	/* Display interface is created by Display management class */
-	ASW_cnf_struct.p_DisplayInterface = 0;
+	p_global_ASW_DisplayInterface = 0;
 
 	/* Display activation */
 	if(ASW_init_cnf.isDisplayActivated)
 	{
-		if(ASW_cnf_struct.p_DisplayManagement == 0)
-			ASW_cnf_struct.p_DisplayManagement = new DisplayManagement();
+		if(p_global_ASW_DisplayManagement == 0)
+			p_global_ASW_DisplayManagement = new DisplayManagement();
 	}
 	else
-		ASW_cnf_struct.p_DisplayManagement = 0;
+		p_global_ASW_DisplayManagement = 0;
 
 }

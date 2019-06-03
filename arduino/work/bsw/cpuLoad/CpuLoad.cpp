@@ -11,27 +11,11 @@
 #include <avr/io.h>
 
 #include "../../lib/LinkedList/LinkedList.h"
-#include "../../lib/string/String.h"
 #include "../../scheduler/scheduler.h"
-
-#include "../usart/usart.h"
 #include "../timer/timer.h"
-#include "../I2C/I2C.h"
-#include "../lcd/LCD.h"
-#include "../dio/dio.h"
-#include "../dht22/dht22.h"
-#include "../cpuLoad/CpuLoad.h"
+#include "CpuLoad.h"
 
-#include "../bsw.h"
-
-#include "../../asw/TempSensor/TempSensor.h"
-#include "../../asw/debug_ift/DebugInterface.h"
-#include "../../asw/debug_mgt/DebugManagement.h"
-#include "../../asw/display_ift/DisplayInterface.h"
-#include "../../asw/display_mgt/DisplayManagement.h"
-#include "../../asw/keepAliveLed/keepAliveLed.h"
-
-#include "../../asw/asw.h"
+CpuLoad* p_global_BSW_cpuload;
 
 CpuLoad::CpuLoad()
 {
@@ -49,13 +33,13 @@ CpuLoad::CpuLoad()
 		sample_mem[i] = 0;
 
 	/* Create timer object if it is still not initialized */
-	if(BSW_cnf_struct.p_timer == 0)
-		BSW_cnf_struct.p_timer = new timer();
+	if(p_global_BSW_timer == 0)
+		p_global_BSW_timer = new timer();
 }
 
 void CpuLoad::ComputeCPULoad()
 {
-	uint16_t counter_value = BSW_cnf_struct.p_timer->getTimer1Value();
+	uint16_t counter_value = p_global_BSW_timer->getTimer1Value();
 
 	/* Compute current load */
 	current_load = (uint8_t)((uint32_t)(counter_value * 100) / (uint32_t)TIMER_CTC_VALUE);

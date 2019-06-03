@@ -142,6 +142,6 @@ private:
 };
 
 
-extern scheduler* p_scheduler;
+extern scheduler* p_global_scheduler; /*!< Pointer to scheduler object */
 
 #endif /* WORK_SCHEDULER_SCHEDULER_H_ */

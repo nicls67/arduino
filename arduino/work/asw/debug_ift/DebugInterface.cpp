@@ -11,48 +11,27 @@
 #include <avr/io.h>
 #include <stdlib.h>
 
-#include "../../lib/LinkedList/LinkedList.h"
 #include "../../lib/string/String.h"
-#include "../../scheduler/scheduler.h"
-
 #include "../../bsw/usart/usart.h"
-#include "../../bsw/timer/timer.h"
-#include "../../bsw/I2C/I2C.h"
-#include "../../bsw/lcd/LCD.h"
-#include "../../bsw/dio/dio.h"
-#include "../../bsw/dht22/dht22.h"
-#include "../../bsw/cpuLoad/CpuLoad.h"
-
-#include "../../bsw/bsw.h"
-
-#include "../TempSensor/TempSensor.h"
-#include "../debug_ift/DebugInterface.h"
-#include "../debug_mgt/DebugManagement.h"
-#include "../display_ift/DisplayInterface.h"
-#include "../display_mgt/DisplayManagement.h"
-#include "../keepAliveLed/keepAliveLed.h"
-
-#include "../asw.h"
+#include "DebugInterface.h"
 
 
-
-
-
+DebugInterface* p_global_ASW_DebugInterface;
 
 
 DebugInterface::DebugInterface()
 {
 	/* Create a new instance of USART driver if needed and attach it to the class */
-	if(BSW_cnf_struct.p_usart == 0)
-		BSW_cnf_struct.p_usart = new usart(USART_BAUDRATE);
+	if(p_global_BSW_usart == 0)
+		p_global_BSW_usart = new usart(USART_BAUDRATE);
 
-	usart_drv_ptr = BSW_cnf_struct.p_usart;
+	usart_drv_ptr = p_global_BSW_usart;
 }
 
 void DebugInterface::sendString(String* str)
 {
 	/* Call driver's transmission function to send the string str */
-	BSW_cnf_struct.p_usart->usart_sendString(str);
+	usart_drv_ptr->usart_sendString(str);
 }
 
 void DebugInterface::sendString(uint8_t* str)
@@ -64,7 +43,7 @@ void DebugInterface::sendString(uint8_t* str)
 
 void DebugInterface::sendChar(uint8_t chr)
 {
-	BSW_cnf_struct.p_usart->usart_sendByte(chr);
+	usart_drv_ptr->usart_sendByte(chr);
 }
 
 void DebugInterface::sendInteger(uint16_t data, uint8_t base)
@@ -77,7 +56,7 @@ void DebugInterface::sendInteger(uint16_t data, uint8_t base)
 
 	strToSend.appendInteger(data, base);
 
-	BSW_cnf_struct.p_usart->usart_sendString(&strToSend);
+	usart_drv_ptr->usart_sendString(&strToSend);
 }
 
 void DebugInterface::sendBool(bool data, bool isText)
@@ -86,7 +65,7 @@ void DebugInterface::sendBool(bool data, bool isText)
 
 	str.appendBool(data, isText);
 
-	BSW_cnf_struct.p_usart->usart_sendString(&str);
+	usart_drv_ptr->usart_sendString(&str);
 }
 
 void DebugInterface::nextLine()

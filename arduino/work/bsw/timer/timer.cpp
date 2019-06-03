@@ -10,6 +10,8 @@
 #include <avr/io.h>
 #include "timer.h"
 
+timer* p_global_BSW_timer;
+
 timer::timer()
 {
 	prescaler = (uint8_t)0b100;

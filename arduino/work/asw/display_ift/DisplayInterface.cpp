@@ -11,31 +11,18 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
+#include "../../lib/String/String.h"
 #include "../../lib/LinkedList/LinkedList.h"
-#include "../../lib/string/String.h"
+
 #include "../../scheduler/scheduler.h"
 
-#include "../../bsw/usart/usart.h"
-#include "../../bsw/timer/timer.h"
 #include "../../bsw/I2C/I2C.h"
 #include "../../bsw/lcd/LCD.h"
-#include "../../bsw/dio/dio.h"
-#include "../../bsw/dht22/dht22.h"
-#include "../../bsw/cpuLoad/CpuLoad.h"
-
-#include "../../bsw/bsw.h"
-
-#include "../TempSensor/TempSensor.h"
-#include "../debug_ift/DebugInterface.h"
-#include "../debug_mgt/DebugManagement.h"
-#include "../display_ift/DisplayInterface.h"
-#include "../display_mgt/DisplayManagement.h"
-#include "../keepAliveLed/keepAliveLed.h"
-#include "../asw.h"
 
 #include "DisplayInterface.h"
 
 
+DisplayInterface* p_global_ASW_DisplayInterface;
 
 DisplayInterface::DisplayInterface(const T_LCD_conf_struct * LCD_init_cnf)
 {
@@ -44,11 +31,11 @@ DisplayInterface::DisplayInterface(const T_LCD_conf_struct * LCD_init_cnf)
 	dummy = 0;
 
 	/* Instantiate new LCD driver and attach it to BSW structure */
-	if (BSW_cnf_struct.p_lcd == 0)
+	if (p_global_BSW_lcd == 0)
 	{
-		BSW_cnf_struct.p_lcd = new LCD(LCD_init_cnf);
+		p_global_BSW_lcd = new LCD(LCD_init_cnf);
 	}
-	p_lcd = BSW_cnf_struct.p_lcd;
+	p_lcd = p_global_BSW_lcd;
 
 	/* Initialize display data */
 	for(i = 0; i < LCD_SIZE_NB_LINES; i++)
@@ -137,7 +124,7 @@ bool DisplayInterface::DisplayFullLine(uint8_t* str, uint8_t size, uint8_t line,
 		/* If no shift is in progress on another line, add periodic task to scheduler */
 		if(isShiftInProgress == false)
 		{
-			p_scheduler->addPeriodicTask((TaskPtr_t)(&DisplayInterface::shiftLine_task), DISPLAY_LINE_SHIFT_PERIOD_MS);
+			p_global_scheduler->addPeriodicTask((TaskPtr_t)(&DisplayInterface::shiftLine_task), DISPLAY_LINE_SHIFT_PERIOD_MS);
 			isShiftInProgress = true;
 		}
 
@@ -259,7 +246,7 @@ bool DisplayInterface::ClearLine(uint8_t line)
 	}
 
 	if(isShiftInProgress == false)
-		dummy = p_scheduler->removePeriodicTask((TaskPtr_t)(&DisplayInterface::shiftLine_task));
+		dummy = p_global_scheduler->removePeriodicTask((TaskPtr_t)(&DisplayInterface::shiftLine_task));
 
 	/* Mark line as empty */
 	display_data[line].isEmpty = true;
@@ -294,7 +281,7 @@ bool DisplayInterface::IsLineEmpty(uint8_t line)
 
 void DisplayInterface::shiftLine_task()
 {
-	T_display_data* display_data_ptr = ASW_cnf_struct.p_DisplayInterface->getDisplayDataPtr();
+	T_display_data* display_data_ptr = p_global_ASW_DisplayInterface->getDisplayDataPtr();
 	T_Display_shift_data* display_shift_data_ptr;
 	uint8_t i;
 
@@ -332,7 +319,7 @@ void DisplayInterface::shiftLine_task()
 				display_shift_data_ptr->str_cur_ptr ++;
 
 			/* Display the line */
-			ASW_cnf_struct.p_DisplayInterface->DisplayFullLine(display_shift_data_ptr->str_cur_ptr, LCD_SIZE_NB_CHAR_PER_LINE, i);
+			p_global_ASW_DisplayInterface->DisplayFullLine(display_shift_data_ptr->str_cur_ptr, LCD_SIZE_NB_CHAR_PER_LINE, i);
 		}
 
 	}

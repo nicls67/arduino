@@ -10,29 +10,16 @@
 #include <avr/io.h>
 
 #include "../../lib/LinkedList/LinkedList.h"
-#include "../../lib/string/String.h"
 #include "../../scheduler/scheduler.h"
 
-#include "../../bsw/usart/usart.h"
-#include "../../bsw/timer/timer.h"
-#include "../../bsw/I2C/I2C.h"
-#include "../../bsw/lcd/LCD.h"
 #include "../../bsw/dio/dio.h"
 #include "../../bsw/dht22/dht22.h"
-#include "../../bsw/cpuLoad/CpuLoad.h"
 
-#include "../../bsw/bsw.h"
-
-#include "../TempSensor/TempSensor.h"
-#include "../debug_ift/DebugInterface.h"
-#include "../debug_mgt/DebugManagement.h"
-#include "../display_ift/DisplayInterface.h"
-#include "../display_mgt/DisplayManagement.h"
-#include "../keepAliveLed/keepAliveLed.h"
-
-#include "../asw.h"
+#include "TempSensor.h"
 
 #define PIT_BEFORE_INVALID 60
+
+TempSensor* p_global_ASW_TempSensor;
 
 TempSensor::TempSensor()
 {
@@ -45,19 +32,19 @@ TempSensor::TempSensor()
 	valid_pit = 0;
 
 	/* Create new instance of DHT22 sensor object */
-	if(BSW_cnf_struct.p_dht22 == 0)
-		BSW_cnf_struct.p_dht22 = new dht22(DHT22_PORT);
+	if(p_global_BSW_dht22 == 0)
+		p_global_BSW_dht22 = new dht22(DHT22_PORT);
 
 	task_period = PERIOD_MS_TASK_TEMP_SENSOR;
 
 	/* Add task to scheduler */
-	p_scheduler->addPeriodicTask((TaskPtr_t)(&TempSensor::readTempSensor_task), task_period);
+	p_global_scheduler->addPeriodicTask((TaskPtr_t)(&TempSensor::readTempSensor_task), task_period);
 }
 
 void TempSensor::readTempSensor_task()
 {
-	ASW_cnf_struct.p_TempSensor->setValidity(BSW_cnf_struct.p_dht22->read(ASW_cnf_struct.p_TempSensor->getHumPtr(), ASW_cnf_struct.p_TempSensor->getTempPtr()));
-	ASW_cnf_struct.p_TempSensor->updateLastValidValues();
+	p_global_ASW_TempSensor->setValidity(p_global_BSW_dht22->read(p_global_ASW_TempSensor->getHumPtr(), p_global_ASW_TempSensor->getTempPtr()));
+	p_global_ASW_TempSensor->updateLastValidValues();
 }
 
 void TempSensor::setValidity(bool validity)
@@ -82,9 +69,9 @@ void TempSensor::updateLastValidValues()
 		valid_temp = read_temperature;
 		valid_hum = read_humidity;
 		validity = true;
-		valid_pit = p_scheduler->getPitNumber();
+		valid_pit = p_global_scheduler->getPitNumber();
 	}
-	else if ((p_scheduler->getPitNumber() - valid_pit) > PIT_BEFORE_INVALID)
+	else if ((p_global_scheduler->getPitNumber() - valid_pit) > PIT_BEFORE_INVALID)
 	{
 		validity = false;
 	}
@@ -105,6 +92,6 @@ bool TempSensor::getTemp(uint16_t* temp)
 bool TempSensor::updateTaskPeriod(uint16_t period)
 {
 	task_period = period;
-	return p_scheduler->updateTaskPeriod((TaskPtr_t)(&TempSensor::readTempSensor_task), task_period);
+	return p_global_scheduler->updateTaskPeriod((TaskPtr_t)(&TempSensor::readTempSensor_task), task_period);
 
 }

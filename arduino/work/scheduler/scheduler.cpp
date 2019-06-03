@@ -11,34 +11,19 @@
 #include <avr/io.h>
 
 #include "../lib/LinkedList/LinkedList.h"
-#include "../lib/string/String.h"
 #include "../lib/operators/operators.h"
 
-#include "../bsw/usart/usart.h"
 #include "../bsw/timer/timer.h"
-#include "../bsw/I2C/I2C.h"
-#include "../bsw/lcd/LCD.h"
-#include "../bsw/dio/dio.h"
-#include "../bsw/dht22/dht22.h"
 #include "../bsw/cpuLoad/CpuLoad.h"
-
-#include "../bsw/bsw.h"
-
-#include "../asw/TempSensor/TempSensor.h"
-#include "../asw/debug_ift/DebugInterface.h"
-#include "../asw/debug_mgt/DebugManagement.h"
-#include "../asw/display_ift/DisplayInterface.h"
-#include "../asw/keepAliveLed/keepAliveLed.h"
-#include "../asw/display_mgt/DisplayManagement.h"
 
 #include "../asw/asw.h"
 
-#include "../main.h"
-
 #include "scheduler.h"
 
+#include "../main.h"
 
-scheduler* p_scheduler; /*!< Pointer to scheduler object */
+
+scheduler* p_global_scheduler;
 
 scheduler::scheduler()
 {
@@ -46,13 +31,13 @@ scheduler::scheduler()
 	TasksLL_ptr = new LinkedList();
 
 	/* Create Timer object of needed */
-	if(BSW_cnf_struct.p_timer == 0)
-		BSW_cnf_struct.p_timer = new timer();
+	if(p_global_BSW_timer == 0)
+		p_global_BSW_timer = new timer();
 
 	/* Initialize CPU load computation */
-	if(isDebugModeActivated && (BSW_cnf_struct.p_cpuload == 0))
+	if(isDebugModeActivated && (p_global_BSW_cpuload == 0))
 	{
-		BSW_cnf_struct.p_cpuload = new CpuLoad();
+		p_global_BSW_cpuload = new CpuLoad();
 	}
 
 	/* Initialize counter to 1, then the tasks are not started at first PIT to avoid HW initialization issue */
@@ -62,7 +47,7 @@ scheduler::scheduler()
 	task_count = 0;
 
 	/* Configure timer for periodic interrupt */
-	BSW_cnf_struct.p_timer->configureTimer1(PRESCALER_PERIODIC_TIMER, TIMER_CTC_VALUE);
+	p_global_BSW_timer->configureTimer1(PRESCALER_PERIODIC_TIMER, TIMER_CTC_VALUE);
 }
 
 void scheduler::launchPeriodicTasks()
@@ -94,8 +79,8 @@ void scheduler::launchPeriodicTasks()
 	}
 
 	/* Compute CPU load */
-	if(BSW_cnf_struct.p_cpuload != 0)
-		BSW_cnf_struct.p_cpuload->ComputeCPULoad();
+	if(p_global_BSW_cpuload != 0)
+		p_global_BSW_cpuload->ComputeCPULoad();
 
 	/* Increment counter */
 	pit_number++;
@@ -103,7 +88,7 @@ void scheduler::launchPeriodicTasks()
 
 void scheduler::startScheduling()
 {
-	BSW_cnf_struct.p_timer->startTimer1();
+	p_global_BSW_timer->startTimer1();
 }
 
 

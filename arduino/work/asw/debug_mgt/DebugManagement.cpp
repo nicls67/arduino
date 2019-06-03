@@ -10,30 +10,22 @@
 #include <avr/io.h>
 #include <stdlib.h>
 
-#include "../../lib/LinkedList/LinkedList.h"
 #include "../../lib/string/String.h"
+#include "../../lib/LinkedList/LinkedList.h"
+
 #include "../../scheduler/scheduler.h"
 
 #include "../../bsw/usart/usart.h"
-#include "../../bsw/timer/timer.h"
-#include "../../bsw/I2C/I2C.h"
-#include "../../bsw/lcd/LCD.h"
-#include "../../bsw/dio/dio.h"
-#include "../../bsw/dht22/dht22.h"
 #include "../../bsw/cpuLoad/CpuLoad.h"
-
-#include "../../bsw/bsw.h"
 
 #include "../TempSensor/TempSensor.h"
 #include "../debug_ift/DebugInterface.h"
-#include "../debug_mgt/DebugManagement.h"
-#include "../display_ift/DisplayInterface.h"
-#include "../display_mgt/DisplayManagement.h"
-#include "../keepAliveLed/keepAliveLed.h"
+#include "DebugManagement.h"
 
 #include "../asw.h"
-
 #include "../../main.h"
+
+DebugManagement* p_global_ASW_DebugManagement;
 
 /*!
  * @brief Main menu of debug mode
@@ -56,16 +48,16 @@ const uint8_t str_debug_info_message_wrong_selection[] = "Impossible de faire ca
 DebugManagement::DebugManagement()
 {
 	/* Create a new interface object if needed and attach it to the class */
-	if(ASW_cnf_struct.p_DebugInterface == 0)
-		ASW_cnf_struct.p_DebugInterface = new DebugInterface();
+	if(p_global_ASW_DebugInterface == 0)
+		p_global_ASW_DebugInterface = new DebugInterface();
 
-	debug_ift_ptr = ASW_cnf_struct.p_DebugInterface;
+	debug_ift_ptr = p_global_ASW_DebugInterface;
 
 	/* Create temperature sensor object if needed */
-	if(ASW_init_cnf.isTempSensorActivated && (ASW_cnf_struct.p_TempSensor == 0))
-		ASW_cnf_struct.p_TempSensor = new TempSensor();
+	if(ASW_init_cnf.isTempSensorActivated && (p_global_ASW_TempSensor == 0))
+		p_global_ASW_TempSensor = new TempSensor();
 
-	tempSensor_ptr = ASW_cnf_struct.p_TempSensor;
+	tempSensor_ptr = p_global_ASW_TempSensor;
 
 	/* initialize menu */
 	menu_state = MAIN_MENU;
@@ -76,7 +68,7 @@ DebugManagement::DebugManagement()
 	DisplayData();
 
 	/* Start display of data periodically */
-	p_scheduler->addPeriodicTask((TaskPtr_t)(&DebugManagement::DisplayPeriodicData_task), PERIOD_MS_TASK_DISPLAY_DEBUG_DATA);
+	p_global_scheduler->addPeriodicTask((TaskPtr_t)(&DebugManagement::DisplayPeriodicData_task), PERIOD_MS_TASK_DISPLAY_DEBUG_DATA);
 }
 
 void DebugManagement::DisplayData()
@@ -135,15 +127,15 @@ void DebugManagement::DisplayData()
 	debug_ift_ptr->nextLine();
 
 	/* Write CPU load data */
-	if(BSW_cnf_struct.p_cpuload !=0)
+	if(p_global_BSW_cpuload !=0)
 	{
 		debug_ift_ptr->sendString((uint8_t*)"Charge CPU :\n");
 		debug_ift_ptr->sendString((uint8_t*)"    Actuelle : ");
-		debug_ift_ptr->sendInteger(BSW_cnf_struct.p_cpuload->getCurrrentCPULoad(),10);
+		debug_ift_ptr->sendInteger(p_global_BSW_cpuload->getCurrrentCPULoad(),10);
 		debug_ift_ptr->sendString((uint8_t*)"\n    Moyenne : ");
-		debug_ift_ptr->sendInteger(BSW_cnf_struct.p_cpuload->getAverageCPULoad(),10);
+		debug_ift_ptr->sendInteger(p_global_BSW_cpuload->getAverageCPULoad(),10);
 		debug_ift_ptr->sendString((uint8_t*)"\n    Max : ");
-		debug_ift_ptr->sendInteger(BSW_cnf_struct.p_cpuload->getMaxCPULoad(),10);
+		debug_ift_ptr->sendInteger(p_global_BSW_cpuload->getMaxCPULoad(),10);
 	}
 	else
 	{
@@ -155,7 +147,7 @@ void DebugManagement::DisplayData()
 
 void DebugManagement::DisplayPeriodicData_task()
 {
-	ASW_cnf_struct.p_DebugManagement->DisplayData();
+	p_global_ASW_DebugManagement->DisplayData();
 }
 
 
@@ -175,7 +167,7 @@ bool DebugManagement::DebugModeManagement()
 		{
 		case 's':
 			debug_ift_ptr->sendString((uint8_t*)"\fBye !");
-			p_scheduler->removePeriodicTask((TaskPtr_t)&DebugManagement::DisplayPeriodicData_task);
+			p_global_scheduler->removePeriodicTask((TaskPtr_t)&DebugManagement::DisplayPeriodicData_task);
 			quit = true;
 			break;
 

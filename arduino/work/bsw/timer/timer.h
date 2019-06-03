@@ -65,5 +65,6 @@ private:
 
 };
 
+extern timer* p_global_BSW_timer; /*!< Pointer to timer driver object */
 
 #endif /* WORK_BSW_TIMER_TIMER_H_ */

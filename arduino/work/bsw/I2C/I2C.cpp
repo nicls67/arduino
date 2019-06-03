@@ -11,6 +11,7 @@
 
 #include "I2C.h"
 
+I2C* p_global_BSW_i2c;
 
 I2C::I2C(uint32_t l_bitrate)
 {

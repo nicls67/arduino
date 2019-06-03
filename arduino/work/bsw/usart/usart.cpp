@@ -13,6 +13,7 @@
 
 #include "usart.h"
 
+usart* p_global_BSW_usart;
 
 usart::usart(uint16_t a_BaudRate)
 {

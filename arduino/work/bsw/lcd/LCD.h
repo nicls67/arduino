@@ -366,5 +366,7 @@ private:
 	void InitializeScreen();
 };
 
+extern LCD* p_global_BSW_lcd; /*!< Pointer to LCD driver object */
+
 
 #endif /* WORK_BSW_LCD_LCD_H_ */

@@ -46,7 +46,7 @@ public:
 private:
 
 	uint8_t dht22_port; /*!< Variable containing the port used for 1-wire communication */
-	dio* p_dio; /*!< Pointer to the DIO object */
+	dio* dio_ptr; /*!< Pointer to the DIO object */
 
 	/*!
 	 * @brief Initializes the communication
@@ -56,5 +56,7 @@ private:
 	void initializeCommunication();
 
 };
+
+extern dht22* p_global_BSW_dht22; /*!< Pointer to dht22 driver object */
 
 #endif /* WORK_BSW_DHT22_DHT22_H_ */

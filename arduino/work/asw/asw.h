@@ -10,22 +10,6 @@
 #ifndef WORK_ASW_ASW_H_
 #define WORK_ASW_ASW_H_
 
-
-/*!
- * @brief ASW configuration structure
- * @details This structure contains all pointers to instanced applicative objects
- */
-typedef struct
-{
-	DebugInterface* p_DebugInterface; /*!< Pointer to USART debug interface object */
-	keepAliveLed* p_keepAliveLed; /*!< Pointer to keepAliveLed object */
-	TempSensor* p_TempSensor; /*!< Pointer to TempSensor object */
-	DisplayInterface* p_DisplayInterface; /*!< Pointer to DisplayInterface object */
-	DisplayManagement* p_DisplayManagement; /*!< Pointer to DisplayManagement object */
-	DebugManagement* p_DebugManagement; /*!< Pointer to the DebugManagement object */
-}
-T_ASW_cnf_struct;
-
 /*!
  * @brief ASW initialization configuration structure
  * @details This structure is used to define which ASW services shall be started at SW start-up.
@@ -38,9 +22,6 @@ typedef struct
 	bool isDisplayActivated; /*!< LCD display activation flag */
 }
 T_ASW_init_cnf;
-
-extern T_ASW_cnf_struct ASW_cnf_struct; /*!< ASW configuration structure */
-
 
 
 /*! @brief Initialization of ASW

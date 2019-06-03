@@ -15,48 +15,38 @@
 
 #include "../../scheduler/scheduler.h"
 
-#include "../../bsw/usart/usart.h"
-#include "../../bsw/timer/timer.h"
 #include "../../bsw/I2C/I2C.h"
 #include "../../bsw/lcd/LCD.h"
-#include "../../bsw/dio/dio.h"
-#include "../../bsw/dht22/dht22.h"
-#include "../../bsw/cpuLoad/CpuLoad.h"
-
-#include "../../bsw/bsw.h"
 
 #include "../TempSensor/TempSensor.h"
-#include "../debug_ift/DebugInterface.h"
-#include "../debug_mgt/DebugManagement.h"
 #include "../display_ift/DisplayInterface.h"
-#include "../keepAliveLed/keepAliveLed.h"
 #include "DisplayManagement.h"
 
 #include "../asw.h"
-
 #include "../../main.h"
 
+DisplayManagement* p_global_ASW_DisplayManagement;
 
 DisplayManagement::DisplayManagement()
 {
 	/* Create display interface object */
-	if (ASW_cnf_struct.p_DisplayInterface == 0)
-		ASW_cnf_struct.p_DisplayInterface = new DisplayInterface(&LCD_init_cnf);
+	if (p_global_ASW_DisplayInterface == 0)
+		p_global_ASW_DisplayInterface = new DisplayInterface(&LCD_init_cnf);
 
-	p_display_ift = ASW_cnf_struct.p_DisplayInterface;
+	p_display_ift = p_global_ASW_DisplayInterface;
 
 	/* Check if temperature sensor object is already created and create one of needed */
-	if(ASW_init_cnf.isTempSensorActivated && (ASW_cnf_struct.p_TempSensor == 0))
-		ASW_cnf_struct.p_TempSensor = new TempSensor();
+	if(ASW_init_cnf.isTempSensorActivated && (p_global_ASW_TempSensor == 0))
+		p_global_ASW_TempSensor = new TempSensor();
 
-	p_tempSensor = ASW_cnf_struct.p_TempSensor;
+	p_tempSensor = p_global_ASW_TempSensor;
 
 	/* Display welcome message on 2nd line */
 	String str;
 	str.appendString((uint8_t*)welcomeMessageString);
 	p_display_ift->DisplayFullLine(str.getString(), str.getSize(), 1, NORMAL, CENTER);
 
-	p_scheduler->addPeriodicTask((TaskPtr_t)&DisplayManagement::RemoveWelcomeMessage_Task, DISPLAY_MGT_PERIOD_WELCOME_MSG_REMOVAL);
+	p_global_scheduler->addPeriodicTask((TaskPtr_t)&DisplayManagement::RemoveWelcomeMessage_Task, DISPLAY_MGT_PERIOD_WELCOME_MSG_REMOVAL);
 
 	/* Update temperature sensor task period to match display period */
 	if(p_tempSensor->getTaskPeriod() > DISPLAY_MGT_PERIOD_TASK_SENSOR)
@@ -66,13 +56,13 @@ DisplayManagement::DisplayManagement()
 
 void DisplayManagement::RemoveWelcomeMessage_Task()
 {
-	DisplayInterface * ift_ptr = ASW_cnf_struct.p_DisplayManagement->GetIftPointer();
+	DisplayInterface * ift_ptr = p_global_ASW_DisplayManagement->GetIftPointer();
 
 	/* Remove itself from scheduler */
-	p_scheduler->removePeriodicTask((TaskPtr_t)&DisplayManagement::RemoveWelcomeMessage_Task);
+	p_global_scheduler->removePeriodicTask((TaskPtr_t)&DisplayManagement::RemoveWelcomeMessage_Task);
 
 	/* Add periodic task in scheduler */
-	p_scheduler->addPeriodicTask((TaskPtr_t)&DisplayManagement::DisplaySensorData_Task, DISPLAY_MGT_PERIOD_TASK_SENSOR);
+	p_global_scheduler->addPeriodicTask((TaskPtr_t)&DisplayManagement::DisplaySensorData_Task, DISPLAY_MGT_PERIOD_TASK_SENSOR);
 
 	/* Clear the screen */
 	ift_ptr->ClearFullScreen();
@@ -87,8 +77,8 @@ void DisplayManagement::DisplaySensorData_Task()
 	TempSensor* tempSensor_ptr;
 
 	/* First get object pointer */
-	displayIft_ptr = ASW_cnf_struct.p_DisplayManagement->GetIftPointer();
-	tempSensor_ptr = ASW_cnf_struct.p_DisplayManagement->GetTempSensorPtr();
+	displayIft_ptr = p_global_ASW_DisplayManagement->GetIftPointer();
+	tempSensor_ptr = p_global_ASW_DisplayManagement->GetTempSensorPtr();
 
 	if(tempSensor_ptr !=0)
 	{

@@ -9,28 +9,9 @@
 
 #include <avr/io.h>
 
-#include "../../lib/LinkedList/LinkedList.h"
-#include "../../lib/string/String.h"
-#include "../../scheduler/scheduler.h"
+#include "dio.h"
 
-#include "../usart/usart.h"
-#include "../timer/timer.h"
-#include "../I2C/I2C.h"
-#include "../lcd/LCD.h"
-#include "../dio/dio.h"
-#include "../dht22/dht22.h"
-#include "../cpuLoad/CpuLoad.h"
-
-#include "../bsw.h"
-
-#include "../../asw/TempSensor/TempSensor.h"
-#include "../../asw/debug_ift/DebugInterface.h"
-#include "../../asw/debug_mgt/DebugManagement.h"
-#include "../../asw/display_ift/DisplayInterface.h"
-#include "../../asw/display_mgt/DisplayManagement.h"
-#include "../../asw/keepAliveLed/keepAliveLed.h"
-
-#include "../../asw/asw.h"
+dio* p_global_BSW_dio;
 
 void dio::ports_init()
 {

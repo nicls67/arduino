@@ -12,31 +12,19 @@
 #include <util/delay.h>
 #include <avr/interrupt.h>
 
-#include "../../lib/LinkedList/LinkedList.h"
 #include "../../lib/string/String.h"
-
+#include "../../lib/LinkedList/LinkedList.h"
 #include "../../scheduler/scheduler.h"
 
 #include "../usart/usart.h"
-#include "../timer/timer.h"
-#include "../I2C/I2C.h"
-#include "../lcd/LCD.h"
-#include "../dio/dio.h"
-#include "../dht22/dht22.h"
-#include "../cpuLoad/CpuLoad.h"
-
-#include "../bsw.h"
 
 #include "../../asw/TempSensor/TempSensor.h"
 #include "../../asw/debug_ift/DebugInterface.h"
 #include "../../asw/debug_mgt/DebugManagement.h"
-#include "../../asw/display_ift/DisplayInterface.h"
-#include "../../asw/display_mgt/DisplayManagement.h"
-#include "../../asw/keepAliveLed/keepAliveLed.h"
 
 #include "../../asw/asw.h"
-
 #include "../../main.h"
+
 
 /*!
  * @brief Main software interrupt
@@ -45,7 +33,7 @@
  */
 ISR(TIMER1_COMPA_vect)
 {
-	p_scheduler->launchPeriodicTasks();
+	p_global_scheduler->launchPeriodicTasks();
 }
 
 
@@ -62,19 +50,19 @@ ISR(USART0_RX_vect)
 	if(isDebugModeActivated)
 	{
 		/* If the debug mode is started */
-		if(ASW_cnf_struct.p_DebugManagement != 0)
+		if(p_global_ASW_DebugManagement != 0)
 		{
-			quit = ASW_cnf_struct.p_DebugManagement->DebugModeManagement();
+			quit = p_global_ASW_DebugManagement->DebugModeManagement();
 		}
-		else if(ASW_cnf_struct.p_DebugInterface->read() == 'a')
+		else if(p_global_ASW_DebugInterface->read() == 'a')
 		{
-			ASW_cnf_struct.p_DebugManagement = new DebugManagement();
+			p_global_ASW_DebugManagement = new DebugManagement();
 		}
 
 		if(quit)
 		{
-			free(ASW_cnf_struct.p_DebugManagement);
-			ASW_cnf_struct.p_DebugManagement = 0;
+			free(p_global_ASW_DebugManagement);
+			p_global_ASW_DebugManagement = 0;
 		}
 	}
 

@@ -114,4 +114,6 @@ private:
 
 };
 
+extern DebugManagement* p_global_ASW_DebugManagement; /*!< Pointer to the DebugManagement object */
+
 #endif /* WORK_ASW_DEBUG_MGT_DEBUGMANAGEMENT_H_ */

@@ -143,5 +143,7 @@ private:
 	uint8_t  PINx_idx_mem; /*!< Memorizes pin index of register PINx in order to speed up register reading time in function dio_getPort_fast */
 };
 
+extern dio* p_global_BSW_dio; /*!< Pointer to dio driver object */
+
 
 #endif /* WORK_BSW_DIO_DIO_H_ */

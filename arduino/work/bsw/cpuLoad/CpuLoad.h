@@ -81,4 +81,6 @@ private:
 	uint16_t last_sum_value; /*!< Value of the last computed sum (it will reduce the number of samples to sum and speed up execution time) */
 };
 
+extern CpuLoad* p_global_BSW_cpuload; /*!< Pointer to cpu load library object */
+
 #endif /* WORK_BSW_CPULOAD_CPULOAD_H_ */

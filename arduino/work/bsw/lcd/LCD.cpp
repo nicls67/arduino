@@ -10,19 +10,10 @@
 #include <util/delay.h>
 #include <avr/io.h>
 
-#include "../../lib/string/string.h"
-
-#include "../usart/usart.h"
-#include "../timer/timer.h"
 #include "../I2C/I2C.h"
-#include "../lcd/LCD.h"
-#include "../dio/dio.h"
-#include "../dht22/dht22.h"
-#include "../cpuLoad/CpuLoad.h"
-
-#include "../bsw.h"
-
 #include "LCD.h"
+
+LCD* p_global_BSW_lcd;
 
 LCD::LCD(const T_LCD_conf_struct* init_conf)
 {
@@ -30,10 +21,10 @@ LCD::LCD(const T_LCD_conf_struct* init_conf)
 	ddram_addr = 0;
 
 	/* Create new instance of I2C driver if needed */
-	if(BSW_cnf_struct.p_i2c == 0)
-		BSW_cnf_struct.p_i2c = new I2C(init_conf->i2c_bitrate);
+	if(p_global_BSW_i2c == 0)
+		p_global_BSW_i2c = new I2C(init_conf->i2c_bitrate);
 
-	i2c_drv_ptr = BSW_cnf_struct.p_i2c;
+	i2c_drv_ptr = p_global_BSW_i2c;
 
 	/* Screen default configuration */
 	ConfigureBacklight(init_conf->backlight_en);

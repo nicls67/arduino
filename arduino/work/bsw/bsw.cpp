@@ -9,7 +9,7 @@
 #include <avr/io.h>
 #include <stdlib.h>
 
-#include "../lib/string/String.h"
+#include "../lib/String/String.h"
 
 #include "usart/usart.h"
 #include "timer/timer.h"
@@ -21,17 +21,15 @@
 
 #include "bsw.h"
 
-T_BSW_cnf_struct BSW_cnf_struct;
-
 void bsw_init()
 {
-	BSW_cnf_struct.p_dio = new dio();
+	p_global_BSW_dio = new dio();
 
-	BSW_cnf_struct.p_timer = 0;
-	BSW_cnf_struct.p_cpuload = 0;
-	BSW_cnf_struct.p_i2c = 0;
-	BSW_cnf_struct.p_lcd = 0;
-	BSW_cnf_struct.p_usart = 0;
-	BSW_cnf_struct.p_dht22 = 0;
+	p_global_BSW_timer = 0;
+	p_global_BSW_cpuload = 0;
+	p_global_BSW_i2c = 0;
+	p_global_BSW_lcd = 0;
+	p_global_BSW_usart = 0;
+	p_global_BSW_dht22 = 0;
 }
 

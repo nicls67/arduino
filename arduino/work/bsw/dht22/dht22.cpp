@@ -11,28 +11,18 @@
 #include <util/delay.h>
 #include <avr/interrupt.h>
 
-#include "../../lib/string/string.h"
-
-#include "../usart/usart.h"
-#include "../timer/timer.h"
-#include "../I2C/I2C.h"
-#include "../lcd/LCD.h"
 #include "../dio/dio.h"
-#include "../dht22/dht22.h"
-#include "../cpuLoad/CpuLoad.h"
-
-#include "../bsw.h"
+#include "dht22.h"
 
 
+#define MAX_WAIT_TIME_US 100 /*!< Maximum waiting time in microseconds */
 
-
-
-#define MAX_WAIT_TIME_US 100
+dht22* p_global_BSW_dht22;
 
 dht22::dht22(uint8_t port)
 {
 	dht22_port = port;
-	p_dio = BSW_cnf_struct.p_dio;
+	dio_ptr = p_global_BSW_dio;
 
 	initializeCommunication();
 }
@@ -48,38 +38,38 @@ bool dht22::read(uint16_t* raw_humidity, uint16_t* raw_temperature)
 	/* To speed-up register reading time, the registers addresses are computed now and only once
 	 * and memorized into DIO driver.
 	 * Then the registers reads will be done with the "fast" reading function using the memorized addresses */
-	p_dio->dio_memorizePINaddress(dht22_port);
+	dio_ptr->dio_memorizePINaddress(dht22_port);
 
 	/* Disable interrupt during the communication */
 	cli();
 
 	/* Set pin to LOW for 1 ms at least */
-	p_dio->dio_setPort(dht22_port, false);
+	dio_ptr->dio_setPort(dht22_port, false);
 	_delay_us(1100);
 
 	/* Set pin to HIGH for 35 us */
-	p_dio->dio_setPort(dht22_port, true);
+	dio_ptr->dio_setPort(dht22_port, true);
 	_delay_us(35);
 
 	/* Re-configure pin as input */
-	p_dio->dio_changePortPinCnf(dht22_port, PORT_CNF_IN);
+	dio_ptr->dio_changePortPinCnf(dht22_port, PORT_CNF_IN);
 
 	/* Sensor will now set pin state to LOW for 80 us
 	 * Wait for 40 us (half time) and check that the pin is LOW */
 	_delay_us(40);
-	if (p_dio->dio_getPort_fast() != false)
+	if (dio_ptr->dio_getPort_fast() != false)
 		return false;
 
 	/* Sensor will set pin state to HIGH for 80 us
 	 * Wait for 80 us (2nd half of the 80 us LOW + 1st half time of the 80 us HIGH) and check that the pin is HIGH */
 	_delay_us(80);
-	if (p_dio->dio_getPort_fast() != true)
+	if (dio_ptr->dio_getPort_fast() != true)
 		return false;
 
 	/* Wait until signal goes to LOW (bit transmission)
 	 * If the signal never goes to LOW, report transmission failure */
 	wait_cpt = 0;
-	while(p_dio->dio_getPort_fast() != false)
+	while(dio_ptr->dio_getPort_fast() != false)
 	{
 		_delay_us(1);
 		wait_cpt++;
@@ -90,7 +80,7 @@ bool dht22::read(uint16_t* raw_humidity, uint16_t* raw_temperature)
 	/* Wait until signal goes to HIGH (bit transmission)
 	 * If the signal never goes to HIGH, report transmission failure */
 	wait_cpt = 0;
-	while(p_dio->dio_getPort_fast() != true)
+	while(dio_ptr->dio_getPort_fast() != true)
 	{
 		_delay_us(1);
 		wait_cpt++;
@@ -103,7 +93,7 @@ bool dht22::read(uint16_t* raw_humidity, uint16_t* raw_temperature)
 	{
 		/* Count the number of cycles until the signal goes LOW */
 		wait_cpt = 0;
-		while(p_dio->dio_getPort_fast() != false)
+		while(dio_ptr->dio_getPort_fast() != false)
 		{
 			_delay_us(1);
 			wait_cpt++;
@@ -118,7 +108,7 @@ bool dht22::read(uint16_t* raw_humidity, uint16_t* raw_temperature)
 		/* Wait until signal goes to HIGH (bit transmission)
 		 * If the signal never goes to HIGH, report transmission failure */
 		wait_cpt = 0;
-		while(p_dio->dio_getPort_fast() != true)
+		while(dio_ptr->dio_getPort_fast() != true)
 		{
 			_delay_us(1);
 			wait_cpt++;
@@ -133,7 +123,7 @@ bool dht22::read(uint16_t* raw_humidity, uint16_t* raw_temperature)
 	{
 		/* Count the number of cycles until the signal goes LOW */
 		wait_cpt = 0;
-		while(p_dio->dio_getPort_fast() != false)
+		while(dio_ptr->dio_getPort_fast() != false)
 		{
 			_delay_us(0.5);
 			wait_cpt++;
@@ -148,7 +138,7 @@ bool dht22::read(uint16_t* raw_humidity, uint16_t* raw_temperature)
 		/* Wait until signal goes to HIGH (bit transmission)
 		 * If the signal never goes to HIGH, report transmission failure */
 		wait_cpt = 0;
-		while(p_dio->dio_getPort_fast() != true)
+		while(dio_ptr->dio_getPort_fast() != true)
 		{
 			_delay_us(1);
 			wait_cpt++;
@@ -211,9 +201,9 @@ bool dht22::read(uint16_t* raw_humidity, uint16_t* raw_temperature)
 void dht22::initializeCommunication()
 {
 	/* Configures pin at output for the beginning of communication */
-	p_dio->dio_changePortPinCnf(dht22_port, PORT_CNF_OUT);
+	dio_ptr->dio_changePortPinCnf(dht22_port, PORT_CNF_OUT);
 
 	/* Set pin at level HIGH */
-	p_dio->dio_setPort(dht22_port, true);
+	dio_ptr->dio_setPort(dht22_port, true);
 
 }

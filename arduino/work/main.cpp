@@ -12,26 +12,13 @@
 #include <avr/interrupt.h>
 
 #include "lib/LinkedList/LinkedList.h"
-#include "lib/string/String.h"
 
-#include "bsw/usart/usart.h"
-#include "bsw/timer/timer.h"
-#include "bsw/I2C/I2C.h"
-#include "bsw/lcd/LCD.h"
 #include "bsw/dio/dio.h"
-#include "bsw/dht22/dht22.h"
-#include "bsw/cpuLoad/CpuLoad.h"
 
 #include "bsw/bsw.h"
 
 #include "scheduler/scheduler.h"
 
-#include "asw/TempSensor/TempSensor.h"
-#include "asw/debug_ift/DebugInterface.h"
-#include "asw/debug_mgt/DebugManagement.h"
-#include "asw/display_ift/DisplayInterface.h"
-#include "asw/display_mgt/DisplayManagement.h"
-#include "asw/keepAliveLed/keepAliveLed.h"
 #include "asw/asw.h"
 
 #include "main.h"
@@ -62,13 +49,13 @@ int main( void )
 	bsw_init();
 
 	/* Debug interface is activated only if the port is set to level HIGH and debug services are needed */
-	if((BSW_cnf_struct.p_dio->dio_getPort(DEBUG_ACTIVE_PORT) == true) && ASW_init_cnf.isDebugActivated)
+	if((p_global_BSW_dio->dio_getPort(DEBUG_ACTIVE_PORT) == true) && ASW_init_cnf.isDebugActivated)
 		isDebugModeActivated = true;
 	else
 		isDebugModeActivated = false;
 
 	/* Initialize scheduler */
-	p_scheduler = new scheduler();
+	p_global_scheduler = new scheduler();
 
 	/* Initialize ASW */
 	asw_init();
@@ -77,7 +64,7 @@ int main( void )
 	sei();
 
 	/* Configure and start main timer for periodic interrupt at 500ms */
-	p_scheduler->startScheduling();
+	p_global_scheduler->startScheduling();
 
 
 	/* Go into an infinite loop */

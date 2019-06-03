@@ -216,5 +216,6 @@ private:
 	void updateLineAndRefresh(uint8_t* str, uint8_t size, uint8_t line);
 };
 
+extern DisplayInterface* p_global_ASW_DisplayInterface; /*!< Pointer to DisplayInterface object */
 
 #endif /* WORK_ASW_DISPLAY_IFT_DISPLAYINTERFACE_H_ */

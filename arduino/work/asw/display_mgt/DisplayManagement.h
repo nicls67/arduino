@@ -112,6 +112,6 @@ private:
 
 };
 
-
+extern DisplayManagement* p_global_ASW_DisplayManagement; /*!< Pointer to DisplayManagement object */
 
 #endif /* WORK_ASW_DISPLAY_MGT_DISPLAYMANAGEMENT_H_ */

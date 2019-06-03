@@ -101,4 +101,6 @@ private:
 
 };
 
+extern DebugInterface* p_global_ASW_DebugInterface; /*!< Pointer to USART debug interface object */
+
 #endif /* WORK_LIB_LOG_H_ */

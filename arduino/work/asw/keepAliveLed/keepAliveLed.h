@@ -42,5 +42,6 @@ private:
 
 };
 
+extern keepAliveLed* p_global_ASW_keepAliveLed; /*!< Pointer to keepAliveLed object */
 
 #endif /* WORK_ASW_KEEPALIVELED_KEEPALIVELED_H_ */

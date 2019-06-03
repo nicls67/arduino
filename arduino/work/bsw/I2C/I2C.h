@@ -73,5 +73,6 @@ private:
 	void initializeBus();
 };
 
+extern I2C* p_global_BSW_i2c; /*!< Pointer to I2C driver object */
 
 #endif /* WORK_BSW_I2C_I2C_H_ */
