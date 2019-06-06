@@ -15,6 +15,7 @@
 
 #include "../bsw/timer/timer.h"
 #include "../bsw/cpuLoad/CpuLoad.h"
+#include "../bsw/wdt/Watchdog.h"
 
 #include "../asw/asw.h"
 
@@ -54,6 +55,9 @@ void scheduler::launchPeriodicTasks()
 {
 	uint8_t task_nb = 0; /* Used for debug */
 	Task_t* cur_task;
+
+	/* Reset watchdog */
+	p_global_BSW_wdg->reset();
 
 	/* First reset element pointer */
 	TasksLL_ptr->ResetElementPtr();

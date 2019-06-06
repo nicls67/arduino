@@ -8,6 +8,7 @@
 
 #include <avr/io.h>
 #include <stdlib.h>
+#include <avr/wdt.h>
 
 #include "../lib/String/String.h"
 
@@ -18,11 +19,15 @@
 #include "dio/dio.h"
 #include "dht22/dht22.h"
 #include "cpuLoad/CpuLoad.h"
+#include "wdt/Watchdog.h"
 
 #include "bsw.h"
 
 void bsw_init()
 {
+	/* Watchdog shall be initialized first, to provoke a watchdog reset as early as possible */
+	p_global_BSW_wdg = new Watchdog(WDTO_1S);
+
 	p_global_BSW_dio = new dio();
 
 	p_global_BSW_timer = 0;
