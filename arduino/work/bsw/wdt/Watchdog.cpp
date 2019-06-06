@@ -8,7 +8,7 @@
  */
 
 /* TODO : debug menu to manage watchdog  : on/off, change timeout */
-/* TODO : debug menu to provoke a reset */
+/* TODO : add management of reset source */
 
 #include <avr/wdt.h>
 #include <util/delay.h>
@@ -51,4 +51,9 @@ void Watchdog::timeoutUpdate(uint8_t value)
 	disable();
 	_delay_us(10);
 	enable(value);
+}
+
+void Watchdog::SystemReset()
+{
+	while(1);
 }

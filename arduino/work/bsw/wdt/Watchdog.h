@@ -52,6 +52,14 @@ public:
 	 */
 	void timeoutUpdate(uint8_t value);
 
+	/*!
+	 * @brief System reset function
+	 * @details This function provokes a system reset by going in an infinite loop. Thus the watchdog will reset the CPU when the timeout occurs.
+	 *
+	 * @return Nothing
+	 */
+	void SystemReset();
+
 private:
 
 	/*!
