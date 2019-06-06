@@ -92,6 +92,14 @@ public:
 	 */
 	void nextLine();
 
+	/*!
+	 * @brief Screen clearing function
+	 * @details This function clears the entire display by sending the \f character on the USART line.
+	 *
+	 * @return Nothing
+	 */
+	void ClearScreen();
+
 
 
 private:

@@ -73,3 +73,8 @@ void DebugInterface::nextLine()
 	sendChar((uint8_t)'\n');
 	sendChar((uint8_t)'\r');
 }
+
+void DebugInterface::ClearScreen()
+{
+	sendChar((uint8_t)'\f');
+}
