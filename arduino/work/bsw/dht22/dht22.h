@@ -11,9 +11,6 @@
 #define WORK_BSW_DHT22_DHT22_H_
 
 
-/* TODO : make a more generic class for 1-wire communication, and maybe if needed a specific class for dht22 which will use this 1-wire class */
-
-
 
 /*!
  * @brief DHT 22 driver class
