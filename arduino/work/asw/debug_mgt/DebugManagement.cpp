@@ -17,6 +17,7 @@
 
 #include "../../bsw/usart/usart.h"
 #include "../../bsw/cpuLoad/CpuLoad.h"
+#include "../../bsw/wdt/Watchdog.h"
 
 #include "../TempSensor/TempSensor.h"
 #include "../debug_ift/DebugInterface.h"
@@ -32,6 +33,8 @@ DebugManagement* p_global_ASW_DebugManagement;
  */
 const uint8_t str_debug_main_menu[] =
 		"Menu principal :  \n"
+		"\n"
+		"    r : Reset du systeme\n"
 		"    s : Quitter debug\n";
 
 /*!
@@ -76,7 +79,7 @@ void DebugManagement::DisplayData()
 	bool validity;
 
 	/* Clear the screen */
-	debug_ift_ptr->sendChar('\f');
+	debug_ift_ptr->ClearScreen();
 
 	/* First write menu */
 	debug_ift_ptr->sendString(menu_string_ptr);
@@ -171,6 +174,10 @@ bool DebugManagement::DebugModeManagement()
 			quit = true;
 			break;
 
+		case 'r':
+			debug_ift_ptr->sendString((uint8_t*)"\fReset !");
+			p_global_BSW_wdg->SystemReset();
+			break;
 		default:
 			info_string_ptr = (uint8_t*)str_debug_info_message_wrong_selection;
 			break;
