@@ -26,7 +26,7 @@
 void bsw_init()
 {
 	/* Watchdog shall be initialized first, to provoke a watchdog reset as early as possible */
-	p_global_BSW_wdg = new Watchdog(WDTO_1S);
+	p_global_BSW_wdg = new Watchdog(WDG_TMO_1S);
 
 	p_global_BSW_dio = new dio();
 
