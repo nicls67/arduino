@@ -13,13 +13,36 @@
 #define PERIOD_MS_TASK_DISPLAY_DEBUG_DATA  5000 /*!< Period for displaying temperature and humidity data */
 #define PERIOD_MS_TASK_DISPLAY_CPU_LOAD 5000 /*!< Period for displaying CPU load data */
 
+
 /*!
  * @brief Defines the debug states
  */
 typedef enum
 {
 	MAIN_MENU, /*!< Init state : main menu is displayed */
-}debug_state_t;
+	WDG_MENU,  /*!< Watchdog state : watchdog menu is displayed */
+}
+debug_mgt_main_menu_state_t;
+
+/*!
+ * @brief Defines possible states for watchdog management
+ */
+typedef enum
+{
+	WDG_MAIN, /*!< Main menu of watchdog management */
+	WDG_TMO_UPDATE, /*!< Timeout update mode */
+}
+debug_mgt_wdg_state_t;
+
+/*!
+ * @brief Structure containing all debug states
+ */
+typedef struct
+{
+	debug_mgt_main_menu_state_t main_state; /*!< Current main menu state */
+	debug_mgt_wdg_state_t wdg_state; /*!< Current state of watchdog management */
+}
+debug_mgt_state_struct_t;
 
 /*!
  * @brief Debug management class
@@ -110,8 +133,52 @@ private:
 	TempSensor* tempSensor_ptr; /*!< Pointer to the temperature sensor object */
 	uint8_t* menu_string_ptr; /*!< Pointer to the current menu string to display */
 	uint8_t* info_string_ptr; /*!< Pointer to the info message to display */
-	debug_state_t menu_state; /*!< Current debug state */
+	debug_mgt_state_struct_t debug_state; /*!< Structure containing debug states for each menu */
 
+
+	/*!
+	 * @brief Debug menu exit function
+	 * @details This function prepares the exit of debug menu. It writes the message "Bye !" on the screen and removes the periodic task from the scheduler.
+	 *
+	 * @return Nothing.
+	 */
+	void exitDebugMenu();
+
+	/*!
+	 * @brief System reset function
+	 * @details This function provokes a reset of the system. It displays a message on the screen and calls the reset function from watchdog class.
+	 *
+	 * @return Nothing.
+	 */
+	void systemReset();
+
+	/*!
+	 * @brief Watchdog menu management function
+	 * @details This function manages the watchdog menu. It handles the character received on USART bus and execute the requested action.
+	 * 			It also manages the display of the watchdog menu.
+	 *
+	 * @param [in] rcv_char Character received on USART bus.
+	 * @return Nothing.
+	 */
+	void WatchdogMenuManagement(uint8_t rcv_char);
+
+	/*!
+	 * @brief Main menu management
+	 * @details This function manages the main debug menu. It handles the character received on USART bus and execute the requested action.
+	 * 			It also manages the display of the main menu.
+	 *
+	 * @param [in] rcv_char Character received on USART bus.
+	 * @return True if the debug mode shall be exited, false otherwise.
+	 */
+	bool MainMenuManagement(uint8_t rcv_char);
+
+	/*!
+	 * @brief Watchdog timeout update function
+	 * @details This function allows the user to update the watchdog timeout value.
+	 * 			It displays a selection menu with the possible timeout value and calls the update function from watchdog class.
+	 *
+	 * @return Nothing
+	 */
 };
 
 extern DebugManagement* p_global_ASW_DebugManagement; /*!< Pointer to the DebugManagement object */

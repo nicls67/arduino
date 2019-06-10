@@ -9,6 +9,7 @@
 
 #include <avr/io.h>
 #include <stdlib.h>
+#include <avr/wdt.h>
 
 #include "../../lib/string/String.h"
 #include "../../lib/LinkedList/LinkedList.h"
@@ -33,9 +34,37 @@ DebugManagement* p_global_ASW_DebugManagement;
  */
 const uint8_t str_debug_main_menu[] =
 		"Menu principal :  \n"
+		"    1 : Watchdog\n"
 		"\n"
 		"    r : Reset du systeme\n"
-		"    s : Quitter debug\n";
+		"    q : Quitter debug\n";
+
+/*!
+ * @brief Watchdog menu of debug mode
+ */
+const uint8_t str_debug_wdg_menu[] =
+		"Menu watchdog : \n"
+		"    1 : Changer timeout\n"
+		"\n"
+		"    q : Retour\n";
+
+/*!
+ * @brief Watchdog timeout update selection
+ */
+const uint8_t str_debug_wdg_timeout_update_selection[] =
+		"Selection du timeout watchdog : \n"
+		"    0 : 15 ms\n"
+		"    1 : 30 ms\n"
+		"    2 : 60 ms\n"
+		"    3 : 120 ms\n"
+		"    4 : 250 ms\n"
+		"    5 : 500 ms\n"
+		"    6 : 1 s\n"
+		"    7 : 2 s\n"
+		"    8 : 4 s\n"
+		"    9 : 8 s\n"
+		"\n"
+		"    a : Annuler\n";
 
 /*!
  * @brief Info menu empty string
@@ -45,8 +74,12 @@ const uint8_t str_debug_info_message_empty[] = "\n";
 /*!
  * @brief Info menu string in case a wrong selection has been performed
  */
-const uint8_t str_debug_info_message_wrong_selection[] = "Impossible de faire ca... !\n";
+const uint8_t str_debug_info_message_wrong_menu_selection[] = "Impossible de faire ca... !\n";
 
+/*!
+ * @brief Info menu string in case the watchdog timeout value has been updated
+ */
+const uint8_t str_debug_info_message_wdg_tmo_updated[] = "Valeur modifiee !\n";
 
 DebugManagement::DebugManagement()
 {
@@ -63,7 +96,9 @@ DebugManagement::DebugManagement()
 	tempSensor_ptr = p_global_ASW_TempSensor;
 
 	/* initialize menu */
-	menu_state = MAIN_MENU;
+	debug_state.main_state = MAIN_MENU;
+	debug_state.wdg_state = WDG_MAIN;
+
 	menu_string_ptr = (uint8_t*)str_debug_main_menu;
 	info_string_ptr = (uint8_t*)str_debug_info_message_empty;
 
@@ -163,27 +198,16 @@ bool DebugManagement::DebugModeManagement()
 	uint8_t rcv_char = debug_ift_ptr->read();
 
 	/* switch on menu state */
-	switch(menu_state)
+	switch(debug_state.main_state)
 	{
+	default:
 	case MAIN_MENU:
-		switch (rcv_char)
-		{
-		case 's':
-			debug_ift_ptr->sendString((uint8_t*)"\fBye !");
-			p_global_scheduler->removePeriodicTask((TaskPtr_t)&DebugManagement::DisplayPeriodicData_task);
-			quit = true;
-			break;
-
-		case 'r':
-			debug_ift_ptr->sendString((uint8_t*)"\fReset !");
-			p_global_BSW_wdg->SystemReset();
-			break;
-		default:
-			info_string_ptr = (uint8_t*)str_debug_info_message_wrong_selection;
-			break;
-		}
+		quit = MainMenuManagement(rcv_char);
 		break;
 
+	case WDG_MENU:
+		WatchdogMenuManagement(rcv_char);
+		break;
 	}
 
 	/* Force display update */
@@ -192,4 +216,119 @@ bool DebugManagement::DebugModeManagement()
 
 	return quit;
 
+}
+
+void DebugManagement::exitDebugMenu()
+{
+	debug_ift_ptr->sendString((uint8_t*)"\fBye !");
+	p_global_scheduler->removePeriodicTask((TaskPtr_t)&DebugManagement::DisplayPeriodicData_task);
+}
+
+void DebugManagement::systemReset()
+{
+	debug_ift_ptr->sendString((uint8_t*)"\fReset !");
+	p_global_BSW_wdg->SystemReset();
+}
+
+void DebugManagement::WatchdogMenuManagement(uint8_t rcv_char)
+{
+	switch(debug_state.wdg_state)
+	{
+	default:
+	case WDG_MAIN:
+		switch (rcv_char)
+		{
+		case '1':
+			menu_string_ptr = (uint8_t*)str_debug_wdg_timeout_update_selection;
+			debug_state.wdg_state = WDG_TMO_UPDATE;
+			break;
+		case 'q':
+			debug_state.main_state = MAIN_MENU;
+			menu_string_ptr = (uint8_t*)str_debug_main_menu;
+			break;
+		default:
+			info_string_ptr = (uint8_t*)str_debug_info_message_wrong_menu_selection;
+			break;
+		}
+		break;
+
+	case WDG_TMO_UPDATE:
+		uint8_t new_tmo = 0xFF;
+		switch(rcv_char)
+		{
+		case 'a':
+			debug_state.wdg_state = WDG_MAIN;
+			menu_string_ptr = (uint8_t*)str_debug_wdg_menu;
+			break;
+		case '0':
+			new_tmo = WDG_TMO_15MS;
+			break;
+		case '1':
+			new_tmo = WDG_TMO_30MS;
+			break;
+		case '2':
+			new_tmo = WDG_TMO_60MS;
+			break;
+		case '3':
+			new_tmo = WDG_TMO_120MS;
+			break;
+		case '4':
+			new_tmo = WDG_TMO_250MS;
+			break;
+		case '5':
+			new_tmo = WDG_TMO_500MS;
+			break;
+		case '6':
+			new_tmo = WDG_TMO_1S;
+			break;
+		case '7':
+			new_tmo = WDG_TMO_2S;
+			break;
+		case '8':
+			new_tmo = WDG_TMO_4S;
+			break;
+		case '9':
+			new_tmo = WDG_TMO_8S;
+			break;
+		default:
+			info_string_ptr = (uint8_t*)str_debug_info_message_wrong_menu_selection;
+			break;
+		}
+
+		if(new_tmo != 0xFF)
+		{
+			p_global_BSW_wdg->timeoutUpdate(new_tmo);
+			debug_state.wdg_state = WDG_MAIN;
+			menu_string_ptr = (uint8_t*)str_debug_wdg_menu;
+			info_string_ptr = (uint8_t*)str_debug_info_message_wdg_tmo_updated;
+		}
+		break;
+	}
+
+}
+
+bool DebugManagement::MainMenuManagement(uint8_t rcv_char)
+{
+	bool quit = false;
+
+	switch (rcv_char)
+	{
+	case '1' :
+		debug_state.main_state = WDG_MENU;
+		debug_state.wdg_state = WDG_MAIN;
+		menu_string_ptr = (uint8_t*)str_debug_wdg_menu;
+		break;
+	case 'q':
+		exitDebugMenu();
+		quit = true;
+		break;
+	case 'r':
+		systemReset();
+		break;
+	default:
+		info_string_ptr = (uint8_t*)str_debug_info_message_wrong_menu_selection;
+		break;
+	}
+
+	return quit;
 }
