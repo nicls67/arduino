@@ -7,7 +7,7 @@
  * @author nicls67
  */
 
-/* TODO : debug menu to manage watchdog  : on/off, change timeout */
+/* TODO : debug menu to manage watchdog  : on/off , display current tmo value*/
 /* TODO : add management of reset source */
 
 #include <avr/wdt.h>
@@ -15,7 +15,7 @@
 
 #include "Watchdog.h"
 
-#define WDG_TIMEOUT_DEFAULT_MS WDTO_500MS /*!< Default timeout value is set to 500 ms */
+#define WDG_TIMEOUT_DEFAULT_MS WDG_TMO_500MS /*!< Default timeout value is set to 500 ms */
 
 Watchdog* p_global_BSW_wdg;
 

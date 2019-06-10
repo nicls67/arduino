@@ -11,6 +11,20 @@
 #define WORK_BSW_WDT_WATCHDOG_H_
 
 /*!
+ * @brief Definition of available timeout values
+ */
+#define WDG_TMO_15MS WDTO_15MS /*!< Timeout value is 15 ms */
+#define WDG_TMO_30MS WDTO_30MS /*!< Timeout value is 30 ms */
+#define WDG_TMO_60MS WDTO_60MS /*!< Timeout value is 60 ms */
+#define WDG_TMO_120MS WDTO_120MS /*!< Timeout value is 120 ms */
+#define WDG_TMO_250MS WDTO_250MS /*!< Timeout value is 250 ms */
+#define WDG_TMO_500MS WDTO_500MS /*!< Timeout value is 500 ms */
+#define WDG_TMO_1S WDTO_1S /*!< Timeout value is 1 s */
+#define WDG_TMO_2S WDTO_2S /*!< Timeout value is 2 s */
+#define WDG_TMO_4S WDTO_4S /*!< Timeout value is 4 s */
+#define WDG_TMO_8S WDTO_8S /*!< Timeout value is 8 s */
+
+/*!
  * @brief Watchdog management class
  * @details This class provides services to manage the watchdog HW module. The watchdog shall be reset periodically to avoid a hardware reset of the system.
  */
