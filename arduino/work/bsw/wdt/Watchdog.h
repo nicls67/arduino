@@ -74,7 +74,17 @@ public:
 	 */
 	void SystemReset();
 
+	/*!
+	 * @brief Watchdog timeout get value.
+	 * @details This function returns the current watchdog timeout value in ms. It has to convert the value of tmo_value into a numeric value of the timeout.
+	 *
+	 * @return Timeout value.
+	 */
+	uint16_t getTMOValue();
+
 private:
+
+	uint8_t tmo_value; /*!< Current timeout value */
 
 	/*!
 	 * @brief Watchdog enabling function

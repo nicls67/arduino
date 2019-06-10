@@ -33,6 +33,7 @@ Watchdog::Watchdog(uint8_t timeout)
 
 void Watchdog::enable(uint8_t value)
 {
+	tmo_value = value;
 	wdt_enable(value);
 }
 
@@ -56,4 +57,46 @@ void Watchdog::timeoutUpdate(uint8_t value)
 void Watchdog::SystemReset()
 {
 	while(1);
+}
+
+uint16_t Watchdog::getTMOValue()
+{
+	uint16_t retval;
+
+	switch(tmo_value)
+	{
+	case 0:
+	default:
+		retval = 15;
+		break;
+	case 1:
+		retval = 30;
+		break;
+	case 2:
+		retval = 60;
+		break;
+	case 3:
+		retval = 120;
+		break;
+	case 4:
+		retval = 250;
+		break;
+	case 5:
+		retval = 500;
+		break;
+	case 6:
+		retval = 1000;
+		break;
+	case 7:
+		retval = 2000;
+		break;
+	case 8:
+		retval = 4000;
+		break;
+	case 9:
+		retval = 8000;
+		break;
+	}
+
+	return retval;
 }
