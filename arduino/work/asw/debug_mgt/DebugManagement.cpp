@@ -45,6 +45,7 @@ const uint8_t str_debug_main_menu[] =
 const uint8_t str_debug_wdg_menu[] =
 		"Menu watchdog : \n"
 		"    1 : Changer timeout\n"
+		"    2 : Afficher valeur actuelle du timeout\n"
 		"\n"
 		"    q : Retour\n";
 
@@ -67,19 +68,19 @@ const uint8_t str_debug_wdg_timeout_update_selection[] =
 		"    a : Annuler\n";
 
 /*!
- * @brief Info menu empty string
- */
-const uint8_t str_debug_info_message_empty[] = "\n";
-
-/*!
  * @brief Info menu string in case a wrong selection has been performed
  */
-const uint8_t str_debug_info_message_wrong_menu_selection[] = "Impossible de faire ca... !\n";
+const uint8_t str_debug_info_message_wrong_menu_selection[] = "Impossible de faire ca... !";
 
 /*!
  * @brief Info menu string in case the watchdog timeout value has been updated
  */
-const uint8_t str_debug_info_message_wdg_tmo_updated[] = "Valeur modifiee !\n";
+const uint8_t str_debug_info_message_wdg_tmo_updated[] = "Valeur modifiee !";
+
+/*!
+ * @brief Info menu string displaying the current value of the watchdog timeout
+ */
+const uint8_t str_debug_info_message_wdg_tmo_value[] = "Valeur du timeout watchdog (ms) : ";
 
 DebugManagement::DebugManagement()
 {
@@ -100,7 +101,7 @@ DebugManagement::DebugManagement()
 	debug_state.wdg_state = WDG_MAIN;
 
 	menu_string_ptr = (uint8_t*)str_debug_main_menu;
-	info_string_ptr = (uint8_t*)str_debug_info_message_empty;
+	info_string_ptr = new String();
 	isInfoStringDisplayed = false;
 
 	/* Display data now to avoid blank screen until the task is called by scheduler */
@@ -124,7 +125,10 @@ void DebugManagement::DisplayData()
 	debug_ift_ptr->nextLine();
 
 	/* Write info message */
-	debug_ift_ptr->sendString(info_string_ptr);
+	if(info_string_ptr->getSize() != 0)
+		debug_ift_ptr->sendString(info_string_ptr);
+
+	debug_ift_ptr->sendChar((uint8_t)'\n');
 
 	/* Skip 1 line */
 	debug_ift_ptr->nextLine();
@@ -183,7 +187,7 @@ void DebugManagement::DisplayData()
 
 	if(isInfoStringDisplayed)
 	{
-		info_string_ptr = (uint8_t*)str_debug_info_message_empty;
+		info_string_ptr->Clear();
 		isInfoStringDisplayed = false;
 	}
 	else
@@ -249,12 +253,16 @@ void DebugManagement::WatchdogMenuManagement(uint8_t rcv_char)
 			menu_string_ptr = (uint8_t*)str_debug_wdg_timeout_update_selection;
 			debug_state.wdg_state = WDG_TMO_UPDATE;
 			break;
+		case '2':
+			info_string_ptr->appendString((uint8_t*)str_debug_info_message_wdg_tmo_value);
+			info_string_ptr->appendInteger(p_global_BSW_wdg->getTMOValue(), 10);
+			break;
 		case 'q':
 			debug_state.main_state = MAIN_MENU;
 			menu_string_ptr = (uint8_t*)str_debug_main_menu;
 			break;
 		default:
-			info_string_ptr = (uint8_t*)str_debug_info_message_wrong_menu_selection;
+			info_string_ptr->appendString((uint8_t*)str_debug_info_message_wrong_menu_selection);
 			break;
 		}
 		break;
@@ -298,7 +306,7 @@ void DebugManagement::WatchdogMenuManagement(uint8_t rcv_char)
 			new_tmo = WDG_TMO_8S;
 			break;
 		default:
-			info_string_ptr = (uint8_t*)str_debug_info_message_wrong_menu_selection;
+			info_string_ptr->appendString((uint8_t*)str_debug_info_message_wrong_menu_selection);
 			break;
 		}
 
@@ -307,7 +315,7 @@ void DebugManagement::WatchdogMenuManagement(uint8_t rcv_char)
 			p_global_BSW_wdg->timeoutUpdate(new_tmo);
 			debug_state.wdg_state = WDG_MAIN;
 			menu_string_ptr = (uint8_t*)str_debug_wdg_menu;
-			info_string_ptr = (uint8_t*)str_debug_info_message_wdg_tmo_updated;
+			info_string_ptr->appendString((uint8_t*)str_debug_info_message_wdg_tmo_updated);
 		}
 		break;
 	}
@@ -333,7 +341,7 @@ bool DebugManagement::MainMenuManagement(uint8_t rcv_char)
 		systemReset();
 		break;
 	default:
-		info_string_ptr = (uint8_t*)str_debug_info_message_wrong_menu_selection;
+		info_string_ptr->appendString((uint8_t*)str_debug_info_message_wrong_menu_selection);
 		break;
 	}
 

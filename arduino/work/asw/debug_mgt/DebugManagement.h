@@ -78,6 +78,7 @@ public:
 	 *  @brief Management of debug mode
 	 *  @details This function manages the debug menu according to the following state machine :
 	 *  		 	  - MAIN_MENU state : handles user choice in main menu and selects next state\n
+	 *				  - WDG_MENU state : handles user choice in watchdog menu and selects next state\n
 	 *
 	 *  		 It is called each time a data is received on USART and debug mode is active.
 	 *
@@ -111,7 +112,7 @@ public:
 	 * @details This function returns the pointer to the info string to display
 	 * @return Info string pointer
 	 */
-	inline uint8_t* getInfoStringPtr()
+	inline String* getInfoStringPtr()
 	{
 		return info_string_ptr;
 	}
@@ -122,7 +123,7 @@ public:
 	 * @param [in] addr String address
 	 * @return Nothing
 	 */
-	inline void setInfoStringPtr(uint8_t* addr)
+	inline void setInfoStringPtr(String* addr)
 	{
 		info_string_ptr = addr;
 	}
@@ -132,7 +133,7 @@ private:
 	DebugInterface* debug_ift_ptr; /*!< Pointer to the debug interface object, which is used to send data on usart link */
 	TempSensor* tempSensor_ptr; /*!< Pointer to the temperature sensor object */
 	uint8_t* menu_string_ptr; /*!< Pointer to the current menu string to display */
-	uint8_t* info_string_ptr; /*!< Pointer to the info message to display */
+	String* info_string_ptr; /*!< Pointer to the info message to display */
 	debug_mgt_state_struct_t debug_state; /*!< Structure containing debug states for each menu */
 	bool isInfoStringDisplayed; /*!< Value defining if the info string has been already displayed one complete cycle of not */
 
