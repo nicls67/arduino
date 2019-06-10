@@ -101,6 +101,7 @@ DebugManagement::DebugManagement()
 
 	menu_string_ptr = (uint8_t*)str_debug_main_menu;
 	info_string_ptr = (uint8_t*)str_debug_info_message_empty;
+	isInfoStringDisplayed = false;
 
 	/* Display data now to avoid blank screen until the task is called by scheduler */
 	DisplayData();
@@ -180,7 +181,13 @@ void DebugManagement::DisplayData()
 		debug_ift_ptr->sendString((uint8_t*)"Charge CPU non disponible\n");
 	}
 
-	info_string_ptr = (uint8_t*)str_debug_info_message_empty;
+	if(isInfoStringDisplayed)
+	{
+		info_string_ptr = (uint8_t*)str_debug_info_message_empty;
+		isInfoStringDisplayed = false;
+	}
+	else
+		isInfoStringDisplayed = true;
 }
 
 void DebugManagement::DisplayPeriodicData_task()

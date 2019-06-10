@@ -134,6 +134,7 @@ private:
 	uint8_t* menu_string_ptr; /*!< Pointer to the current menu string to display */
 	uint8_t* info_string_ptr; /*!< Pointer to the info message to display */
 	debug_mgt_state_struct_t debug_state; /*!< Structure containing debug states for each menu */
+	bool isInfoStringDisplayed; /*!< Value defining if the info string has been already displayed one complete cycle of not */
 
 
 	/*!
