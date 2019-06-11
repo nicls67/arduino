@@ -82,9 +82,39 @@ public:
 	 */
 	uint16_t getTMOValue();
 
+	/*!
+	 * @brief Watchdog status function
+	 * @details This function returns the current status of the watchdog : enabled or disabled.
+	 *
+	 * @returns True if the watchdog is enabled, false otherwise.
+	 */
+	inline bool isEnabled()
+	{
+		return isActive;
+	}
+
+	/*!
+	 * @brief Watchdog switching function
+	 * @details This function switches the state of the watchdog. It it was enabled, the function disables the watchdog, and if it was disabled, the function enables it with the memorized timeout value.
+	 * 			The function returns the new status of the watchdog.
+	 *
+	 * @return New status of the watchdog : True if enabled, false if disabled.
+	 */
+	bool SwitchWdg();
+
+
 private:
 
 	uint8_t tmo_value; /*!< Current timeout value */
+	bool isActive; /*!< Watchdog activation flag */
+
+	/*!
+	 * @brief Watchdog disabling function
+	 * @details This function disables the watchdog by calling wdt_disable macro.
+	 *
+	 * @return Nothing
+	 */
+	void disable();
 
 	/*!
 	 * @brief Watchdog enabling function
@@ -94,14 +124,6 @@ private:
 	 * @return Nothing
 	 */
 	void enable(uint8_t value);
-
-	/*!
-	 * @brief Watchdog disabling function
-	 * @details This function disables the watchdog by calling wdt_disable macro.
-	 *
-	 * @return Nothing
-	 */
-	void disable();
 };
 
 extern Watchdog* p_global_BSW_wdg; /*!< Pointer to Watchdog driver object */

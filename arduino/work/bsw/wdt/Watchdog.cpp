@@ -22,25 +22,36 @@ Watchdog* p_global_BSW_wdg;
 
 Watchdog::Watchdog()
 {
+	isActive = false;
 	enable(WDG_TIMEOUT_DEFAULT_MS);
 	reset(); /* The reset is not mandatory here because the enable function already make a reset, done here by precaution */
 }
 
 Watchdog::Watchdog(uint8_t timeout)
 {
+	isActive = false;
 	enable(timeout);
+	reset(); /* The reset is not mandatory here because the enable function already make a reset, done here by precaution */
 }
 
 
 void Watchdog::enable(uint8_t value)
 {
-	tmo_value = value;
-	wdt_enable(value);
+	if(!isActive)
+	{
+		tmo_value = value;
+		isActive = true;
+		wdt_enable(value);
+	}
 }
 
 void Watchdog::disable()
 {
-	wdt_disable();
+	if(isActive)
+	{
+		isActive = false;
+		wdt_disable();
+	}
 }
 
 void Watchdog::reset()
@@ -50,9 +61,14 @@ void Watchdog::reset()
 
 void Watchdog::timeoutUpdate(uint8_t value)
 {
-	disable();
-	_delay_us(10);
-	enable(value);
+	if(isActive)
+	{
+		disable();
+		_delay_us(10);
+		enable(value);
+	}
+	else
+		tmo_value = value;
 }
 
 void Watchdog::SystemReset()
@@ -100,4 +116,14 @@ uint16_t Watchdog::getTMOValue()
 	}
 
 	return retval;
+}
+
+bool Watchdog::SwitchWdg()
+{
+	if(isActive)
+		disable();
+	else
+		enable(tmo_value);
+
+	return isActive;
 }
