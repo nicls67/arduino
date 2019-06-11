@@ -7,7 +7,6 @@
  * @author nicls67
  */
 
-/* TODO : debug menu to manage watchdog  : on/off */
 /* TODO : add management of reset source */
 /* TODO : keep timeout value after of soft reset */
 
