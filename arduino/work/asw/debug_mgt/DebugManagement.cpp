@@ -29,6 +29,8 @@
 
 DebugManagement* p_global_ASW_DebugManagement;
 
+/* TODO : display current timeout value in timeout update menu  -> impact on string class */
+
 /*!
  * @brief Main menu of debug mode
  */
@@ -46,6 +48,7 @@ const uint8_t str_debug_wdg_menu[] =
 		"Menu watchdog : \n"
 		"    1 : Changer timeout\n"
 		"    2 : Afficher valeur actuelle du timeout\n"
+		"    3 : Activer/desactiver watchdog\n"
 		"\n"
 		"    q : Retour\n";
 
@@ -81,6 +84,18 @@ const uint8_t str_debug_info_message_wdg_tmo_updated[] = "Valeur modifiee !";
  * @brief Info menu string displaying the current value of the watchdog timeout
  */
 const uint8_t str_debug_info_message_wdg_tmo_value[] = "Valeur du timeout watchdog (ms) : ";
+
+/*!
+ * @brief Info menu string displayed when the watchdog has been disabled
+ */
+const uint8_t str_debug_info_message_wdg_disabled[] = "Watchdog inactif !";
+
+/*!
+ * @brief Info menu string displayed when the watchdog has been enabled
+ */
+const uint8_t str_debug_info_message_wdg_enabled[] = "Watchdog actif !";
+
+
 
 DebugManagement::DebugManagement()
 {
@@ -243,20 +258,41 @@ void DebugManagement::systemReset()
 
 void DebugManagement::WatchdogMenuManagement(uint8_t rcv_char)
 {
+	bool status;
+
 	switch(debug_state.wdg_state)
 	{
 	default:
+	/* Main page of the watchdog menu */
 	case WDG_MAIN:
 		switch (rcv_char)
 		{
+		/* User choice : update timeout
+		 * Go to the next menu and display current timeout value
+		 */
 		case '1':
 			menu_string_ptr = (uint8_t*)str_debug_wdg_timeout_update_selection;
 			debug_state.wdg_state = WDG_TMO_UPDATE;
 			break;
+		/* User choice : display TMO value
+		 * Get the timeout value from watchdog class and displays it in info string
+		 */
 		case '2':
 			info_string_ptr->appendString((uint8_t*)str_debug_info_message_wdg_tmo_value);
 			info_string_ptr->appendInteger(p_global_BSW_wdg->getTMOValue(), 10);
 			break;
+		/* User choice : enable/disable watchdog
+		 * Switch the state of the watchdog
+		 * Display the new status in the info string.
+		 */
+		case '3':
+			status = p_global_BSW_wdg->SwitchWdg();
+			if(status)
+				info_string_ptr->appendString((uint8_t*)str_debug_info_message_wdg_enabled);
+			else
+				info_string_ptr->appendString((uint8_t*)str_debug_info_message_wdg_disabled);
+			break;
+		/* User choice : go back to main menu */
 		case 'q':
 			debug_state.main_state = MAIN_MENU;
 			menu_string_ptr = (uint8_t*)str_debug_main_menu;
@@ -267,6 +303,9 @@ void DebugManagement::WatchdogMenuManagement(uint8_t rcv_char)
 		}
 		break;
 
+	/* Watchdog timeout update:
+	 * Select the new timeout value, update the watchdog with this value and display a message in info string
+	 */
 	case WDG_TMO_UPDATE:
 		uint8_t new_tmo = 0xFF;
 		switch(rcv_char)
@@ -326,12 +365,20 @@ bool DebugManagement::MainMenuManagement(uint8_t rcv_char)
 {
 	bool quit = false;
 
+	/* Main menu page */
 	switch (rcv_char)
 	{
+	/* User choice : go to watchdog menu
+	 * Display the menu and the watchdog status in the info string
+	 */
 	case '1' :
 		debug_state.main_state = WDG_MENU;
 		debug_state.wdg_state = WDG_MAIN;
 		menu_string_ptr = (uint8_t*)str_debug_wdg_menu;
+		if(p_global_BSW_wdg->isEnabled())
+			info_string_ptr->appendString((uint8_t*)str_debug_info_message_wdg_enabled);
+		else
+			info_string_ptr->appendString((uint8_t*)str_debug_info_message_wdg_disabled);
 		break;
 	case 'q':
 		exitDebugMenu();
