@@ -77,6 +77,14 @@
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
 		<buildTargets>
+			<target name="SourceMonitor" path="SourceMonitor" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>C:/Program</buildCommand>
+				<buildArguments>Files (x86)\SourceMonitor\SourceMonitor.exe</buildArguments>
+				<buildTarget/>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>false</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
 			<target name="clean" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>make</buildCommand>
 				<buildArguments>-j16</buildArguments>
@@ -96,15 +104,12 @@
 			<target name="doxygen" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>doxygen</buildCommand>
 				<buildArguments>../doxygen/DoxyFile</buildArguments>
-				<buildTarget/>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>
 			</target>
 			<target name="latex" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>../doxygen/latex/make.bat</buildCommand>
-				<buildArguments/>
-				<buildTarget/>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>
@@ -112,7 +117,6 @@
 			<target name="refman copy" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>cp</buildCommand>
 				<buildArguments>../doxygen/latex/refman.pdf ../doxygen</buildArguments>
-				<buildTarget/>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>
