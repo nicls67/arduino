@@ -8,7 +8,6 @@
  */
 
 /* TODO : add management of reset source */
-/* TODO : keep timeout value after of soft reset */
 
 #include <avr/wdt.h>
 #include <util/delay.h>
