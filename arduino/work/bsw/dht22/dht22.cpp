@@ -35,6 +35,9 @@ bool dht22::read(uint16_t* raw_humidity, uint16_t* raw_temperature)
 	uint8_t rcv_buf_data[32];
 	uint8_t rcv_buf_crc[8];
 
+	/* Initialize communication */
+	initializeCommunication();
+
 	/* To speed-up register reading time, the registers addresses are computed now and only once
 	 * and memorized into DIO driver.
 	 * Then the registers reads will be done with the "fast" reading function using the memorized addresses */
@@ -149,10 +152,6 @@ bool dht22::read(uint16_t* raw_humidity, uint16_t* raw_temperature)
 
 	/* Re-enable interrupts at the end of communication */
 	sei();
-
-	/* Initialize communication for next time */
-	initializeCommunication();
-
 
 	/* Convert timing into binary data */
 	uint32_t raw_rcv_data = 0;

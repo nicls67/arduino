@@ -32,8 +32,6 @@
 
 #include "../main.h"
 
-/* TODO : check what happens if sensor value is invalid */
-
 void asw_init()
 {
 	/* Temperature sensor activation */
