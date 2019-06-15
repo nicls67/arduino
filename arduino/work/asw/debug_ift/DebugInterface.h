@@ -86,7 +86,7 @@ public:
 
 	/*!
 	 * @brief Go to next line function
-	 * @details This function goes to the next line on the console display. It sends the two characters \n and \r on the USART line.
+	 * @details This function goes to the next line on the console display. It sends the two characters \c \\n and \c \\r on the USART line.
 	 *
 	 * @return Nothing
 	 */
@@ -94,7 +94,7 @@ public:
 
 	/*!
 	 * @brief Screen clearing function
-	 * @details This function clears the entire display by sending the \f character on the USART line.
+	 * @details This function clears the entire display by sending the \c \\f character on the USART line.
 	 *
 	 * @return Nothing
 	 */
