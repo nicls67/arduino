@@ -7,8 +7,6 @@
  * @author nicls67
  */
 
-/* TODO : add management of reset source */
-
 #include <avr/wdt.h>
 #include <util/delay.h>
 
