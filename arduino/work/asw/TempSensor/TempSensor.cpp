@@ -17,7 +17,8 @@
 
 #include "TempSensor.h"
 
-#define PIT_BEFORE_INVALID 60
+#define VALIDITY_TIMEOUT_MS 30000 /*!< Sensor data are declared invalid after 30s */
+#define PIT_BEFORE_INVALID (uint32_t)(VALIDITY_TIMEOUT_MS/SW_PERIOD_MS) /*!< Number of cycles after which the sensors data are declared invalid */
 
 TempSensor* p_global_ASW_TempSensor;
 
