@@ -10,6 +10,7 @@
 /* TODO : add management of reset source */
 
 #include <avr/wdt.h>
+#include <avr/io.h>
 #include <util/delay.h>
 
 #include "Watchdog.h"
@@ -18,8 +19,33 @@
 
 Watchdog* p_global_BSW_wdg;
 
+/*!
+ * @brief MCUSR register mirror
+ * @details This variable mirrors the  value of the MCUSR register. It is set during the init3 phase. It is global to be accessible from the watchdog class.
+ */
+uint8_t mcusr_mirror __attribute__ ((section(".noinit")));
+void get_mcusr(void) __attribute__((section(".init3"))) __attribute__((naked));
+
+/*!
+ * @brief MCUSR register get function
+ * @details This function stores the value of the MCUSR register into the mirror global variable.
+ * 			It also clears the register and disables the watchdog.
+ *
+ * @return Nothing
+ */
+void get_mcusr(void)
+{
+	mcusr_mirror = MCUSR;
+    MCUSR = 0;
+    wdt_disable();
+}
+
 Watchdog::Watchdog()
 {
+	/* First read the reset reason */
+	extractResetReason();
+
+	/* Then activate the watchdog */
 	isActive = false;
 	enable(WDG_TIMEOUT_DEFAULT_MS);
 	reset(); /* The reset is not mandatory here because the enable function already make a reset, done here by precaution */
@@ -124,4 +150,22 @@ bool Watchdog::SwitchWdg()
 		enable(tmo_value);
 
 	return isActive;
+}
+
+void Watchdog::extractResetReason()
+{
+	/* Extract the reset reason */
+	if(((mcusr_mirror >> PORF) & 0x01) == 1)
+		reset_reason = POWER_ON_RESET_TYPE;
+	else if (((mcusr_mirror >> EXTRF) & 0x01) == 1)
+		reset_reason = EXTERNAL_RESET_TYPE;
+	else if (((mcusr_mirror >> BORF) & 0x01) == 1)
+		reset_reason = BROWN_OUT_RESET_TYPE;
+	else if (((mcusr_mirror >> WDRF) & 0x01) == 1)
+		reset_reason = WDG_RESET_TYPE;
+	else if (((mcusr_mirror >> JTRF) & 0x01) == 1)
+		reset_reason = JTAG_RESET_TYPE;
+	else
+		reset_reason = POWER_ON_RESET_TYPE;
+
 }

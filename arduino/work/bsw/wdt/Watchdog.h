@@ -11,6 +11,20 @@
 #define WORK_BSW_WDT_WATCHDOG_H_
 
 /*!
+ * @brief Type definition for reset source
+ * @details This enumeration defines all possible reset sources : JTAG reset, watchdog reset, brown-out reset, external reset and power-on reset.
+ */
+typedef enum
+{
+	JTAG_RESET_TYPE,
+	WDG_RESET_TYPE,
+	BROWN_OUT_RESET_TYPE,
+	EXTERNAL_RESET_TYPE,
+	POWER_ON_RESET_TYPE
+}
+T_WDG_Reset_type;
+
+/*!
  * @brief Definition of available timeout values
  */
 #define WDG_TMO_15MS WDTO_15MS /*!< Timeout value is 15 ms */
@@ -24,6 +38,7 @@
 #define WDG_TMO_4S WDTO_4S /*!< Timeout value is 4 s */
 #define WDG_TMO_8S WDTO_8S /*!< Timeout value is 8 s */
 
+extern uint8_t mcusr_mirror __attribute__ ((section(".noinit")));
 /*!
  * @brief Watchdog management class
  * @details This class provides services to manage the watchdog HW module. The watchdog shall be reset periodically to avoid a hardware reset of the system.
@@ -86,7 +101,7 @@ public:
 	 * @brief Watchdog status function
 	 * @details This function returns the current status of the watchdog : enabled or disabled.
 	 *
-	 * @returns True if the watchdog is enabled, false otherwise.
+	 * @return True if the watchdog is enabled, false otherwise.
 	 */
 	inline bool isEnabled()
 	{
@@ -102,11 +117,22 @@ public:
 	 */
 	bool SwitchWdg();
 
+	/*!
+	 * @brief Reset reason get function.
+	 * @details This function returns the reason of the last reset.
+	 *
+	 * @return Reason of the last reset.
+	 */
+	inline T_WDG_Reset_type getResetReason()
+	{
+		return reset_reason;
+	}
 
 private:
 
 	uint8_t tmo_value; /*!< Current timeout value */
 	bool isActive; /*!< Watchdog activation flag */
+	T_WDG_Reset_type reset_reason; /*!< Variable used to store the reason if the last reset */
 
 	/*!
 	 * @brief Watchdog disabling function
@@ -124,6 +150,14 @@ private:
 	 * @return Nothing
 	 */
 	void enable(uint8_t value);
+
+	/*!
+	 * @brief Reset reason reading function.
+	 * @details This function reads the reason of the last reset in register \c MCUSR and clears the register. The reset reason is stored in variable \c reset_reason.
+	 *
+	 * @return Nothing
+	 */
+	void extractResetReason();
 };
 
 extern Watchdog* p_global_BSW_wdg; /*!< Pointer to Watchdog driver object */

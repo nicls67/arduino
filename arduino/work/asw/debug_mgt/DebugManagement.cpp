@@ -133,6 +133,8 @@ void DebugManagement::DisplayData()
 	/* Clear the screen */
 	debug_ift_ptr->ClearScreen();
 
+	debug_ift_ptr->sendInteger((uint16_t)mcusr_mirror, 16);
+
 	/* First write menu */
 	debug_ift_ptr->sendString(menu_string_ptr);
 
