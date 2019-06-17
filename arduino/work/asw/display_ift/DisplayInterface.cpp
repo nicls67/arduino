@@ -77,21 +77,9 @@ bool DisplayInterface::DisplayFullLine(uint8_t* str, uint8_t size, uint8_t line,
 		mode = LINE_SHIFT;
 
 
-
-	/* If the line is already configured in line shift mode, do not update display data, the shift is already in progress */
-	if(display_data[line].mode != LINE_SHIFT)
-	{
-		/* Clear the line to avoid issues in case a line shift is in progress on this line */
-		ClearLine(line);
-
-		/* Update data */
-		display_data[line].mode = mode;
-		display_data[line].isEmpty = false;
-		display_data[line].alignment = alignment;
-	}
 	/* If the requested mode is LINE SHIFT and the line is already in LINE SHIFT mode,
 	 * do not execute the function completely : only the string in shift data structure shall be updated */
-	else if(mode == LINE_SHIFT)
+	if((mode == LINE_SHIFT) && (display_data[line].mode == LINE_SHIFT))
 	{
 		display_data[line].shift_data.str_ptr->Clear();
 		display_data[line].shift_data.str_ptr->appendString(str);
@@ -104,6 +92,16 @@ bool DisplayInterface::DisplayFullLine(uint8_t* str, uint8_t size, uint8_t line,
 
 		return true;
 	}
+
+	/* Clear the line to avoid issues in case a line shift is in progress on this line */
+	ClearLine(line);
+
+	/* Update data */
+	display_data[line].mode = mode;
+	display_data[line].isEmpty = false;
+	display_data[line].alignment = alignment;
+
+
 
 	switch (mode)
 	{
@@ -230,6 +228,10 @@ bool DisplayInterface::ClearLine(uint8_t line)
 	if(display_data[line].mode == GO_TO_NEXT_LINE)
 		isNextLineMode = true;
 
+	/* Free shift data string */
+	if(display_data[line].mode == LINE_SHIFT)
+		free(display_data[line].shift_data.str_ptr);
+
 	/* Set line mode to NORMAL */
 	display_data[line].mode = NORMAL;
 
@@ -239,10 +241,7 @@ bool DisplayInterface::ClearLine(uint8_t line)
 	for(i=0; i<LCD_SIZE_NB_LINES; i++)
 	{
 		if(display_data[i].mode == LINE_SHIFT)
-		{
 			isShiftInProgress = true;
-			free(display_data[line].shift_data.str_ptr);
-		}
 	}
 
 	if(isShiftInProgress == false)
@@ -319,7 +318,7 @@ void DisplayInterface::shiftLine_task()
 				display_shift_data_ptr->str_cur_ptr ++;
 
 			/* Display the line */
-			p_global_ASW_DisplayInterface->DisplayFullLine(display_shift_data_ptr->str_cur_ptr, LCD_SIZE_NB_CHAR_PER_LINE, i);
+			p_global_ASW_DisplayInterface->updateLineAndRefresh(display_shift_data_ptr->str_cur_ptr, LCD_SIZE_NB_CHAR_PER_LINE, i);
 		}
 
 	}

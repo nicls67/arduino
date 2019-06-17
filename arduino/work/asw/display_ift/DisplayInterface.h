@@ -156,7 +156,18 @@ public:
 	 */
 	void setLineAlignmentAndRefresh(uint8_t line, T_DisplayInterface_LineAlignment alignment);
 
-
+	/*!
+	 * @brief Line data string update function
+	 * @details This function updates the data string and refreshes the display. It performs a raw update of the line, no processing is done by this function.
+	 * 			For calls from outside the class, it is better to use DisplayFullLine function.
+	 *
+	 * @param [in] str Pointer to the string to display
+	 * @param [in] size Size of the string
+	 * @param [in] line Line to update
+	 *
+	 * @return Nothing
+	 */
+	void updateLineAndRefresh(uint8_t* str, uint8_t size, uint8_t line);
 
 private:
 
@@ -203,17 +214,7 @@ private:
 	 */
 	void setLineAlignment(uint8_t line);
 
-	/*!
-	 * @brief Line data string update function
-	 * @details This function updates the data string and refreshes the display. The string is aligned according to the given parameter.
-	 *
-	 * @param [in] str Pointer to the string to display
-	 * @param [in] size Size of the string
-	 * @param [in] line Line to update
-	 *
-	 * @return Nothing
-	 */
-	void updateLineAndRefresh(uint8_t* str, uint8_t size, uint8_t line);
+
 };
 
 extern DisplayInterface* p_global_ASW_DisplayInterface; /*!< Pointer to DisplayInterface object */
