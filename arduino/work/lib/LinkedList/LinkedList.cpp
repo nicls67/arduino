@@ -13,27 +13,6 @@
 #include "../string/String.h"
 #include "../operators/operators.h"
 
-#include "../../bsw/usart/usart.h"
-#include "../../bsw/timer/timer.h"
-#include "../../bsw/I2C/I2C.h"
-#include "../../bsw/lcd/LCD.h"
-#include "../../bsw/dio/dio.h"
-#include "../../bsw/dht22/dht22.h"
-#include "../../bsw/cpuLoad/CpuLoad.h"
-
-#include "../../bsw/bsw.h"
-
-#include "../../asw/sensors/Sensor.h"
-#include "../../asw/sensors/TempSensor/TempSensor.h"
-#include "../../asw/sensors/HumSensor/HumSensor.h"
-#include "../../asw/debug_ift/DebugInterface.h"
-#include "../../asw/debug_mgt/DebugManagement.h"
-#include "../../asw/display_ift/DisplayInterface.h"
-#include "../../asw/keepAliveLed/keepAliveLed.h"
-#include "../../asw/display_mgt/DisplayManagement.h"
-
-#include "../../asw/asw.h"
-
 #include "LinkedList.h"
 
 LinkedList::LinkedList()
