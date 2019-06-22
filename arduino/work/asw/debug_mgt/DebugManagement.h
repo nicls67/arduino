@@ -132,6 +132,7 @@ private:
 
 	DebugInterface* debug_ift_ptr; /*!< Pointer to the debug interface object, which is used to send data on usart link */
 	TempSensor* tempSensor_ptr; /*!< Pointer to the temperature sensor object */
+	HumSensor* humSensor_ptr; /*!< Pointer to the humidity sensor object */
 	uint8_t* menu_string_ptr; /*!< Pointer to the current menu string to display */
 	String* info_string_ptr; /*!< Pointer to the info message to display */
 	debug_mgt_state_struct_t debug_state; /*!< Structure containing debug states for each menu */
@@ -173,14 +174,6 @@ private:
 	 * @return True if the debug mode shall be exited, false otherwise.
 	 */
 	bool MainMenuManagement(uint8_t rcv_char);
-
-	/*!
-	 * @brief Watchdog timeout update function
-	 * @details This function allows the user to update the watchdog timeout value.
-	 * 			It displays a selection menu with the possible timeout value and calls the update function from watchdog class.
-	 *
-	 * @return Nothing
-	 */
 };
 
 extern DebugManagement* p_global_ASW_DebugManagement; /*!< Pointer to the DebugManagement object */

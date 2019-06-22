@@ -18,7 +18,9 @@
 #include "../../bsw/I2C/I2C.h"
 #include "../../bsw/lcd/LCD.h"
 
-#include "../TempSensor/TempSensor.h"
+#include "../sensors/Sensor.h"
+#include "../sensors/TempSensor/TempSensor.h"
+#include "../sensors/HumSensor/HumSensor.h"
 #include "../display_ift/DisplayInterface.h"
 #include "DisplayManagement.h"
 
@@ -39,7 +41,12 @@ DisplayManagement::DisplayManagement()
 	if(ASW_init_cnf.isTempSensorActivated && (p_global_ASW_TempSensor == 0))
 		p_global_ASW_TempSensor = new TempSensor();
 
+	/* Check if humidity sensor object is already created and create one of needed */
+	if(ASW_init_cnf.isHumSensorActivated && (p_global_ASW_HumSensor == 0))
+		p_global_ASW_HumSensor = new HumSensor();
+
 	p_tempSensor = p_global_ASW_TempSensor;
+	p_humSensor = p_global_ASW_HumSensor;
 
 	/* Display welcome message on 2nd line */
 	String str;
@@ -48,9 +55,12 @@ DisplayManagement::DisplayManagement()
 
 	p_global_scheduler->addPeriodicTask((TaskPtr_t)&DisplayManagement::RemoveWelcomeMessage_Task, DISPLAY_MGT_PERIOD_WELCOME_MSG_REMOVAL);
 
-	/* Update temperature sensor task period to match display period */
+	/* Update temperature and humidity sensor task period to match display period */
 	if(p_tempSensor->getTaskPeriod() > DISPLAY_MGT_PERIOD_TASK_SENSOR)
 		p_tempSensor->updateTaskPeriod(DISPLAY_MGT_PERIOD_TASK_SENSOR);
+
+	if(p_humSensor->getTaskPeriod() > DISPLAY_MGT_PERIOD_TASK_SENSOR)
+		p_humSensor->updateTaskPeriod(DISPLAY_MGT_PERIOD_TASK_SENSOR);
 
 }
 
@@ -75,10 +85,12 @@ void DisplayManagement::DisplaySensorData_Task()
 {
 	DisplayInterface* displayIft_ptr;
 	TempSensor* tempSensor_ptr;
+	HumSensor* humSensor_ptr;
 
 	/* First get object pointer */
 	displayIft_ptr = p_global_ASW_DisplayManagement->GetIftPointer();
 	tempSensor_ptr = p_global_ASW_DisplayManagement->GetTempSensorPtr();
+	humSensor_ptr = p_global_ASW_DisplayManagement->GetHumSensorPtr();
 
 	if(tempSensor_ptr !=0)
 	{
@@ -86,11 +98,11 @@ void DisplayManagement::DisplaySensorData_Task()
 		String str(tempDisplayString);
 
 		/* If sensor data are valid */
-		if(tempSensor_ptr->GetValidity())
+		if(tempSensor_ptr->getValidity())
 		{
-			str.appendInteger((uint16_t)tempSensor_ptr->GetTempInteger(),10);
+			str.appendInteger((uint16_t)tempSensor_ptr->getValueInteger(),10);
 			str.appendString((uint8_t*)".");
-			str.appendInteger((uint16_t)tempSensor_ptr->GetTempDecimal(),10);
+			str.appendInteger((uint16_t)tempSensor_ptr->getValueDecimal(),10);
 			str.appendString((uint8_t*)" ");
 			str.appendChar(161);
 		}
@@ -99,16 +111,22 @@ void DisplayManagement::DisplaySensorData_Task()
 
 		displayIft_ptr->DisplayFullLine(str.getString(), str.getSize(), DISPLAY_MGT_LINE_TEMP, LINE_SHIFT);
 
+	}
+	else
+		displayIft_ptr->DisplayFullLine((uint8_t*)noTempSensorDisplayString, sizeof(noTempSensorDisplayString)/sizeof(uint8_t), DISPLAY_MGT_LINE_TEMP, LINE_SHIFT);
+
+
+	if(humSensor_ptr !=0)
+	{
 		/* Display humidity */
-		str.Clear();
-		str.appendString((uint8_t*)humidityDisplayString);
+		String str(humidityDisplayString);
 
 		/* If sensor data are valid */
-		if(tempSensor_ptr->GetValidity())
+		if(humSensor_ptr->getValidity())
 		{
-			str.appendInteger((uint16_t)tempSensor_ptr->GetHumInteger(),10);
+			str.appendInteger((uint16_t)humSensor_ptr->getValueInteger(),10);
 			str.appendString((uint8_t*)".");
-			str.appendInteger((uint16_t)tempSensor_ptr->GetHumDecimal(),10);
+			str.appendInteger((uint16_t)humSensor_ptr->getValueDecimal(),10);
 			str.appendString((uint8_t*)" %");
 		}
 		else
@@ -117,9 +135,7 @@ void DisplayManagement::DisplaySensorData_Task()
 		displayIft_ptr->DisplayFullLine(str.getString(), str.getSize(), DISPLAY_MGT_LINE_HUM, LINE_SHIFT);
 	}
 	else
-		displayIft_ptr->DisplayFullLine((uint8_t*)noSensorDisplayString, sizeof(noSensorDisplayString)/sizeof(uint8_t), DISPLAY_MGT_LINE_TEMP, LINE_SHIFT);
-
-
+		displayIft_ptr->DisplayFullLine((uint8_t*)noHumSensorDisplayString, sizeof(noHumSensorDisplayString)/sizeof(uint8_t), DISPLAY_MGT_LINE_TEMP, LINE_SHIFT);
 
 
 }

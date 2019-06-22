@@ -19,6 +19,7 @@ typedef struct
 	bool isDebugActivated; /*!< Debug services activation flag */
 	bool isLEDActivated; /*!< Keep-alive LED activation flag */
 	bool isTempSensorActivated; /*!< Temperature sensor activation flag */
+	bool isHumSensorActivated; /*!< Humidity sensor activation flag */
 	bool isDisplayActivated; /*!< LCD display activation flag */
 }
 T_ASW_init_cnf;

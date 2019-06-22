@@ -41,7 +41,8 @@ const T_LCD_conf_struct LCD_init_cnf = {
 const uint8_t welcomeMessageString[] = "Bienvenue !";
 const uint8_t tempDisplayString[] = "Temperature : "; /*!< String used for temperature display */
 const uint8_t humidityDisplayString[] = "Humidite : "; /*!< String used for humidity display */
-const uint8_t noSensorDisplayString[] = "Capteur de temperature desactive"; /*!< String used in case temperature sensor is deactivated */
+const uint8_t noTempSensorDisplayString[] = "Capteur de temperature desactive"; /*!< String used in case temperature sensor is deactivated */
+const uint8_t noHumSensorDisplayString[] = "Capteur d'humidite desactive"; /*!< String used in case humidity sensor is deactivated */
 
 /*!
  * @brief Display management class
@@ -85,7 +86,7 @@ public:
 	}
 
 	/*!
-	 * @brief Sensor pointer get function
+	 * @brief Temperature sensor pointer get function
 	 * @details This function returns the pointer to the temperature sensor object
 	 *
 	 * @return Pointer to sensor object
@@ -93,6 +94,17 @@ public:
 	inline TempSensor* GetTempSensorPtr()
 	{
 		return p_tempSensor;
+	}
+
+	/*!
+	 * @brief Humidity sensor pointer get function
+	 * @details This function returns the pointer to the humidity sensor object
+	 *
+	 * @return Pointer to sensor object
+	 */
+	inline HumSensor* GetHumSensorPtr()
+	{
+		return p_humSensor;
 	}
 
 	/*!
@@ -109,6 +121,7 @@ private:
 
 	DisplayInterface * p_display_ift; /*!< Pointer to the display interface object */
 	TempSensor* p_tempSensor; /*!< Pointer to the temperature sensor object */
+	HumSensor* p_humSensor; /*!< Pointer to the humidity sensor object */
 
 };
 

@@ -32,6 +32,7 @@ const T_ASW_init_cnf ASW_init_cnf =
 	true, 	/* Debug services*/
 	true, 	/* LED */
 	true, 	/* Temperature sensor */
+	true,	/* Humidity sensor */
 	true  	/* Display */
 };
 

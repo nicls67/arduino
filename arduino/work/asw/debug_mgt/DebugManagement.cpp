@@ -20,7 +20,9 @@
 #include "../../bsw/cpuLoad/CpuLoad.h"
 #include "../../bsw/wdt/Watchdog.h"
 
-#include "../TempSensor/TempSensor.h"
+#include "../sensors/Sensor.h"
+#include "../sensors/TempSensor/TempSensor.h"
+#include "../sensors/HumSensor/HumSensor.h"
 #include "../debug_ift/DebugInterface.h"
 #include "DebugManagement.h"
 
@@ -109,7 +111,12 @@ DebugManagement::DebugManagement()
 	if(ASW_init_cnf.isTempSensorActivated && (p_global_ASW_TempSensor == 0))
 		p_global_ASW_TempSensor = new TempSensor();
 
+	/* Create humidity sensor object if needed */
+	if(ASW_init_cnf.isHumSensorActivated && (p_global_ASW_HumSensor == 0))
+		p_global_ASW_HumSensor = new HumSensor();
+
 	tempSensor_ptr = p_global_ASW_TempSensor;
+	humSensor_ptr = p_global_ASW_HumSensor;
 
 	/* initialize menu */
 	debug_state.main_state = MAIN_MENU;
@@ -151,27 +158,34 @@ void DebugManagement::DisplayData()
 	/* Write sensor data */
 	if(tempSensor_ptr != 0)
 	{
-		validity = tempSensor_ptr->GetValidity();
+		validity = tempSensor_ptr->getValidity();
 
 		debug_ift_ptr->sendString((uint8_t*)"Donnees capteurs :\n");
 		debug_ift_ptr->sendString((uint8_t*)"    Temperature : ");
 
 		if(validity)
 		{
-			debug_ift_ptr->sendInteger(tempSensor_ptr->GetTempInteger(),10);
+			debug_ift_ptr->sendInteger(tempSensor_ptr->getValueInteger(),10);
 			debug_ift_ptr->sendString((uint8_t*)".");
-			debug_ift_ptr->sendInteger(tempSensor_ptr->GetTempDecimal(),10);
+			debug_ift_ptr->sendInteger(tempSensor_ptr->getValueDecimal(),10);
 		}
 		else
 			debug_ift_ptr->sendString((uint8_t*)"invalid");
 
 		debug_ift_ptr->sendString((uint8_t*)" degC\n    Humidite : ");
+	}
+	else
+		debug_ift_ptr->sendString((uint8_t*)"Le capteur de temperature est desactive...\n");
+
+	if(humSensor_ptr != 0)
+	{
+		validity = humSensor_ptr->getValidity();
 
 		if(validity)
 		{
-			debug_ift_ptr->sendInteger(tempSensor_ptr->GetHumInteger(),10);
+			debug_ift_ptr->sendInteger(humSensor_ptr->getValueInteger(),10);
 			debug_ift_ptr->sendString((uint8_t*)".");
-			debug_ift_ptr->sendInteger(tempSensor_ptr->GetHumDecimal(),10);
+			debug_ift_ptr->sendInteger(humSensor_ptr->getValueDecimal(),10);
 		}
 		else
 			debug_ift_ptr->sendString((uint8_t*)"invalid");
@@ -179,7 +193,8 @@ void DebugManagement::DisplayData()
 		debug_ift_ptr->sendString((uint8_t*)" %\n");
 	}
 	else
-		debug_ift_ptr->sendString((uint8_t*)"Le capteur de temperature est desactive...\n");
+		debug_ift_ptr->sendString((uint8_t*)"Le capteur d'humidite est desactive...\n");
+
 
 	/* Skip 1 line */
 	debug_ift_ptr->nextLine();

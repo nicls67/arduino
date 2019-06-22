@@ -23,7 +23,9 @@
 
 #include "../../bsw/bsw.h"
 
-#include "../../asw/TempSensor/TempSensor.h"
+#include "../../asw/sensors/Sensor.h"
+#include "../../asw/sensors/TempSensor/TempSensor.h"
+#include "../../asw/sensors/HumSensor/HumSensor.h"
 #include "../../asw/debug_ift/DebugInterface.h"
 #include "../../asw/debug_mgt/DebugManagement.h"
 #include "../../asw/display_ift/DisplayInterface.h"
