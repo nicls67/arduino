@@ -11,6 +11,8 @@
 #include <util/delay.h>
 #include <avr/interrupt.h>
 
+#include "../../lib/LinkedList/LinkedList.h"
+#include "../../scheduler/scheduler.h"
 #include "../dio/dio.h"
 #include "dht22.h"
 
@@ -24,16 +26,24 @@ dht22::dht22(uint8_t port)
 	dht22_port = port;
 	dio_ptr = p_global_BSW_dio;
 
+	pit_last_read = 0xFFFFFFFF;
+
 	initializeCommunication();
 }
 
-bool dht22::read(uint16_t* raw_humidity, uint16_t* raw_temperature)
+void dht22::read()
 {
 	uint8_t wait_cpt;
 	uint8_t bit_cpt = 32;
 
 	uint8_t rcv_buf_data[32];
 	uint8_t rcv_buf_crc[8];
+
+	/* memorize current PIT number */
+	pit_last_read = p_global_scheduler->getPitNumber();
+
+	/* Validity is set to false */
+	mem_validity = false;
 
 	/* Initialize communication */
 	initializeCommunication();
@@ -61,13 +71,13 @@ bool dht22::read(uint16_t* raw_humidity, uint16_t* raw_temperature)
 	 * Wait for 40 us (half time) and check that the pin is LOW */
 	_delay_us(40);
 	if (dio_ptr->dio_getPort_fast() != false)
-		return false;
+		return ;
 
 	/* Sensor will set pin state to HIGH for 80 us
 	 * Wait for 80 us (2nd half of the 80 us LOW + 1st half time of the 80 us HIGH) and check that the pin is HIGH */
 	_delay_us(80);
 	if (dio_ptr->dio_getPort_fast() != true)
-		return false;
+		return ;
 
 	/* Wait until signal goes to LOW (bit transmission)
 	 * If the signal never goes to LOW, report transmission failure */
@@ -77,7 +87,7 @@ bool dht22::read(uint16_t* raw_humidity, uint16_t* raw_temperature)
 		_delay_us(1);
 		wait_cpt++;
 		if(wait_cpt > MAX_WAIT_TIME_US)
-			return false;
+			return ;
 	}
 
 	/* Wait until signal goes to HIGH (bit transmission)
@@ -88,7 +98,7 @@ bool dht22::read(uint16_t* raw_humidity, uint16_t* raw_temperature)
 		_delay_us(1);
 		wait_cpt++;
 		if(wait_cpt > MAX_WAIT_TIME_US)
-			return false;
+			return ;
 	}
 
 	/* There are 32 bits of data to receive */
@@ -101,7 +111,7 @@ bool dht22::read(uint16_t* raw_humidity, uint16_t* raw_temperature)
 			_delay_us(1);
 			wait_cpt++;
 			if(wait_cpt > MAX_WAIT_TIME_US)
-				return false;
+				return ;
 		}
 
 		/* Update bit counter and memorize time */
@@ -116,7 +126,7 @@ bool dht22::read(uint16_t* raw_humidity, uint16_t* raw_temperature)
 			_delay_us(1);
 			wait_cpt++;
 			if(wait_cpt > MAX_WAIT_TIME_US)
-				return false;
+				return ;
 		}
 	}
 
@@ -131,7 +141,7 @@ bool dht22::read(uint16_t* raw_humidity, uint16_t* raw_temperature)
 			_delay_us(0.5);
 			wait_cpt++;
 			if(wait_cpt > MAX_WAIT_TIME_US)
-				return false;
+				return ;
 		}
 
 		/* Update bit counter and memorize time */
@@ -146,7 +156,7 @@ bool dht22::read(uint16_t* raw_humidity, uint16_t* raw_temperature)
 			_delay_us(1);
 			wait_cpt++;
 			if(wait_cpt > MAX_WAIT_TIME_US)
-				return false;
+				return ;
 		}
 	}
 
@@ -186,15 +196,15 @@ bool dht22::read(uint16_t* raw_humidity, uint16_t* raw_temperature)
 	crc4 = raw_rcv_data & 0xFF;
 	crc = crc1 + crc2 + crc3 + crc4;
 	if(crc != raw_rcv_crc)
-		return false;
+		return;
 
 
 	/* Convert data in humidity and temperature */
-	*raw_humidity = (raw_rcv_data >> 16) & 0xFFFF;
-	*raw_temperature = raw_rcv_data & 0xFFFF;
+	mem_humidity = (raw_rcv_data >> 16) & 0xFFFF;
+	mem_temperature = raw_rcv_data & 0xFFFF;
+	mem_validity = true;
 
-
-	return true;
+	return;
 }
 
 void dht22::initializeCommunication()
@@ -205,4 +215,26 @@ void dht22::initializeCommunication()
 	/* Set pin at level HIGH */
 	dio_ptr->dio_setPort(dht22_port, true);
 
+}
+
+bool dht22::getHumidity(uint16_t* humidity)
+{
+	/* Start a new read operation if the data are obsolete */
+	if(pit_last_read != p_global_scheduler->getPitNumber())
+		read();
+
+	/* Write the data */
+	*humidity = mem_humidity;
+	return mem_validity;
+}
+
+bool dht22::getTemperature(uint16_t* temperature)
+{
+	/* Start a new read operation if the data are obsolete */
+	if(pit_last_read != p_global_scheduler->getPitNumber())
+		read();
+
+	/* Write the data */
+	*temperature = mem_temperature;
+	return mem_validity;
 }

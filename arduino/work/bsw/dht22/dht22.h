@@ -30,20 +30,34 @@ public:
 	dht22(uint8_t port);
 
 	/*!
-	 * @brief Reads the data from DHT22
-	 * @details This function communicates with DHT22 using 1-wire protocol to read raw values of temperature and humidity.
-	 * 			A checksum check is done when communication is finished to validate the received data
+	 * @brief Temperature get function
+	 * @details This functions writes the temperature value at the given address and returns the validity of the data.
+	 * 			If the values have not been refreshed during the current PIT, a read operation is performed on the DHT22 device.
 	 *
-	 * @param [out] raw_humidity Raw humidity value received from sensor
-	 * @param [out] raw_temperature Raw temperature value received from sensor
-	 * @return Validity of the read value
+	 * @param [in] temperature Address where the temperature shall be written
+	 * @return Validity of the data
 	 */
-	bool read(uint16_t* raw_humidity, uint16_t* raw_temperature);
+	bool getTemperature(uint16_t* temperature);
+
+	/*!
+	 * @brief Humidity get function
+	 * @details This functions writes the humidity value at the given address and returns the validity of the data.
+	 * 			If the values have not been refreshed during the current PIT, a read operation is performed on the DHT22 device.
+	 *
+	 * @param [in] humidity Address where the humidity shall be written
+	 * @return Validity of the data
+	 */
+	bool getHumidity(uint16_t* humidity);
+
 
 private:
 
 	uint8_t dht22_port; /*!< Variable containing the port used for 1-wire communication */
 	dio* dio_ptr; /*!< Pointer to the DIO object */
+	uint16_t mem_temperature; /*!< Memorized value of temperature */
+	uint16_t mem_humidity; /*!< Memorized value of humidity */
+	bool mem_validity; /*!< Memorized value of validity */
+	uint32_t pit_last_read; /*!< Value of the PIT number when the last read operation has been performed */
 
 	/*!
 	 * @brief Initializes the communication
@@ -51,6 +65,16 @@ private:
 	 * @return Nothing
 	 */
 	void initializeCommunication();
+
+	/*!
+	 * @brief Reads the data from DHT22
+	 * @details This function communicates with DHT22 using 1-wire protocol to read raw values of temperature and humidity.
+	 * 			A checksum check is done when communication is finished to validate the received data.
+	 * 			Validity of the data, temperature and humidity values and memorized in the associated class members.
+	 *
+	 * @return Nothing
+	 */
+	void read();
 
 };
 

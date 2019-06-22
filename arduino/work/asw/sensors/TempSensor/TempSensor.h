@@ -37,8 +37,8 @@ public:
 	TempSensor(uint16_t val_tmo, uint16_t period);
 
 	/*!
-	 * @brief Task for reading temperature and humidity values
-	 * @details This task reads temperature and humidity data using DHT22 driver. It is called every 5 seconds.
+	 * @brief Task for reading temperature values
+	 * @details This task reads temperature data using DHT22 driver. It is called periodically.
 	 * @return Nothing
 	 */
 	static void readTempSensor_task();

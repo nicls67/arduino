@@ -45,8 +45,7 @@ TempSensor::TempSensor(uint16_t val_tmo, uint16_t period) : Sensor(val_tmo, peri
 
 void TempSensor::readTempSensor_task()
 {
-	uint16_t dummy;
-	p_global_ASW_TempSensor->setLastValidity(p_global_BSW_dht22->read(&dummy, p_global_ASW_TempSensor->getRawDataPtr()));
+	p_global_ASW_TempSensor->setLastValidity(p_global_BSW_dht22->getTemperature(p_global_ASW_TempSensor->getRawDataPtr()));
 	p_global_ASW_TempSensor->updateValidData();
 }
 
