@@ -92,9 +92,9 @@ public:
 	 *
 	 * @return Integer value of the sensor data
 	 */
-	inline uint8_t getValueInteger()
+	inline uint16_t getValueInteger()
 	{
-		return (uint8_t)(valid_value/10);
+		return (uint16_t)(valid_value/10);
 	}
 
 	/*!
@@ -163,7 +163,6 @@ protected:
 	uint16_t valid_value; /*!< Valid value of sensor data */
 
 	uint16_t task_period; /*!< Task period */
-
 
 };
 
