@@ -86,7 +86,7 @@ bool DisplayInterface::DisplayFullLine(uint8_t* str, uint8_t size, uint8_t line,
 
 		/* The address of the string may have changed, replace pointer inside the range */
 		if(display_data[line].shift_data.str_cur_ptr > (display_data[line].shift_data.str_ptr->getString() + display_data[line].shift_data.str_ptr->getSize() - LCD_SIZE_NB_CHAR_PER_LINE))
-			display_data[line].shift_data.str_cur_ptr = display_data[line].shift_data.str_ptr->getString() + display_data[line].shift_data.str_ptr->getSize();
+			display_data[line].shift_data.str_cur_ptr = display_data[line].shift_data.str_ptr->getString() + display_data[line].shift_data.str_ptr->getSize() - LCD_SIZE_NB_CHAR_PER_LINE;
 		else if (display_data[line].shift_data.str_cur_ptr < display_data[line].shift_data.str_ptr->getString())
 			display_data[line].shift_data.str_cur_ptr = display_data[line].shift_data.str_ptr->getString();
 
