@@ -48,7 +48,12 @@ HumSensor::HumSensor(uint16_t val_tmo, uint16_t period) : Sensor(val_tmo, period
 void HumSensor::readHumSensor_task()
 {
 	HumSensor* hum_ptr = (HumSensor*)p_global_ASW_SensorManagement->getSensorObjectPtr(HUMIDITY);
-	hum_ptr->setLastValidity(p_global_BSW_dht22->getHumidity(hum_ptr->getRawDataPtr()));
+
+	if(hum_ptr != 0)
+		hum_ptr->setLastValidity(p_global_BSW_dht22->getHumidity(hum_ptr->getRawDataPtr()));
+	else
+		hum_ptr->setLastValidity(false);
+
 	hum_ptr->updateValidData();
 }
 
