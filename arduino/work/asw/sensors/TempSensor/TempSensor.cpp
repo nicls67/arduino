@@ -11,17 +11,17 @@
 #include <stdlib.h>
 
 #include "../../../lib/LinkedList/LinkedList.h"
+#include "../../../lib/String/String.h"
 #include "../../../scheduler/scheduler.h"
 
 #include "../../../bsw/dio/dio.h"
 #include "../../../bsw/dht22/dht22.h"
 
+#include "../../sensors_mgt/SensorManagement.h"
 #include "../Sensor.h"
 #include "TempSensor.h"
 
 #define DHT22_PORT ENCODE_PORT(PORT_B, 6) /*!< DHT22 is connected to port PB6 */
-
-TempSensor* p_global_ASW_TempSensor;
 
 TempSensor::TempSensor() : Sensor()
 {
@@ -45,8 +45,9 @@ TempSensor::TempSensor(uint16_t val_tmo, uint16_t period) : Sensor(val_tmo, peri
 
 void TempSensor::readTempSensor_task()
 {
-	p_global_ASW_TempSensor->setLastValidity(p_global_BSW_dht22->getTemperature(p_global_ASW_TempSensor->getRawDataPtr()));
-	p_global_ASW_TempSensor->updateValidData();
+	TempSensor* temp_ptr = (TempSensor*)p_global_ASW_SensorManagement->getSensorObjectPtr(TEMPERATURE);
+	temp_ptr->setLastValidity(p_global_BSW_dht22->getTemperature(temp_ptr->getRawDataPtr()));
+	temp_ptr->updateValidData();
 }
 
 

@@ -55,6 +55,4 @@ private:
 
 };
 
-extern HumSensor* p_global_ASW_HumSensor; /*!< Pointer to TempSensor object */
-
 #endif /* WORK_ASW_SENSORS_HUMSENSOR_HUMSENSOR_H_ */

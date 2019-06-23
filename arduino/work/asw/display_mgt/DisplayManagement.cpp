@@ -11,7 +11,7 @@
 #include <avr/io.h>
 
 #include "../../lib/LinkedList/LinkedList.h"
-#include "../../lib/string/string.h"
+#include "../../lib/string/String.h"
 
 #include "../../scheduler/scheduler.h"
 
@@ -21,6 +21,7 @@
 #include "../sensors/Sensor.h"
 #include "../sensors/TempSensor/TempSensor.h"
 #include "../sensors/HumSensor/HumSensor.h"
+#include "../sensors_mgt/SensorManagement.h"
 #include "../display_ift/DisplayInterface.h"
 #include "DisplayManagement.h"
 
@@ -37,16 +38,11 @@ DisplayManagement::DisplayManagement()
 
 	p_display_ift = p_global_ASW_DisplayInterface;
 
-	/* Check if temperature sensor object is already created and create one of needed */
-	if(ASW_init_cnf.isTempSensorActivated && (p_global_ASW_TempSensor == 0))
-		p_global_ASW_TempSensor = new TempSensor();
-
-	/* Check if humidity sensor object is already created and create one of needed */
-	if(ASW_init_cnf.isHumSensorActivated && (p_global_ASW_HumSensor == 0))
-		p_global_ASW_HumSensor = new HumSensor();
-
-	p_tempSensor = p_global_ASW_TempSensor;
-	p_humSensor = p_global_ASW_HumSensor;
+	/* Initialize sensor management pointer */
+	if(p_global_ASW_SensorManagement != 0)
+		p_SensorMgt = p_global_ASW_SensorManagement;
+	else
+		p_SensorMgt = 0;
 
 	/* Display welcome message on 2nd line */
 	String str;
@@ -56,11 +52,7 @@ DisplayManagement::DisplayManagement()
 	p_global_scheduler->addPeriodicTask((TaskPtr_t)&DisplayManagement::RemoveWelcomeMessage_Task, DISPLAY_MGT_PERIOD_WELCOME_MSG_REMOVAL);
 
 	/* Update temperature and humidity sensor task period to match display period */
-	if(p_tempSensor->getTaskPeriod() > DISPLAY_MGT_PERIOD_TASK_SENSOR)
-		p_tempSensor->updateTaskPeriod(DISPLAY_MGT_PERIOD_TASK_SENSOR);
-
-	if(p_humSensor->getTaskPeriod() > DISPLAY_MGT_PERIOD_TASK_SENSOR)
-		p_humSensor->updateTaskPeriod(DISPLAY_MGT_PERIOD_TASK_SENSOR);
+	/* TODO : check how to manage display period synchro */
 
 }
 
@@ -83,59 +75,20 @@ void DisplayManagement::RemoveWelcomeMessage_Task()
 
 void DisplayManagement::DisplaySensorData_Task()
 {
-	DisplayInterface* displayIft_ptr;
-	TempSensor* tempSensor_ptr;
-	HumSensor* humSensor_ptr;
+	/* TODO : possible to use string class into DisplayFullLine? */
+	DisplayInterface* displayIft_ptr = p_global_ASW_DisplayManagement->GetIftPointer();
+	SensorManagement* sensor_ptr = p_global_ASW_DisplayManagement->GetSensorMgtPtr();
 
-	/* First get object pointer */
-	displayIft_ptr = p_global_ASW_DisplayManagement->GetIftPointer();
-	tempSensor_ptr = p_global_ASW_DisplayManagement->GetTempSensorPtr();
-	humSensor_ptr = p_global_ASW_DisplayManagement->GetHumSensorPtr();
-
-	if(tempSensor_ptr !=0)
+	if(sensor_ptr !=0)
 	{
-		/* Display temperature */
-		String str(tempDisplayString);
-
-		/* If sensor data are valid */
-		if(tempSensor_ptr->getValidity())
+		for(uint8_t i=0; i<sensor_ptr->getSensorCount(); i++)
 		{
-			str.appendInteger((uint16_t)tempSensor_ptr->getValueInteger(),10);
-			str.appendString((uint8_t*)".");
-			str.appendInteger((uint16_t)tempSensor_ptr->getValueDecimal(),10);
-			str.appendString((uint8_t*)" ");
-			str.appendChar(161);
+			String str = sensor_ptr->getFullStringFormattedValue(i);
+			displayIft_ptr->DisplayFullLine(str.getString(), str.getSize(), DISPLAY_MGT_FIRST_LINE_SENSORS + i, LINE_SHIFT);
 		}
-		else
-			str.appendString((uint8_t*)"invalide");
-
-		displayIft_ptr->DisplayFullLine(str.getString(), str.getSize(), DISPLAY_MGT_LINE_TEMP, LINE_SHIFT);
-
 	}
 	else
-		displayIft_ptr->DisplayFullLine((uint8_t*)noTempSensorDisplayString, sizeof(noTempSensorDisplayString)/sizeof(uint8_t), DISPLAY_MGT_LINE_TEMP, LINE_SHIFT);
-
-
-	if(humSensor_ptr !=0)
-	{
-		/* Display humidity */
-		String str(humidityDisplayString);
-
-		/* If sensor data are valid */
-		if(humSensor_ptr->getValidity())
-		{
-			str.appendInteger((uint16_t)humSensor_ptr->getValueInteger(),10);
-			str.appendString((uint8_t*)".");
-			str.appendInteger((uint16_t)humSensor_ptr->getValueDecimal(),10);
-			str.appendString((uint8_t*)" %");
-		}
-		else
-			str.appendString((uint8_t*)"invalide");
-
-		displayIft_ptr->DisplayFullLine(str.getString(), str.getSize(), DISPLAY_MGT_LINE_HUM, LINE_SHIFT);
-	}
-	else
-		displayIft_ptr->DisplayFullLine((uint8_t*)noHumSensorDisplayString, sizeof(noHumSensorDisplayString)/sizeof(uint8_t), DISPLAY_MGT_LINE_TEMP, LINE_SHIFT);
+		displayIft_ptr->DisplayFullLine((uint8_t*)noSensorsDisplayString, sizeof(noSensorsDisplayString)/sizeof(uint8_t) - 1, DISPLAY_MGT_FIRST_LINE_SENSORS, GO_TO_NEXT_LINE);
 
 
 }

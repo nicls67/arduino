@@ -21,9 +21,7 @@
 
 #include "../bsw/bsw.h"
 
-#include "sensors/Sensor.h"
-#include "sensors/TempSensor/TempSensor.h"
-#include "sensors/HumSensor/HumSensor.h"
+#include "sensors_mgt/SensorManagement.h"
 #include "debug_ift/DebugInterface.h"
 #include "debug_mgt/DebugManagement.h"
 #include "display_ift/DisplayInterface.h"
@@ -36,23 +34,14 @@
 
 void asw_init()
 {
-	/* Temperature sensor activation */
-	if(ASW_init_cnf.isTempSensorActivated)
+	/* Sensors activation */
+	if(ASW_init_cnf.isSensorMgtActivated)
 	{
-		if(p_global_ASW_TempSensor == 0)
-			p_global_ASW_TempSensor = new TempSensor();
+		if(p_global_ASW_SensorManagement == 0)
+			p_global_ASW_SensorManagement = new SensorManagement();
 	}
 	else
-		p_global_ASW_TempSensor = 0;
-
-	/* Humidity sensor activation */
-	if(ASW_init_cnf.isHumSensorActivated)
-	{
-		if(p_global_ASW_HumSensor == 0)
-			p_global_ASW_HumSensor = new HumSensor();
-	}
-	else
-		p_global_ASW_HumSensor = 0;
+		p_global_ASW_SensorManagement = 0;
 
 
 	/* Creation of debug services */

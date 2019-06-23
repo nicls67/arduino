@@ -15,8 +15,7 @@
 #define DISPLAY_MGT_PERIOD_TASK_SENSOR 1500 /*!< Display is updated every 1.5s */
 #define DISPLAY_MGT_PERIOD_WELCOME_MSG_REMOVAL 5000 /*!< Time after which one the welcome message is removed */
 
-#define DISPLAY_MGT_LINE_TEMP 0 /*!< Current temperature is displayed on line 0 */
-#define DISPLAY_MGT_LINE_HUM 1 /*!< Current humidity is displayed on line 1 */
+#define DISPLAY_MGT_FIRST_LINE_SENSORS 0 /*!< Sensors data are displayed starting on line 0 */
 
 #define DISPLAY_MGT_I2C_BITRATE (uint32_t)100000 /*!< I2C bus bitrate is 100 kHz */
 
@@ -37,12 +36,9 @@ const T_LCD_conf_struct LCD_init_cnf = {
 	LCD_CNF_ENTRY_MODE_DISPLAY_SHIFT_OFF
 };
 
-
+/* TODO : move constants in C file */
 const uint8_t welcomeMessageString[] = "Bienvenue !";
-const uint8_t tempDisplayString[] = "Temperature : "; /*!< String used for temperature display */
-const uint8_t humidityDisplayString[] = "Humidite : "; /*!< String used for humidity display */
-const uint8_t noTempSensorDisplayString[] = "Capteur de temperature desactive"; /*!< String used in case temperature sensor is deactivated */
-const uint8_t noHumSensorDisplayString[] = "Capteur d'humidite desactive"; /*!< String used in case humidity sensor is deactivated */
+const uint8_t noSensorsDisplayString[] = "Capteurs desactives"; /*!< String used in case sensors are deactivated */
 
 /*!
  * @brief Display management class
@@ -86,25 +82,14 @@ public:
 	}
 
 	/*!
-	 * @brief Temperature sensor pointer get function
-	 * @details This function returns the pointer to the temperature sensor object
+	 * @brief Sensor management pointer get function
+	 * @details This function returns the pointer to the sensor management object
 	 *
-	 * @return Pointer to sensor object
+	 * @return Pointer to sensor management object
 	 */
-	inline TempSensor* GetTempSensorPtr()
+	inline SensorManagement* GetSensorMgtPtr()
 	{
-		return p_tempSensor;
-	}
-
-	/*!
-	 * @brief Humidity sensor pointer get function
-	 * @details This function returns the pointer to the humidity sensor object
-	 *
-	 * @return Pointer to sensor object
-	 */
-	inline HumSensor* GetHumSensorPtr()
-	{
-		return p_humSensor;
+		return p_SensorMgt;
 	}
 
 	/*!
@@ -120,8 +105,7 @@ public:
 private:
 
 	DisplayInterface * p_display_ift; /*!< Pointer to the display interface object */
-	TempSensor* p_tempSensor; /*!< Pointer to the temperature sensor object */
-	HumSensor* p_humSensor; /*!< Pointer to the humidity sensor object */
+	SensorManagement* p_SensorMgt; /*!< Pointer to the sensor management object */
 
 };
 

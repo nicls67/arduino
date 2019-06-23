@@ -18,9 +18,7 @@
 
 #include "../usart/usart.h"
 
-#include "../../asw/sensors/Sensor.h"
-#include "../../asw/sensors/TempSensor/TempSensor.h"
-#include "../../asw/sensors/HumSensor/HumSensor.h"
+#include "../../asw/sensors_mgt/SensorManagement.h"
 #include "../../asw/debug_ift/DebugInterface.h"
 #include "../../asw/debug_mgt/DebugManagement.h"
 

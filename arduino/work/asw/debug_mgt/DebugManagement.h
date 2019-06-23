@@ -131,8 +131,7 @@ public:
 private:
 
 	DebugInterface* debug_ift_ptr; /*!< Pointer to the debug interface object, which is used to send data on usart link */
-	TempSensor* tempSensor_ptr; /*!< Pointer to the temperature sensor object */
-	HumSensor* humSensor_ptr; /*!< Pointer to the humidity sensor object */
+	SensorManagement* sensorMgt_ptr; /*!< Pointer to the sensor management object */
 	uint8_t* menu_string_ptr; /*!< Pointer to the current menu string to display */
 	String* info_string_ptr; /*!< Pointer to the info message to display */
 	debug_mgt_state_struct_t debug_state; /*!< Structure containing debug states for each menu */

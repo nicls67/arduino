@@ -114,6 +114,17 @@ public:
 	 */
 	void Clear();
 
+	/*!
+	 * @brief Space adding function
+	 * @details This function adds a space at the end of the string. It only calls appendChar function.
+	 *
+	 * @return Nothing
+	 */
+	inline void appendSpace()
+	{
+		appendChar((uint8_t)' ');
+	}
+
 
 private:
 

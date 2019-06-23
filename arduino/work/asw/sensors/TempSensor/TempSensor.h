@@ -57,7 +57,5 @@ private:
 
 };
 
-extern TempSensor* p_global_ASW_TempSensor; /*!< Pointer to TempSensor object */
-
 
 #endif /* WORK_ASW_TEMPSENSOR_TEMPSENSOR_H_ */

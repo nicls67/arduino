@@ -13,17 +13,17 @@
 #include <stdlib.h>
 
 #include "../../../lib/LinkedList/LinkedList.h"
+#include "../../../lib/String/String.h"
 #include "../../../scheduler/scheduler.h"
 
 #include "../../../bsw/dio/dio.h"
 #include "../../../bsw/dht22/dht22.h"
 
+#include "../../sensors_mgt/SensorManagement.h"
 #include "../Sensor.h"
 #include "HumSensor.h"
 
 #define DHT22_PORT ENCODE_PORT(PORT_B, 6) /*!< DHT22 is connected to port PB6 */
-
-HumSensor* p_global_ASW_HumSensor;
 
 HumSensor::HumSensor() : Sensor()
 {
@@ -47,8 +47,9 @@ HumSensor::HumSensor(uint16_t val_tmo, uint16_t period) : Sensor(val_tmo, period
 
 void HumSensor::readHumSensor_task()
 {
-	p_global_ASW_HumSensor->setLastValidity(p_global_BSW_dht22->getHumidity(p_global_ASW_HumSensor->getRawDataPtr()));
-	p_global_ASW_HumSensor->updateValidData();
+	HumSensor* hum_ptr = (HumSensor*)p_global_ASW_SensorManagement->getSensorObjectPtr(HUMIDITY);
+	hum_ptr->setLastValidity(p_global_BSW_dht22->getHumidity(hum_ptr->getRawDataPtr()));
+	hum_ptr->updateValidData();
 }
 
 
