@@ -17,7 +17,7 @@
 
 #define TASK_PERIOD_DEFAULT 1000 /*!< Default sensor task period : 1s */
 #define VALIDITY_TIMEOUT_MS_DEFAULT 30000 /*!< Sensor data are declared invalid after 30s */
-#define PIT_BEFORE_INVALID_DEFAULT (uint32_t)(VALIDITY_TIMEOUT_MS_DEFAULT/SW_PERIOD_MS) /*!< Number of cycles after which the sensors data are declared invalid */
+
 
 Sensor::Sensor()
 {
@@ -29,7 +29,7 @@ Sensor::Sensor()
 	validity_last_read = false;
 
 	valid_pit = 0;
-	validity_tmo = PIT_BEFORE_INVALID_DEFAULT;
+	validity_tmo = VALIDITY_TIMEOUT_MS_DEFAULT/SW_PERIOD_MS;
 
 	task_period = TASK_PERIOD_DEFAULT;
 
@@ -45,7 +45,7 @@ Sensor::Sensor(uint16_t val_tmo, uint16_t period)
 	validity_last_read = false;
 
 	valid_pit = 0;
-	validity_tmo = val_tmo;
+	validity_tmo = val_tmo/SW_PERIOD_MS;
 
 	task_period = period;
 }
