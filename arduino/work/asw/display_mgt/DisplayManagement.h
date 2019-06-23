@@ -36,9 +36,6 @@ const T_LCD_conf_struct LCD_init_cnf = {
 	LCD_CNF_ENTRY_MODE_DISPLAY_SHIFT_OFF
 };
 
-/* TODO : move constants in C file */
-const uint8_t welcomeMessageString[] = "Bienvenue !";
-const uint8_t noSensorsDisplayString[] = "Capteurs desactives"; /*!< String used in case sensors are deactivated */
 
 /*!
  * @brief Display management class

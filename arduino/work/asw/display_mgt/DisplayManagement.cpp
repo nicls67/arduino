@@ -18,17 +18,14 @@
 #include "../../bsw/I2C/I2C.h"
 #include "../../bsw/lcd/LCD.h"
 
-#include "../sensors/Sensor.h"
-#include "../sensors/TempSensor/TempSensor.h"
-#include "../sensors/HumSensor/HumSensor.h"
 #include "../sensors_mgt/SensorManagement.h"
 #include "../display_ift/DisplayInterface.h"
 #include "DisplayManagement.h"
 
-#include "../asw.h"
-#include "../../main.h"
-
 DisplayManagement* p_global_ASW_DisplayManagement;
+
+const uint8_t welcomeMessageString[] = "Bienvenue !"; /*!< String displayed on the screen at startup */
+const uint8_t noSensorsDisplayString[] = "Capteurs desactives"; /*!< String used in case sensors are deactivated */
 
 DisplayManagement::DisplayManagement()
 {
