@@ -42,9 +42,7 @@ DisplayManagement::DisplayManagement()
 		p_SensorMgt = 0;
 
 	/* Display welcome message on 2nd line */
-	String str;
-	str.appendString((uint8_t*)welcomeMessageString);
-	p_display_ift->DisplayFullLine(str.getString(), str.getSize(), 1, NORMAL, CENTER);
+	p_display_ift->DisplayFullLine((uint8_t*)welcomeMessageString, sizeof(welcomeMessageString)/sizeof(uint8_t) - 1, 1, NORMAL, CENTER);
 
 	p_global_scheduler->addPeriodicTask((TaskPtr_t)&DisplayManagement::RemoveWelcomeMessage_Task, DISPLAY_MGT_PERIOD_WELCOME_MSG_REMOVAL);
 
@@ -81,7 +79,7 @@ void DisplayManagement::DisplaySensorData_Task()
 		for(uint8_t i=0; i<sensor_ptr->getSensorCount(); i++)
 		{
 			String str = sensor_ptr->getFullStringFormattedValue(i);
-			displayIft_ptr->DisplayFullLine(str.getString(), str.getSize(), DISPLAY_MGT_FIRST_LINE_SENSORS + i, LINE_SHIFT);
+			displayIft_ptr->DisplayFullLine(&str, DISPLAY_MGT_FIRST_LINE_SENSORS + i, LINE_SHIFT);
 		}
 	}
 	else

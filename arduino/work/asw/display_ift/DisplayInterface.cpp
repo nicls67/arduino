@@ -140,6 +140,11 @@ bool DisplayInterface::DisplayFullLine(uint8_t* str, uint8_t size, uint8_t line,
 	return true;
 }
 
+bool DisplayInterface::DisplayFullLine(String* str, uint8_t line, T_DisplayInterface_LineDisplayMode mode, T_DisplayInterface_LineAlignment alignment)
+{
+	return DisplayFullLine(str->getString(), str->getSize(), line, mode, alignment);
+}
+
 void DisplayInterface::updateLineAndRefresh(uint8_t* str, uint8_t size, uint8_t line)
 {
 	uint8_t i;

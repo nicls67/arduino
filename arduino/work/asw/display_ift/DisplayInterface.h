@@ -99,6 +99,18 @@ public:
 	bool DisplayFullLine(uint8_t* str, uint8_t size, uint8_t line, T_DisplayInterface_LineDisplayMode mode = NORMAL, T_DisplayInterface_LineAlignment alignment = LEFT);
 
 	/*!
+	 * @brief Line display function
+	 * @details This function displays the given string on the requested line. If the string is too long to be displayed entirely, the behavior is defined by the selected mode.
+	 *
+	 * @param [in] str Pointer to the string to display
+	 * @param [in] line Index of the line where the string shall be displayed
+	 * @param [in] mode Display mode
+	 * @param [in] alignment Requested alignment for the line
+	 * @return True if the line has been correctly displayed, false otherwise
+	 */
+	bool DisplayFullLine(String* str, uint8_t line, T_DisplayInterface_LineDisplayMode mode = NORMAL, T_DisplayInterface_LineAlignment alignment = LEFT);
+
+	/*!
 	 * @brief Line clearing function
 	 * @details This function clears the requested line. It sets the corresponding DDRAM addresses to the ASCII value of space character.
 	 * 			If it was the last line with a display shift in progress, it removes the periodic task from the scheduler.
