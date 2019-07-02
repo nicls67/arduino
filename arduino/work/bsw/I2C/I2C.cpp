@@ -15,13 +15,12 @@ I2C* p_global_BSW_i2c;
 
 I2C::I2C(uint32_t l_bitrate)
 {
-	tx_address = 0;
 	bitrate = l_bitrate;
 
 	initializeBus();
 }
 
-bool I2C::writeByte(uint8_t* data)
+bool I2C::writeByte(uint8_t* data, uint8_t tx_address)
 {
 
 	/* Send START condition */
@@ -62,11 +61,6 @@ bool I2C::writeByte(uint8_t* data)
 	TWCR = (1<<TWINT)|(1<<TWEN)|(1<<TWSTO);
 
 	return true;
-}
-
-void I2C::setTxAddress(uint8_t address)
-{
-	tx_address = address;
 }
 
 void I2C::setBitRate(uint32_t l_bitrate)

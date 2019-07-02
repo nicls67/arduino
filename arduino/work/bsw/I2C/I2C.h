@@ -33,21 +33,13 @@ public:
 
 	/*!
 	 * @brief Byte sending function
-	 * @details This function sends one byte on I2C bus
+	 * @details This function sends one byte to the I2C device with the given address
 	 *
 	 * @param [in] data Pointer to the data to send
+	 * @param [in] tx_address I2C address of the device
 	 * @return True if transmission is completed, False if an error has occurred
 	 */
-	bool writeByte(uint8_t* data);
-
-	/*!
-	 * @brief Setting function for Tx I2C address
-	 * @details This function sets the given Tx I2C address in the internal class variable.
-	 *
-	 * @param [in] address Requested Tx address
-	 * @return Nothing
-	 */
-	void setTxAddress(uint8_t address);
+	bool writeByte(uint8_t* data, uint8_t tx_address);
 
 	/*!
 	 * @brief Variable bitrate setting function
@@ -59,7 +51,6 @@ public:
 	void setBitRate(uint32_t l_bitrate);
 
 private:
-	uint8_t tx_address;
 	uint32_t bitrate;
 
 	/*!

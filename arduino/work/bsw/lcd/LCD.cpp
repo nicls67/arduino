@@ -48,13 +48,13 @@ void LCD::write4bits(uint8_t data)
 
 	/* Configure backlight pin and set EN pin */
 	data |= (backlight_enable << BACKLIGHT_PIN) + (1 << EN_PIN);
-	dummy = i2c_drv_ptr->writeByte(&data);
+	dummy = i2c_drv_ptr->writeByte(&data, cnfI2C_addr);
 
 	_delay_us(1);
 
 	/* Clear enable pin */
 	data &= ~(1 << EN_PIN);
-	dummy = i2c_drv_ptr->writeByte(&data);
+	dummy = i2c_drv_ptr->writeByte(&data, cnfI2C_addr);
 
 	_delay_us(50);
 }
@@ -73,8 +73,6 @@ void LCD::write(uint8_t data, T_LCD_config_mode mode)
 void LCD::InitializeScreen()
 {
 	uint8_t data;
-
-	i2c_drv_ptr->setTxAddress(cnfI2C_addr);
 
 	/* Wait for 30ms after power on */
 	_delay_us(30000);
