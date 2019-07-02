@@ -70,7 +70,7 @@ void DisplayManagement::RemoveWelcomeMessage_Task()
 
 void DisplayManagement::DisplaySensorData_Task()
 {
-	/* TODO : possible to use string class into DisplayFullLine? */
+
 	DisplayInterface* displayIft_ptr = p_global_ASW_DisplayManagement->GetIftPointer();
 	SensorManagement* sensor_ptr = p_global_ASW_DisplayManagement->GetSensorMgtPtr();
 
@@ -78,7 +78,8 @@ void DisplayManagement::DisplaySensorData_Task()
 	{
 		for(uint8_t i=0; i<sensor_ptr->getSensorCount(); i++)
 		{
-			String str = sensor_ptr->getFullStringFormattedValue(i);
+			String str;
+			sensor_ptr->getFullStringFormattedValue(i, &str);
 			displayIft_ptr->DisplayFullLine(&str, DISPLAY_MGT_FIRST_LINE_SENSORS + i, LINE_SHIFT);
 		}
 	}

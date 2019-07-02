@@ -154,7 +154,8 @@ void DebugManagement::DisplayData()
 	{
 		for(uint8_t i=0; i<sensorMgt_ptr->getSensorCount(); i++)
 		{
-			String str = sensorMgt_ptr->getFullStringFormattedValue(i);
+			String str;
+			sensorMgt_ptr->getFullStringFormattedValue(i, &str);
 			debug_ift_ptr->sendString(&str);
 			debug_ift_ptr->nextLine();
 		}

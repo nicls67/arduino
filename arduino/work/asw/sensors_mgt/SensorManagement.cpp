@@ -67,27 +67,24 @@ bool SensorManagement::updateTaskPeriod(uint16_t period)
 	return retval;
 }
 
-String SensorManagement::getFullStringFormattedValue(uint8_t sensor_idx)
+void SensorManagement::getFullStringFormattedValue(uint8_t sensor_idx, String* str)
 {
-	String str;
-
-	str.appendString(SensorManagement_Sensor_Config_list[sensor_idx].data_name_str);
-	str.appendSpace();
-	str.appendChar((uint8_t)':');
-	str.appendSpace();
+	str->Clear();
+	str->appendString(SensorManagement_Sensor_Config_list[sensor_idx].data_name_str);
+	str->appendSpace();
+	str->appendChar((uint8_t)':');
+	str->appendSpace();
 
 	if(((Sensor*)(sensor_ptr_table[sensor_idx]))->getValidity())
 	{
-		str.appendInteger(((Sensor*)(sensor_ptr_table[sensor_idx]))->getValueInteger(), 10);
-		str.appendChar((uint8_t)'.');
-		str.appendInteger(((Sensor*)(sensor_ptr_table[sensor_idx]))->getValueDecimal(), 10);
-		str.appendSpace();
-		str.appendString(SensorManagement_Sensor_Config_list[sensor_idx].unit_str);
+		str->appendInteger(((Sensor*)(sensor_ptr_table[sensor_idx]))->getValueInteger(), 10);
+		str->appendChar((uint8_t)'.');
+		str->appendInteger(((Sensor*)(sensor_ptr_table[sensor_idx]))->getValueDecimal(), 10);
+		str->appendSpace();
+		str->appendString(SensorManagement_Sensor_Config_list[sensor_idx].unit_str);
 	}
 	else
-		str.appendString((uint8_t*)"invalide");
-
-	return str;
+		str->appendString((uint8_t*)"invalide");
 }
 
 void* SensorManagement::getSensorObjectPtr(T_SensorManagement_Sensor_Type type)

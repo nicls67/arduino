@@ -63,9 +63,10 @@ public:
 	 * @details This function gets the value of the selected sensor and formats it into a string using the data name string defined in the configuration.
 	 *
 	 * @param [in] sensor_idx Index of the requested sensor
-	 * @return Formatted string
+	 * @param [out] str Pointer to the formatted string
+	 * @return Nothing
 	 */
-	String getFullStringFormattedValue(uint8_t sensor_idx);
+	void getFullStringFormattedValue(uint8_t sensor_idx, String* str);
 
 	/*!
 	 * @brief Sensor object pointer get function
