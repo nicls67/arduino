@@ -22,6 +22,11 @@ I2C::I2C(uint32_t l_bitrate)
 
 bool I2C::writeByte(uint8_t* data, uint8_t tx_address)
 {
+	return write(data, tx_address, 1);
+}
+
+bool I2C::write(uint8_t* data, uint8_t tx_address, uint8_t size)
+{
 
 	/* Send START condition */
 	TWCR = (1<<TWINT)|(1<<TWSTA)|(1<<TWEN);
@@ -46,16 +51,19 @@ bool I2C::writeByte(uint8_t* data, uint8_t tx_address)
 	if ((TWSR & 0xF8) != SLA_ACK)
 		return false;
 
-	/* Load data into TWDR and start transmission */
-	TWDR = *data;
-	TWCR = (1<<TWINT) | (1<<TWEN);
+	for(int i = 0; i<size; i++)
+	{
+		/* Load data into TWDR and start transmission */
+		TWDR = data[i];
+		TWCR = (1<<TWINT) | (1<<TWEN);
 
-	/* Wait until TWINT flag is set */
-	while (!(TWCR & (1<<TWINT)));
+		/* Wait until TWINT flag is set */
+		while (!(TWCR & (1<<TWINT)));
 
-	/* If an error has occurred, stop the transmission */
-	if ((TWSR & 0xF8) != DATA_ACK)
-		return false;
+		/* If an error has occurred, stop the transmission */
+		if ((TWSR & 0xF8) != DATA_ACK)
+			return false;
+	}
 
 	/* Send STOP condition */
 	TWCR = (1<<TWINT)|(1<<TWEN)|(1<<TWSTO);

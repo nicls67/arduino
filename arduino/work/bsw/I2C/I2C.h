@@ -33,13 +33,25 @@ public:
 
 	/*!
 	 * @brief Byte sending function
-	 * @details This function sends one byte to the I2C device with the given address
+	 * @details This function sends one byte to the I2C device with the given address.
+	 * 			It only calls "write" function with size equal to 1. Kept for compatibility with LCD driver.
 	 *
 	 * @param [in] data Pointer to the data to send
 	 * @param [in] tx_address I2C address of the device
 	 * @return True if transmission is completed, False if an error has occurred
 	 */
 	bool writeByte(uint8_t* data, uint8_t tx_address);
+
+	/*!
+	 * @brief I2C write function
+	 * @details This function sends the requested number of bytes to the I2C device with the given address
+	 *
+	 * @param [in] data Pointer to the data to send
+	 * @param [in] tx_address I2C address of the device
+	 * @param [in] size Number of bytes to send
+	 * @return True if transmission is completed, False if an error has occurred
+	 */
+	bool write(uint8_t* data, uint8_t tx_address, uint8_t size);
 
 	/*!
 	 * @brief Variable bitrate setting function
