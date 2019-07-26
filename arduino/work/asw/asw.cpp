@@ -34,16 +34,6 @@
 
 void asw_init()
 {
-	/* Sensors activation */
-	if(ASW_init_cnf.isSensorMgtActivated)
-	{
-		if(p_global_ASW_SensorManagement == 0)
-			p_global_ASW_SensorManagement = new SensorManagement();
-	}
-	else
-		p_global_ASW_SensorManagement = 0;
-
-
 	/* Creation of debug services */
 	if(isDebugModeActivated)
 	{
@@ -55,14 +45,26 @@ void asw_init()
 	else
 		p_global_ASW_DebugInterface = 0;
 
+
 	/* Debug management object is created on user request by USART interrupt */
 	p_global_ASW_DebugManagement = 0;
+
+	/* Sensors activation */
+	if(ASW_init_cnf.isSensorMgtActivated)
+	{
+		if(p_global_ASW_SensorManagement == 0)
+			p_global_ASW_SensorManagement = new SensorManagement();
+	}
+	else
+		p_global_ASW_SensorManagement = 0;
+
 
 	/* LED activation */
 	if(ASW_init_cnf.isLEDActivated)
 		p_global_ASW_keepAliveLed = new keepAliveLed();
 	else
 		p_global_ASW_keepAliveLed = 0;
+
 
 	/* Display interface is created by Display management class */
 	p_global_ASW_DisplayInterface = 0;
