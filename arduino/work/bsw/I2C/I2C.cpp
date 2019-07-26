@@ -22,10 +22,10 @@ I2C::I2C(uint32_t l_bitrate)
 
 bool I2C::writeByte(uint8_t* data, uint8_t tx_address)
 {
-	return write(data, tx_address, 1);
+	return write(data, tx_address, 1, true);
 }
 
-bool I2C::write(uint8_t* data, uint8_t tx_address, uint8_t size)
+bool I2C::write(uint8_t* data, uint8_t tx_address, uint8_t size, bool sendStopCond)
 {
 
 	/* Send START condition */
@@ -66,7 +66,8 @@ bool I2C::write(uint8_t* data, uint8_t tx_address, uint8_t size)
 	}
 
 	/* Send STOP condition */
-	TWCR = (1<<TWINT)|(1<<TWEN)|(1<<TWSTO);
+	if(sendStopCond)
+		TWCR = (1<<TWINT)|(1<<TWEN)|(1<<TWSTO);
 
 	return true;
 }

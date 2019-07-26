@@ -49,9 +49,10 @@ public:
 	 * @param [in] data Pointer to the data to send
 	 * @param [in] tx_address I2C address of the device
 	 * @param [in] size Number of bytes to send
+	 * @param [in] sendStopCond Defines if the stop condition shall be sent or not
 	 * @return True if transmission is completed, False if an error has occurred
 	 */
-	bool write(uint8_t* data, uint8_t tx_address, uint8_t size);
+	bool write(uint8_t* data, uint8_t tx_address, uint8_t size, bool sendStopCond);
 
 	/*!
 	 * @brief Variable bitrate setting function
