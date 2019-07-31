@@ -14,7 +14,8 @@ timer* p_global_BSW_timer;
 
 timer::timer()
 {
-	prescaler = (uint8_t)0b100;
+	prescaler1 = (uint8_t)0b100;
+	prescaler3 = (uint8_t)0b100;
 }
 
 void timer::configureTimer1(uint16_t a_prescaler, uint16_t a_ctcValue)
@@ -34,19 +35,56 @@ void timer::configureTimer1(uint16_t a_prescaler, uint16_t a_ctcValue)
 	switch(a_prescaler)
 	{
 	case 1:
-		prescaler = (uint8_t)0b001;
+		prescaler1 = (uint8_t)0b001;
 		break;
 	case 8:
-		prescaler = (uint8_t)0b010;
+		prescaler1 = (uint8_t)0b010;
 		break;
 	case 64:
-		prescaler = (uint8_t)0b011;
+		prescaler1 = (uint8_t)0b011;
 		break;
 	case 256:
-		prescaler = (uint8_t)0b100;
+		prescaler1 = (uint8_t)0b100;
 		break;
 	case 1024:
-		prescaler = (uint8_t)0b101;
+		prescaler1 = (uint8_t)0b101;
+		break;
+	default:
+		/* Keep default value */
+		break;
+	}
+}
+
+void timer::configureTimer3(uint16_t a_prescaler, uint16_t a_ctcValue)
+{
+	/* Configure the Timer/Counter1 Control Register A */
+	TCCR3A = 0 ;
+	/* Configure the Timer/Counter1 Control Register B */
+	TCCR3B = (1 << WGM12) ; // Configure timer 1 for CTC mode
+
+	/* Enable CTC interrupt */
+	TIMSK3 = (1 << OCIE3A);
+
+	/* Set CTC compare value */
+	OCR3A = a_ctcValue;
+
+	/* memorize prescaler value */
+	switch(a_prescaler)
+	{
+	case 1:
+		prescaler3 = (uint8_t)0b001;
+		break;
+	case 8:
+		prescaler3 = (uint8_t)0b010;
+		break;
+	case 64:
+		prescaler3 = (uint8_t)0b011;
+		break;
+	case 256:
+		prescaler3 = (uint8_t)0b100;
+		break;
+	case 1024:
+		prescaler3 = (uint8_t)0b101;
 		break;
 	default:
 		/* Keep default value */
@@ -63,7 +101,18 @@ void timer::startTimer1()
 	TCCR1B &= (~mask);
 
 	/* Set bits 0-2 of TCCR1 to prescaler value to start the timer */
-	TCCR1B |= prescaler ;
+	TCCR1B |= prescaler1 ;
+}
+
+void timer::startTimer3()
+{
+	uint8_t mask = (uint8_t)0b111;
+
+	/* Reset bits 0-2 of TCCR3 */
+	TCCR3B &= (~mask);
+
+	/* Set bits 0-2 of TCCR3 to prescaler value to start the timer */
+	TCCR3B |= prescaler3 ;
 }
 
 void timer::stopTimer1()
@@ -71,6 +120,13 @@ void timer::stopTimer1()
 	/* Reset bits 0-2 of TCCR1 */
 	uint8_t mask = (uint8_t)0b111;
 	TCCR1B &= (~mask);
+}
+
+void timer::stopTimer3()
+{
+	/* Reset bits 0-2 of TCCR3 */
+	uint8_t mask = (uint8_t)0b111;
+	TCCR3B &= (~mask);
 }
 
 
