@@ -9,6 +9,7 @@
 
 #include <util/delay.h>
 #include <avr/io.h>
+#include <avr/interrupt.h>
 
 #include "../I2C/I2C.h"
 #include "LCD.h"
@@ -48,13 +49,13 @@ void LCD::write4bits(uint8_t data)
 
 	/* Configure backlight pin and set EN pin */
 	data |= (backlight_enable << BACKLIGHT_PIN) + (1 << EN_PIN);
-	dummy = i2c_drv_ptr->writeByte(&data, cnfI2C_addr);
+	dummy = i2c_drv_ptr->writeByte(data, cnfI2C_addr, true);
 
 	_delay_us(1);
 
 	/* Clear enable pin */
 	data &= ~(1 << EN_PIN);
-	dummy = i2c_drv_ptr->writeByte(&data, cnfI2C_addr);
+	dummy = i2c_drv_ptr->writeByte(data, cnfI2C_addr, true);
 
 	_delay_us(50);
 }
@@ -64,9 +65,14 @@ void LCD::write(uint8_t data, T_LCD_config_mode mode)
 	uint8_t high = data & 0b11110000;
 	uint8_t low = (data << 4) & 0b11110000;
 
+	/* Disable interrupt during the communication */
+	cli();
+
 	write4bits(high | (mode << RS_PIN));
 	write4bits(low | (mode << RS_PIN));
 
+	/* Re-enable interrupts at the end of communication */
+	sei();
 }
 
 

@@ -20,9 +20,9 @@ I2C::I2C(uint32_t l_bitrate)
 	initializeBus();
 }
 
-bool I2C::writeByte(uint8_t* data, uint8_t tx_address)
+bool I2C::writeByte(uint8_t data, uint8_t tx_address, bool sendStopCond)
 {
-	return write(data, tx_address, 1, true);
+	return write(&data, tx_address, 1, sendStopCond);
 }
 
 bool I2C::write(uint8_t* data, uint8_t tx_address, uint8_t size, bool sendStopCond)
@@ -48,7 +48,7 @@ bool I2C::write(uint8_t* data, uint8_t tx_address, uint8_t size, bool sendStopCo
 	while (!(TWCR & (1<<TWINT)));
 
 	/* If an error has occurred, stop the transmission */
-	if ((TWSR & 0xF8) != SLA_ACK)
+	if ((TWSR & 0xF8) != SLAW_ACK)
 		return false;
 
 	for(int i = 0; i<size; i++)
@@ -68,6 +68,55 @@ bool I2C::write(uint8_t* data, uint8_t tx_address, uint8_t size, bool sendStopCo
 	/* Send STOP condition */
 	if(sendStopCond)
 		TWCR = (1<<TWINT)|(1<<TWEN)|(1<<TWSTO);
+
+	return true;
+}
+
+bool I2C::read(uint8_t i2c_address, uint8_t size, uint8_t* buf_ptr)
+{
+	uint8_t idx = 0;
+
+	/* Send START condition */
+	TWCR = (1<<TWINT)|(1<<TWSTA)|(1<<TWEN);
+
+	/* Wait until TWINT flag is set */
+	while (!(TWCR & (1<<TWINT)));
+
+	/* If an error has occurred, stop */
+	if (((TWSR & 0xF8) != START) && ((TWSR & 0xF8) != REPEATED_START))
+		return false;
+
+	/* Load I2C address into TWDR register and start transmission of the address
+	 * The address is shifted by 1 bit to the left, as bit 0 of SLA word is for RW condition
+	 * Here we are in a read process, then bit 0 is set to 1 */
+	TWDR = (i2c_address << 1) | 1;
+	TWCR = (1<<TWINT) | (1<<TWEN);
+
+	/* Wait until TWINT flag is set */
+	while (!(TWCR & (1<<TWINT)));
+
+	/* If an error has occurred, stop the transmission */
+	if ((TWSR & 0xF8) != SLAR_ACK)
+		return false;
+
+	while(size > 0)
+	{
+		/* Clear TWINT flag and activate ACK pulse transmission (except for the last byte to receive) */
+		if(size==1)
+			TWCR = (1<<TWINT) | (1<<TWEN) ;
+		else
+			TWCR = (1<<TWINT) | (1<<TWEA) | (1<<TWEN) ;
+
+		/* Wait until TWINT flag is set to read data */
+		while (!(TWCR & (1<<TWINT)));
+
+		buf_ptr[idx] = TWDR;
+		idx++;
+		size--;
+	}
+
+	/* Send STOP condition */
+	TWCR = (1<<TWINT)|(1<<TWEN)|(1<<TWSTO);
 
 	return true;
 }
