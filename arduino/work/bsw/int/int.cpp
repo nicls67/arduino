@@ -17,6 +17,8 @@
 #include "../../scheduler/scheduler.h"
 
 #include "../usart/usart.h"
+#include "../I2C/I2C.h"
+#include "../bmp180/Bmp180.h"
 
 #include "../../asw/sensors_mgt/SensorManagement.h"
 #include "../../asw/debug_ift/DebugInterface.h"
@@ -34,6 +36,16 @@
 ISR(TIMER1_COMPA_vect)
 {
 	p_global_scheduler->launchPeriodicTasks();
+}
+
+/*!
+ * @brief Bmp180 end of conversion interrupt
+ * @details This function calls the end of conversion function of BMP180 driver.
+ * @return Nothing
+ */
+ISR(TIMER3_COMPA_vect)
+{
+	p_global_BSW_bmp180->conversionTimerInterrupt();
 }
 
 
