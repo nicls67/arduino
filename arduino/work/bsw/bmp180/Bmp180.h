@@ -20,19 +20,28 @@
 #define BMP180_CTRL_MEAS_EEP_ADDR 0xF4 /*!< Address of the the measurement control register in EEPROM */
 #define BMP180_CTRL_MEAS_START_TEMP_CONV 0x2E /*!< Value of measurement control register to start a temperature conversion */
 
-#define BMP180_DATA_VALIDITY_TMO 2 /*!< Number of PITs after which the sensor value is declared invalid */
-
 #define BMP180_TIMER_PRESCALER_VALUE 64 /*!< Value of prescaler to use for timer */
 #define BMP180_TEMP_MEAS_TIMER_CTC_VALUE ((F_CPU/PRESCALER_PERIODIC_TIMER)/(1000/10)) /**< Compare value for periodic timer */
 
 #define BMP180_OUT_REG_LSB_EEPROM_ADDR 0xF7 /*!< Address of LSB out register */
 #define BMP180_OUT_REG_MSB_EEPROM_ADDR 0xF6 /*!< Address of MSB out register */
 
+#define BMP180_MONITORING_DEFAULT_PERIOD 500 /*!< Monitoring period is set by default to 500ms */
 
-
-
+/*!
+ * @brief Enumeration defining the possible statuses for BMP180 sensor driver
+ */
+typedef enum
+{
+	IDLE, /*!< No conversion is in progress and communication is OK */
+	TEMP_CONV_IN_PROGRESS, /*!< A temperature conversion is in progress */
+	PRESSURE_CONV_IN_PROGRESS, /*!< A pressure conversion is in progress */
+	COMM_FAILED, /*!< Communication is failed */
+}
+T_BMP180_status;
 
 /* TODO : add monitoring of driver status : reset comm in case of failure, also for LCD ! */
+/* TODO : add manual activation of temp and pressure reading */
 
 /*!
  * @brief BMP180 sensor class definition
@@ -44,7 +53,8 @@ public:
 	/*!
 	 * @brief Bmp180 class constructor
 	 * @details This function initializes the class Bmp180. It reads the chip ID and reads calibration data.
-	 * 			If the chip ID is incorrect, the status is set to communication failed.
+	 * 			If the chip ID or calibration data are incorrect, the status is set to communication failed.
+	 * 			It also starts the periodic monitoring of the driver.
 	 *
 	 * @return Nothing
 	 */
@@ -73,21 +83,63 @@ public:
 	 */
 	void conversionTimerInterrupt();
 
+	/*!
+	 * @brief BMP180 periodic monitoring function
+	 * @details This function is in charge of monitoring the BMP180 sensor.
+	 * 			It starts new conversions of temperature and pressure values.
+	 * 			Temperature and pressure values time stamps are monitored and availability of measures are updated.
+	 * 			It also	monitors the status of the driver, if the driver is failed, it tries to restart the sensor device.
+	 *
+	 * @return Nothing
+	 */
+	static void Bmp180Monitoring_Task();
+
+	/*!
+	 * @brief Driver status get function
+	 * @details This function returns the status of the driver.
+	 *
+	 * @return Driver status
+	 */
+	inline T_BMP180_status getStatus()
+	{
+		return status;
+	}
+
+	/*!
+	 * @brief Task period get function
+	 * @details This function returns the task period of the monitoring function.
+	 *
+	 * @return Task period
+	 */
+	inline uint16_t getMonitoringTaskPeriod()
+	{
+		return task_period;
+	}
+
+	/*!
+	 * @brief Starts a new temperature conversion
+	 * @details This function starts a new temperature conversion by writing 0x2E into register 0xF4 of sensor.
+	 * 			It also starts a timer to retrieve sensor data after the conversion time.
+	 *
+	 * @return Nothing
+	 */
+	void startNewTemperatureConversion();
+
+	/*!
+	 * @brief Temperature value monitoring function
+	 * @details This function monitors the temperature value.
+	 * 			It the last correct measurement was done more than twice the monitoring period in the past,
+	 * 			the value is declared not ready.
+	 *
+	 * @return Nothing
+	 */
+	void TemperatureMonitoring();
+
 private:
 	I2C* i2c_drv_ptr; /*!< Pointer to the I2C driver object */
 	uint8_t chip_id; /*!< Sensor chip ID */
-
-	/*!
-	 * @brief Enumeration defining the possible statuses for BMP180 sensor driver
-	 */
-	typedef enum
-	{
-		OK,
-		COMM_FAILED,
-	}
-	T_BMP180_status;
-
 	T_BMP180_status status; /*!< Sensor status */
+	uint16_t task_period; /*!< Period of the monitoring task */ /*TODO : add update of period */
 
 	/*!
 	 * @brief Structure defining the calibration data of BMP180 sensor
@@ -125,19 +177,6 @@ private:
 	T_BMP180_measurement_data pressure_value; /*!< Pressure data structure */
 
 	/*!
-	 * @brief Enumeration defining the different possible types of conversion
-	 */
-	typedef enum
-	{
-		NONE, /*!< No conversion is in progress */
-		TEMPERATURE, /*!< A temperature conversion is in progress */
-		PRESSURE /*!< A pressure conversion is in progress */
-	}
-	T_BMP180_conversion_type;
-
-	T_BMP180_conversion_type conversionInProgress; /*<! Defines if a conversion is in progress or not, and which type */
-
-	/*!
 	 * @brief Calibration data reading function
 	 * @details This function reads the pressure and temperature calibration data in BMP180 EEPROM using I2C bus.
 	 * 			It also updates the driver status if the communication with the device is failed.
@@ -154,15 +193,6 @@ private:
 	 * @return Nothing
 	 */
 	void readChipID();
-
-	/*!
-	 * @brief Starts a new temperature conversion
-	 * @details This function starts a new temperature conversion by writing 0x2E into register 0xF4 of sensor.
-	 * 			It also starts a timer to retrieve sensor data after the conversion time.
-	 *
-	 * @return Nothing
-	 */
-	void startNewTemperatureConversion();
 
 	/*!
 	 * @brief Temperature calculation function

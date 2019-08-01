@@ -33,7 +33,7 @@ Bmp180::Bmp180()
 	i2c_drv_ptr = p_global_BSW_i2c;
 
 	/* Set status to OK */
-	status = OK;
+	status = IDLE;
 
 	/* Read chip ID */
 	chip_id = 0;
@@ -53,15 +53,16 @@ Bmp180::Bmp180()
 	pressure_value.value = 0;
 	pressure_value.ts = 0;
 
-	/* No conversion is in progress */
-	conversionInProgress = NONE;
+	/* Add monitoring function into scheduler */
+	task_period = BMP180_MONITORING_DEFAULT_PERIOD;
+	p_global_scheduler->addPeriodicTask((TaskPtr_t)(&Bmp180::Bmp180Monitoring_Task), task_period);
 }
 
 void Bmp180::readCalibData()
 {
 	bool ret_status;
 
-	if(status == OK)
+	if(status == IDLE)
 	{
 		uint8_t buf_calib_data[sizeof(T_BMP180_calib_data)];
 		ret_status = i2c_drv_ptr->writeByte(BMP180_CHIP_ID_CALIB_EEP_START_ADDR, BMP180_I2C_ADDR, false);
@@ -84,7 +85,7 @@ void Bmp180::readCalibData()
 
 				/* If the status is still OK, copy the buffer into the calibration data structure
 				 * An inversion is done between MSB and LSB during the copy because AtMega2560 is little endian */
-				if(status == OK)
+				if(status == IDLE)
 				{
 					uint8_t* ptr = (uint8_t*)&calibration_data;
 					for(uint8_t i=0; i<sizeof(T_BMP180_calib_data); i=i+2)
@@ -107,7 +108,7 @@ void Bmp180::readChipID()
 {
 	bool ret_status;
 
-	if(status == OK)
+	if(status == IDLE)
 	{
 		ret_status = i2c_drv_ptr->writeByte(BMP180_CHIP_ID_EEP_ADDR, BMP180_I2C_ADDR, false);
 
@@ -124,34 +125,16 @@ void Bmp180::readChipID()
 
 bool Bmp180::getTemperatureValue(uint16_t* data)
 {
-	bool retval = false;
+	*data = temperature_value.value;
 
-	/* If the status is not OK, no value is returned */
-	if(status == OK)
-	{
-		/* Data is returned only if a measurement is ready */
-		if(temperature_value.ready)
-		{
-			retval = true;
-			*data = temperature_value.value;
-		}
-
-		/* Value is valid for only x PITs */
-		if(p_global_scheduler->getPitNumber() - temperature_value.ts > BMP180_DATA_VALIDITY_TMO)
-			temperature_value.ready = false;
-
-		/* A new measurement is started */
-		startNewTemperatureConversion();
-	}
-
-	return retval;
+	return temperature_value.ready;
 }
 
 void Bmp180::startNewTemperatureConversion()
 {
 	bool ret_status;
 
-	if((status == OK) && (conversionInProgress == NONE))
+	if(status == IDLE)
 	{
 		uint8_t data[2] = {BMP180_CTRL_MEAS_EEP_ADDR, BMP180_CTRL_MEAS_START_TEMP_CONV};
 		ret_status = i2c_drv_ptr->write(data, BMP180_I2C_ADDR, 2, true);
@@ -161,7 +144,7 @@ void Bmp180::startNewTemperatureConversion()
 		{
 			p_global_BSW_timer->configureTimer3(BMP180_TIMER_PRESCALER_VALUE, BMP180_TEMP_MEAS_TIMER_CTC_VALUE);
 			p_global_BSW_timer->startTimer3();
-			conversionInProgress = TEMPERATURE;
+			status = TEMP_CONV_IN_PROGRESS;
 		}
 		else
 			status = COMM_FAILED;
@@ -176,7 +159,7 @@ void Bmp180::conversionTimerInterrupt()
 	p_global_BSW_timer->stopTimer3();
 
 	/* If driver status is OK and a conversion is in progress */
-	if((status == OK) && (conversionInProgress != NONE))
+	if(status != COMM_FAILED)
 	{
 		/* Read the result in sensor EEPROM */
 		ret_status = i2c_drv_ptr->writeByte(BMP180_OUT_REG_LSB_EEPROM_ADDR, BMP180_I2C_ADDR, false);
@@ -196,9 +179,10 @@ void Bmp180::conversionTimerInterrupt()
 					{
 						uint16_t RawValue = (msb << 8) + lsb;
 						/* Convert the value in real temperature or pressure */
-						if(conversionInProgress == TEMPERATURE)
+						if(status == TEMP_CONV_IN_PROGRESS)
 							CalculateTemperature(RawValue);
 
+						status = IDLE;
 					}
 					else
 						status = COMM_FAILED;
@@ -212,7 +196,6 @@ void Bmp180::conversionTimerInterrupt()
 		else
 			status = COMM_FAILED;
 
-		conversionInProgress = NONE;
 		/* TODO : conversion in progress flag could be put in driver status */
 	}
 }
@@ -225,4 +208,20 @@ void Bmp180::CalculateTemperature(uint16_t UT)
 	temperature_value.value = (uint16_t)((B5 + 8)/(16));
 	temperature_value.ready = true;
 	temperature_value.ts = p_global_scheduler->getPitNumber();
+}
+
+void Bmp180::Bmp180Monitoring_Task()
+{
+	/* If the status is equal to IDLE, start a new temperature conversion */
+	if(p_global_BSW_bmp180->getStatus() == IDLE)
+		p_global_BSW_bmp180->startNewTemperatureConversion();
+
+	/* Monitoring of temperature value */
+	p_global_BSW_bmp180->TemperatureMonitoring();
+}
+
+void Bmp180::TemperatureMonitoring()
+{
+	if(p_global_scheduler->getPitNumber() - temperature_value.ts > ((task_period/SW_PERIOD_MS)*2) )
+		temperature_value.ready = false;
 }
