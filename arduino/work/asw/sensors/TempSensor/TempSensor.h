@@ -23,7 +23,8 @@ public:
 
 	/*!
 	 * @brief Class constructor
-	 * @details This function initializes all data of the class TempSensor. If needed, it creates a new instance of the DHT22 sensor object. It also adds the periodic task in the scheduler.
+	 * @details This function initializes all data of the class TempSensor. If needed, it creates a new instance of the DHT22 and BMP180 sensors objects.
+	 * 			It also adds the periodic task in the scheduler.
 	 * @return Nothing
 	 */
 	TempSensor();
@@ -31,14 +32,16 @@ public:
 	/*!
 	 * @brief Overloaded class constructor
 	 * @details This function initializes all data of the class TempSensor. It sets validity timeout and task period to the given value.
-	 * 			If needed, it creates a new instance of the DHT22 sensor object. It also adds the periodic task in the scheduler.
+	 * 			If needed, it creates a new instance of the DHT22 and BMP180 sensor objects.
+	 * 			It also adds the periodic task in the scheduler.
 	 * @return Nothing
 	 */
 	TempSensor(uint16_t val_tmo, uint16_t period);
 
 	/*!
 	 * @brief Task for reading temperature values
-	 * @details This task reads temperature data using DHT22 driver. It is called periodically.
+	 * @details This task reads temperature data using DHT22 and BMP180 drivers. It is called periodically.
+	 * 			The returned temperature is the mean between both sensors values, if only one sensor is valid, only this value is used .
 	 * @return Nothing
 	 */
 	static void readTempSensor_task();

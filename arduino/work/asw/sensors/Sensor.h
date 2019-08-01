@@ -32,7 +32,7 @@ public:
 	 * @details This function initializes the class. It sets validity timeout and task period to the given value.
 	 *
 	 * @param [in] val_tmo Validity timeout
-	 * @param [in] task_period Task period
+	 * @param [in] period Task period
 	 * @return Nothing
 	 */
 	Sensor(uint16_t val_tmo, uint16_t period);

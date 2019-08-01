@@ -14,13 +14,11 @@
 #include "../../../lib/String/String.h"
 #include "../../../scheduler/scheduler.h"
 
-#include "../../../bsw/usart/usart.h"
 #include "../../../bsw/dio/dio.h"
 #include "../../../bsw/dht22/dht22.h"
 #include "../../../bsw/I2C/I2C.h"
 #include "../../../bsw/bmp180/Bmp180.h"
 
-#include "../../debug_ift/DebugInterface.h"
 #include "../../sensors_mgt/SensorManagement.h"
 #include "../Sensor.h"
 #include "TempSensor.h"

@@ -10,15 +10,13 @@
 #include <avr/io.h>
 
 #include "../../lib/LinkedList/LinkedList.h"
-#include "../../lib/String/String.h"
 #include "../../scheduler/scheduler.h"
 
 #include "../I2C/I2C.h"
 #include "../timer/timer.h"
 #include "Bmp180.h"
 
-#include "../usart/usart.h"
-#include "../../asw/debug_ift/DebugInterface.h"
+
 
 Bmp180* p_global_BSW_bmp180;
 
