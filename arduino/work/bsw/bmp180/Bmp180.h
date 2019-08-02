@@ -145,6 +145,14 @@ public:
 	void ActivateTemperatureConversion(uint16_t req_period);
 
 	/*!
+	 * @brief Temperature conversion stop function
+	 * @details This function stops or the periodic start of temperature conversion.
+	 *
+	 * @return Nothing
+	 */
+	void StopTemperatureConversion();
+
+	/*!
 	 * @brief Temperature conversion activation flag get function
 	 * @details This function returns the activation status of the temperature conversion.
 	 *

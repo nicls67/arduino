@@ -237,3 +237,8 @@ void Bmp180::ActivateTemperatureConversion(uint16_t req_period)
 	task_period = req_period;
 	p_global_scheduler->updateTaskPeriod((TaskPtr_t)(&Bmp180::Bmp180Monitoring_Task), task_period);
 }
+
+void Bmp180::StopTemperatureConversion()
+{
+	isTempConvActivated = false;
+}
