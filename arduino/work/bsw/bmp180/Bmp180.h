@@ -167,9 +167,9 @@ private:
 	 */
 	typedef struct
 	{
-		uint16_t value;
-		bool ready;
-		uint32_t ts;
+		uint16_t value; /*!< Last measurement value */
+		bool ready; /*!< Measurement readiness flag */
+		uint32_t ts; /*!< Time stamp of last measurement */
 	}
 	T_BMP180_measurement_data;
 
