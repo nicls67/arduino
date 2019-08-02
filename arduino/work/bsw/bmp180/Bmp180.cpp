@@ -53,6 +53,10 @@ Bmp180::Bmp180()
 	pressure_value.value = 0;
 	pressure_value.ts = 0;
 
+	/* Initialize activation flags */
+	isTempConvActivated = false;
+	isPressConvActivated = false;
+
 	/* Add monitoring function into scheduler */
 	task_period = BMP180_MONITORING_DEFAULT_PERIOD;
 	p_global_scheduler->addPeriodicTask((TaskPtr_t)(&Bmp180::Bmp180Monitoring_Task), task_period);
@@ -195,8 +199,6 @@ void Bmp180::conversionTimerInterrupt()
 		}
 		else
 			status = COMM_FAILED;
-
-		/* TODO : conversion in progress flag could be put in driver status */
 	}
 }
 
@@ -213,7 +215,7 @@ void Bmp180::CalculateTemperature(uint16_t UT)
 void Bmp180::Bmp180Monitoring_Task()
 {
 	/* If the status is equal to IDLE, start a new temperature conversion */
-	if(p_global_BSW_bmp180->getStatus() == IDLE)
+	if((p_global_BSW_bmp180->getStatus() == IDLE) && p_global_BSW_bmp180->isTempConversionActivated())
 		p_global_BSW_bmp180->startNewTemperatureConversion();
 
 	/* Monitoring of temperature value */
@@ -224,4 +226,14 @@ void Bmp180::TemperatureMonitoring()
 {
 	if(p_global_scheduler->getPitNumber() - temperature_value.ts > ((task_period/SW_PERIOD_MS)*2) )
 		temperature_value.ready = false;
+}
+
+void Bmp180::ActivateTemperatureConversion(uint16_t req_period)
+{
+	isTempConvActivated = true;
+
+	/* Currently task period is updated directly,
+	 * then pressure and temperature conversion have always the same period */
+	task_period = req_period;
+	p_global_scheduler->updateTaskPeriod((TaskPtr_t)(&Bmp180::Bmp180Monitoring_Task), task_period);
 }

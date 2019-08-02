@@ -14,11 +14,13 @@
 #include "../../../lib/String/String.h"
 #include "../../../scheduler/scheduler.h"
 
+#include "../../../bsw/usart/usart.h"
 #include "../../../bsw/dio/dio.h"
 #include "../../../bsw/dht22/dht22.h"
 #include "../../../bsw/I2C/I2C.h"
 #include "../../../bsw/bmp180/Bmp180.h"
 
+#include "../../debug_ift/DebugInterface.h"
 #include "../../sensors_mgt/SensorManagement.h"
 #include "../Sensor.h"
 #include "TempSensor.h"
@@ -36,6 +38,8 @@ TempSensor::TempSensor() : Sensor()
 	if(p_global_BSW_bmp180 == 0)
 		p_global_BSW_bmp180 = new Bmp180();
 
+	p_global_BSW_bmp180->ActivateTemperatureConversion(task_period);
+
 	/* Add task to scheduler */
 	p_global_scheduler->addPeriodicTask((TaskPtr_t)(&TempSensor::readTempSensor_task), task_period);
 
@@ -50,6 +54,8 @@ TempSensor::TempSensor(uint16_t val_tmo, uint16_t period) : Sensor(val_tmo, peri
 	/* Create new instance of BMP180 sensor object */
 	if(p_global_BSW_bmp180 == 0)
 		p_global_BSW_bmp180 = new Bmp180();
+
+	p_global_BSW_bmp180->ActivateTemperatureConversion(task_period);
 
 	/* Add task to scheduler */
 	p_global_scheduler->addPeriodicTask((TaskPtr_t)(&TempSensor::readTempSensor_task), task_period);
@@ -101,6 +107,10 @@ void TempSensor::readTempSensor_task()
 
 		/* Update validity data */
 		temp_ptr->updateValidData();
+
+		p_global_ASW_DebugInterface->sendInteger(temperature1, 10);
+		p_global_ASW_DebugInterface->sendInteger(temperature2, 10);
+		p_global_ASW_DebugInterface->nextLine();
 
 	}
 

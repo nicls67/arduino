@@ -135,11 +135,33 @@ public:
 	 */
 	void TemperatureMonitoring();
 
+	/*!
+	 * @brief Temperature conversion activation function
+	 * @details This function activates or the periodic start of temperature conversion. The requested period is transmitted in parameter.
+	 *
+	 * @param [in] req_period Requested period for temperature conversion
+	 * @return Nothing
+	 */
+	void ActivateTemperatureConversion(uint16_t req_period);
+
+	/*!
+	 * @brief Temperature conversion activation flag get function
+	 * @details This function returns the activation status of the temperature conversion.
+	 *
+	 * @return True if temperature conversion is activated, false otherwise.
+	 */
+	inline bool isTempConversionActivated()
+	{
+		return isTempConvActivated;
+	}
+
 private:
 	I2C* i2c_drv_ptr; /*!< Pointer to the I2C driver object */
 	uint8_t chip_id; /*!< Sensor chip ID */
 	T_BMP180_status status; /*!< Sensor status */
 	uint16_t task_period; /*!< Period of the monitoring task */ /*TODO : add update of period */
+	bool isTempConvActivated; /*!< Temperature conversion activation flag */
+	bool isPressConvActivated; /*!< Pressure conversion activation flag */
 
 	/*!
 	 * @brief Structure defining the calibration data of BMP180 sensor
