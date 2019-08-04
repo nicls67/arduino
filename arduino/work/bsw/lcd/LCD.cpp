@@ -9,7 +9,6 @@
 
 #include <util/delay.h>
 #include <avr/io.h>
-#include <avr/interrupt.h>
 
 #include "../I2C/I2C.h"
 #include "LCD.h"
@@ -65,14 +64,8 @@ void LCD::write(uint8_t data, T_LCD_config_mode mode)
 	uint8_t high = data & 0b11110000;
 	uint8_t low = (data << 4) & 0b11110000;
 
-	/* Disable interrupt during the communication */
-	cli();
-
 	write4bits(high | (mode << RS_PIN));
 	write4bits(low | (mode << RS_PIN));
-
-	/* Re-enable interrupts at the end of communication */
-	sei();
 }
 
 

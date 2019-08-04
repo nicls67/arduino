@@ -8,6 +8,7 @@
  */
 
 #include <avr/io.h>
+#include <avr/interrupt.h>
 
 #include "I2C.h"
 
@@ -27,6 +28,8 @@ bool I2C::writeByte(uint8_t data, uint8_t tx_address, bool sendStopCond)
 
 bool I2C::write(uint8_t* data, uint8_t tx_address, uint8_t size, bool sendStopCond)
 {
+	/* Disable interrupt during the communication */
+	cli();
 
 	/* Send START condition */
 	TWCR = (1<<TWINT)|(1<<TWSTA)|(1<<TWEN);
@@ -69,11 +72,17 @@ bool I2C::write(uint8_t* data, uint8_t tx_address, uint8_t size, bool sendStopCo
 	if(sendStopCond)
 		TWCR = (1<<TWINT)|(1<<TWEN)|(1<<TWSTO);
 
+	/* Re-enable interrupts at the end of communication */
+	sei();
+
 	return true;
 }
 
 bool I2C::read(uint8_t i2c_address, uint8_t size, uint8_t* buf_ptr)
 {
+	/* Disable interrupt during the communication */
+	cli();
+
 	uint8_t idx = 0;
 
 	/* Send START condition */
@@ -117,6 +126,9 @@ bool I2C::read(uint8_t i2c_address, uint8_t size, uint8_t* buf_ptr)
 
 	/* Send STOP condition */
 	TWCR = (1<<TWINT)|(1<<TWEN)|(1<<TWSTO);
+
+	/* Re-enable interrupts at the end of communication */
+	sei();
 
 	return true;
 }
