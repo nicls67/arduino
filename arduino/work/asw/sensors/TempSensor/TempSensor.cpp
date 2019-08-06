@@ -14,13 +14,11 @@
 #include "../../../lib/String/String.h"
 #include "../../../scheduler/scheduler.h"
 
-#include "../../../bsw/usart/usart.h"
 #include "../../../bsw/dio/dio.h"
 #include "../../../bsw/dht22/dht22.h"
 #include "../../../bsw/I2C/I2C.h"
 #include "../../../bsw/bmp180/Bmp180.h"
 
-#include "../../debug_ift/DebugInterface.h"
 #include "../../sensors_mgt/SensorManagement.h"
 #include "../Sensor.h"
 #include "TempSensor.h"
@@ -78,7 +76,7 @@ void TempSensor::readTempSensor_task()
 		if(val1 && val2)
 		{
 			if(((temperature1 > temperature2) && ((temperature1 - temperature2) < TEMP_SENSOR_VALUE_ACCEPTABLE_DIFFERENCE))
-				|| ((temperature1 < temperature2) && ((temperature2 - temperature1) < TEMP_SENSOR_VALUE_ACCEPTABLE_DIFFERENCE)))
+				|| ((temperature1 <= temperature2) && ((temperature2 - temperature1) < TEMP_SENSOR_VALUE_ACCEPTABLE_DIFFERENCE)))
 			{
 				/* Sensors return similar values, set validity to true and update sensor value */
 				temp_ptr->setLastValidity(true);
@@ -107,17 +105,12 @@ void TempSensor::readTempSensor_task()
 
 		/* Update validity data */
 		temp_ptr->updateValidData();
-
-		p_global_ASW_DebugInterface->sendInteger(temperature1, 10);
-		p_global_ASW_DebugInterface->sendInteger(temperature2, 10);
-		p_global_ASW_DebugInterface->nextLine();
-
 	}
 
 }
 
 
-
+/* TODO : also update BMP180 period */
 bool TempSensor::updateTaskPeriod(uint16_t period)
 {
 	task_period = period;
