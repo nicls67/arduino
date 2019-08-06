@@ -104,29 +104,6 @@ void Bmp180::readCalibData()
 		else
 			status = COMM_FAILED;
 	}
-
-//	p_global_ASW_DebugInterface->sendInteger(calibration_data.AC1,10);
-//	p_global_ASW_DebugInterface->nextLine();
-//	p_global_ASW_DebugInterface->sendInteger(calibration_data.AC2,10);
-//	p_global_ASW_DebugInterface->nextLine();
-//	p_global_ASW_DebugInterface->sendInteger(calibration_data.AC3,10);
-//	p_global_ASW_DebugInterface->nextLine();
-//	p_global_ASW_DebugInterface->sendInteger(calibration_data.AC4,10);
-//	p_global_ASW_DebugInterface->nextLine();
-//	p_global_ASW_DebugInterface->sendInteger(calibration_data.AC5,10);
-//	p_global_ASW_DebugInterface->nextLine();
-//	p_global_ASW_DebugInterface->sendInteger(calibration_data.AC6,10);
-//	p_global_ASW_DebugInterface->nextLine();
-//	p_global_ASW_DebugInterface->sendInteger(calibration_data.B1,10);
-//	p_global_ASW_DebugInterface->nextLine();
-//	p_global_ASW_DebugInterface->sendInteger(calibration_data.B2,10);
-//	p_global_ASW_DebugInterface->nextLine();
-//	p_global_ASW_DebugInterface->sendInteger(calibration_data.MB,10);
-//	p_global_ASW_DebugInterface->nextLine();
-//	p_global_ASW_DebugInterface->sendInteger(calibration_data.MC,10);
-//	p_global_ASW_DebugInterface->nextLine();
-//	p_global_ASW_DebugInterface->sendInteger(calibration_data.MD,10);
-//	p_global_ASW_DebugInterface->nextLine();
 }
 
 void Bmp180::readChipID()
@@ -338,6 +315,7 @@ void Bmp180::ActivateTemperatureConversion(uint16_t req_period)
 void Bmp180::ActivatePressureConversion(uint16_t req_period)
 {
 	isPressConvActivated = true;
+	isTempConvActivated = true; /* Temperature conversion needs to be activated to read pressure */
 
 	/* Currently task period is updated directly,
 	 * then pressure and temperature conversion have always the same period */
@@ -347,7 +325,9 @@ void Bmp180::ActivatePressureConversion(uint16_t req_period)
 
 void Bmp180::StopTemperatureConversion()
 {
-	isTempConvActivated = false;
+	/* Disable temperature conversion only is pressure conversion is also disabled */
+	if(!isPressConvActivated)
+		isTempConvActivated = false;
 }
 
 void Bmp180::StopPressureConversion()

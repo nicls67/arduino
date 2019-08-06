@@ -47,7 +47,7 @@ T_BMP180_status;
 
 /* TODO : add monitoring of driver status : reset comm in case of failure, also for LCD ! */
 /* TODO : add management of OSS for pressure */
-/* TODO : what happens if temp measurement is not activated and pressure is */
+/* TODO : check task period update between pressure and temp */
 
 /*!
  * @brief BMP180 sensor class definition
@@ -178,7 +178,7 @@ public:
 
 	/*!
 	 * @brief Pressure conversion activation function
-	 * @details This function activates or the periodic start of pressure conversion. The requested period is transmitted in parameter.
+	 * @details This function activates or the periodic start of pressure and temperature conversion. The requested period is transmitted in parameter.
 	 *
 	 * @param [in] req_period Requested period for pressure conversion
 	 * @return Nothing
@@ -187,7 +187,7 @@ public:
 
 	/*!
 	 * @brief Temperature conversion stop function
-	 * @details This function stops or the periodic start of temperature conversion.
+	 * @details This function stops or the periodic start of temperature conversion, only if pressure conversion is also disabled.
 	 *
 	 * @return Nothing
 	 */
