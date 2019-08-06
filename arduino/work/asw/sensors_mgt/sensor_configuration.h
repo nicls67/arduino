@@ -24,7 +24,7 @@ typedef struct
 }
 T_SensorManagement_Sensor_Config;
 
-extern T_SensorManagement_Sensor_Config SensorManagement_Sensor_Config_list[2];
+extern T_SensorManagement_Sensor_Config SensorManagement_Sensor_Config_list[3];
 
 
 #endif /* WORK_ASW_SENSORS_MGT_SENSOR_CONFIGURATION_H_ */

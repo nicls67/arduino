@@ -22,20 +22,27 @@
 /*!
  * @brief Sensor configuration table
  */
-T_SensorManagement_Sensor_Config SensorManagement_Sensor_Config_list[2] =
+T_SensorManagement_Sensor_Config SensorManagement_Sensor_Config_list[3] =
 {
 		{
 				TEMPERATURE,
 				SENSOR_MGT_CNF_DEFAULT_PERIOD,
 				SENSOR_MGT_CNF_DEFAULT_TMO,
-				(uint8_t*)"Temperature",
+				(uint8_t*)"T",
 				(uint8_t*)"degC"
 		},
 		{
 				HUMIDITY,
 				SENSOR_MGT_CNF_DEFAULT_PERIOD,
 				SENSOR_MGT_CNF_DEFAULT_TMO,
-				(uint8_t*)"Humidite",
+				(uint8_t*)"H",
 				(uint8_t*)"%"
+		},
+		{
+				PRESSURE,
+				SENSOR_MGT_CNF_DEFAULT_PERIOD,
+				SENSOR_MGT_CNF_DEFAULT_TMO,
+				(uint8_t*)"P",
+				(uint8_t*)"hPa"
 		}
 };

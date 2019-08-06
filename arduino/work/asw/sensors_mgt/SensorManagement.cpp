@@ -16,6 +16,7 @@
 #include "../sensors/Sensor.h"
 #include "../sensors/TempSensor/TempSensor.h"
 #include "../sensors/HumSensor/HumSensor.h"
+#include "../sensors/PressSensor/PressSensor.h"
 
 #include "SensorManagement.h"
 #include "sensor_configuration.h"
@@ -44,6 +45,12 @@ SensorManagement::SensorManagement()
 			{
 			HumSensor* hum_ptr = new HumSensor(SensorManagement_Sensor_Config_list[i].validity_tmo, SensorManagement_Sensor_Config_list[i].period);
 			sensor_ptr_table[i] = hum_ptr;
+			}
+			break;
+		case PRESSURE :
+			{
+			PressSensor* press_ptr = new PressSensor(SensorManagement_Sensor_Config_list[i].validity_tmo, SensorManagement_Sensor_Config_list[i].period);
+			sensor_ptr_table[i] = press_ptr;
 			}
 			break;
 		}

@@ -17,7 +17,8 @@
 typedef enum
 {
 	TEMPERATURE,
-	HUMIDITY
+	HUMIDITY,
+	PRESSURE
 }
 T_SensorManagement_Sensor_Type;
 
