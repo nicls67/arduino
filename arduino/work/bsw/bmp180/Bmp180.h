@@ -25,8 +25,8 @@
 #define BMP180_PRESS_MEAS_OSS0_WAITING_TIME 15 /*!< Waiting time for a pressure conversion with parameter OSS0 */
 
 #define BMP180_TIMER_PRESCALER_VALUE 64 /*!< Value of prescaler to use for timer */
-#define BMP180_TEMP_MEAS_TIMER_CTC_VALUE ((F_CPU/BMP180_TIMER_PRESCALER_VALUE)/(1000/BMP180_TEMP_MEAS_WAITING_TIME)) /**< Compare value for periodic timer in case of temperature conversion */
-#define BMP180_PRESS_MEAS_OSS0_TIMER_CTC_VALUE ((F_CPU/BMP180_TIMER_PRESCALER_VALUE)/(1000/BMP180_PRESS_MEAS_OSS0_WAITING_TIME)) /**< Compare value for periodic timer in case of pressure conversion with parameter OSS0 */
+#define BMP180_TEMP_MEAS_TIMER_CTC_VALUE ((F_CPU/BMP180_TIMER_PRESCALER_VALUE)/(1000/BMP180_TEMP_MEAS_WAITING_TIME)) /*!< Compare value for periodic timer in case of temperature conversion */
+#define BMP180_PRESS_MEAS_OSS0_TIMER_CTC_VALUE ((F_CPU/BMP180_TIMER_PRESCALER_VALUE)/(1000/BMP180_PRESS_MEAS_OSS0_WAITING_TIME)) /*!< Compare value for periodic timer in case of pressure conversion with parameter OSS0 */
 
 #define BMP180_OUT_REG_LSB_EEPROM_ADDR 0xF7 /*!< Address of LSB out register */
 #define BMP180_OUT_REG_MSB_EEPROM_ADDR 0xF6 /*!< Address of MSB out register */
