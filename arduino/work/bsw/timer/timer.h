@@ -45,6 +45,15 @@ public:
 	void configureTimer3(uint16_t a_prescaler, uint16_t a_ctcValue);
 
 	/*!
+	 * @brief Configures Timer #4
+	 * @details This function configures hardware timer #4 in CTC mode, enables its interrupts, sets prescaler to a_prescaler and CTC value to a_ctcValue
+	 * @param [in] a_prescaler prescaler value
+	 * @param [in] a_ctcValue Value to which the counter will compare before raising an interrupt
+	 * @return Nothing
+	 */
+	void configureTimer4(uint16_t a_prescaler, uint16_t a_ctcValue);
+
+	/*!
 	 * @brief Start Timer #1
 	 * @details This functions starts Timer #1. Timer shall be initialized before this function is called.
 	 * @return Nothing
@@ -57,6 +66,13 @@ public:
 	 * @return Nothing
 	 */
 	void startTimer3();
+
+	/*!
+	 * @brief Start Timer #4
+	 * @details This functions starts Timer #4. Timer shall be initialized before this function is called.
+	 * @return Nothing
+	 */
+	void startTimer4();
 
 	/*!
 	 * @brief Stops Timer #1
@@ -73,6 +89,13 @@ public:
 	void stopTimer3();
 
 	/*!
+	 * @brief Stops Timer #4
+	 * @details This functions stops timer #4 by resetting bits 0-2 of TCCR3B
+	 * @return Nothing
+	 */
+	void stopTimer4();
+
+	/*!
 	 * @brief Reads current value of timer #1
 	 * @details This function reads the value of of timer #1 using register TCNT1. The function is inlined to speed up SW execution.
 	 *
@@ -86,6 +109,7 @@ public:
 private:
 	uint8_t prescaler1;
 	uint8_t prescaler3;
+	uint8_t prescaler4;
 
 };
 
