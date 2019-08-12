@@ -22,6 +22,8 @@
 #include "../display_ift/DisplayInterface.h"
 #include "DisplayManagement.h"
 
+#include "../time_mgt/TimeManagement.h"
+
 DisplayManagement* p_global_ASW_DisplayManagement;
 
 const uint8_t welcomeMessageString[] = "Bienvenue !"; /*!< String displayed on the screen at startup */
@@ -74,6 +76,7 @@ void DisplayManagement::DisplaySensorData_Task()
 	DisplayInterface* displayIft_ptr = p_global_ASW_DisplayManagement->GetIftPointer();
 	SensorManagement* sensor_ptr = p_global_ASW_DisplayManagement->GetSensorMgtPtr();
 
+	/* Display sensor data */
 	if(sensor_ptr !=0)
 	{
 		for(uint8_t i=0; i<sensor_ptr->getSensorCount(); i++)
@@ -86,5 +89,11 @@ void DisplayManagement::DisplaySensorData_Task()
 	else
 		displayIft_ptr->DisplayFullLine((uint8_t*)noSensorsDisplayString, sizeof(noSensorsDisplayString)/sizeof(uint8_t) - 1, DISPLAY_MGT_FIRST_LINE_SENSORS, GO_TO_NEXT_LINE);
 
+	/* TODO : position of time and date must depend of the number of sensors displayed */
+
+	/* Display time */
+	String str;
+	p_global_ASW_TimeManagement->FormatTimeString(&str, ':', true, false);
+	displayIft_ptr->DisplayFullLine(&str, 3, NORMAL);
 
 }
