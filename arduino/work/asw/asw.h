@@ -20,6 +20,7 @@ typedef struct
 	bool isLEDActivated; /*!< Keep-alive LED activation flag */
 	bool isSensorMgtActivated; /*!< Sensor activation */
 	bool isDisplayActivated; /*!< LCD display activation flag */
+	bool isTimeMgtActivated; /*!< Time management activation */
 }
 T_ASW_init_cnf;
 

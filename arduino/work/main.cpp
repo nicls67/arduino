@@ -32,7 +32,8 @@ const T_ASW_init_cnf ASW_init_cnf =
 	true, 	/* Debug services*/
 	true, 	/* LED */
 	true, 	/* Sensor management */
-	true  	/* Display */
+	true,  	/* Display */
+	true	/* Time management */
 };
 
 /* TODO : add the possibility to activate/deactivate ASW functions dynamically in debug menu */
