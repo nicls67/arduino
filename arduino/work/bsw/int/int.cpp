@@ -19,6 +19,7 @@
 #include "../usart/usart.h"
 #include "../I2C/I2C.h"
 #include "../bmp180/Bmp180.h"
+#include "../clock/Clock.h"
 
 #include "../../asw/sensors_mgt/SensorManagement.h"
 #include "../../asw/debug_ift/DebugInterface.h"
@@ -46,6 +47,16 @@ ISR(TIMER1_COMPA_vect)
 ISR(TIMER3_COMPA_vect)
 {
 	p_global_BSW_bmp180->conversionTimerInterrupt();
+}
+
+/*!
+ * @brief Clock periodic interrupt
+ * @details This function calls increments the clock counter at the end of the period.
+ * @return Nothing
+ */
+ISR(TIMER4_COMPA_vect)
+{
+	p_global_BSW_Clock->incrementCounter();
 }
 
 

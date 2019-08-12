@@ -21,6 +21,7 @@
 #include "cpuLoad/CpuLoad.h"
 #include "wdt/Watchdog.h"
 #include "bmp180/Bmp180.h"
+#include "clock/Clock.h"
 
 #include "bsw.h"
 
@@ -38,5 +39,6 @@ void bsw_init()
 	p_global_BSW_usart = 0;
 	p_global_BSW_dht22 = 0;
 	p_global_BSW_bmp180 = 0;
+	p_global_BSW_Clock = 0;
 }
 
