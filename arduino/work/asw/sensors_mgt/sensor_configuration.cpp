@@ -16,7 +16,7 @@
 #include "SensorManagement.h"
 #include "sensor_configuration.h"
 
-#define SENSOR_MGT_CNF_DEFAULT_PERIOD 1000 /*!< Default period for sensors task */
+#define SENSOR_MGT_CNF_DEFAULT_PERIOD 3000 /*!< Default period for sensors task */
 #define SENSOR_MGT_CNF_DEFAULT_TMO 15000 /*!< Default timeout value for sensors */
 
 /*!

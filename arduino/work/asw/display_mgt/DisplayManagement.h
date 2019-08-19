@@ -12,7 +12,7 @@
 
 #define DISPLAY_MGT_LCD_I2C_ADDR 0x27 /*!< I2C address of the screen */
 
-#define DISPLAY_MGT_PERIOD_TASK_SENSOR 1000 /*!< Display is updated every 1.5s */
+#define DISPLAY_MGT_PERIOD_TASK_SENSOR 500 /*!< Display is updated every 0.5s */
 #define DISPLAY_MGT_PERIOD_WELCOME_MSG_REMOVAL 5000 /*!< Time after which one the welcome message is removed */
 
 #define DISPLAY_MGT_FIRST_LINE_SENSORS 0 /*!< Sensors data are displayed starting on line 0 */
