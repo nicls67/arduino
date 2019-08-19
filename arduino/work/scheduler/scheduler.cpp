@@ -48,7 +48,7 @@ scheduler::scheduler()
 	task_count = 0;
 
 	/* Configure timer for periodic interrupt */
-	p_global_BSW_timer->configureTimer1(PRESCALER_PERIODIC_TIMER, TIMER_CTC_VALUE);
+	p_global_BSW_timer->configureTimer4(PRESCALER_PERIODIC_TIMER, TIMER_CTC_VALUE);
 }
 
 void scheduler::launchPeriodicTasks()
@@ -92,7 +92,7 @@ void scheduler::launchPeriodicTasks()
 
 void scheduler::startScheduling()
 {
-	p_global_BSW_timer->startTimer1();
+	p_global_BSW_timer->startTimer4();
 }
 
 

@@ -31,10 +31,10 @@
 
 /*!
  * @brief Main software interrupt
- * @details This function handles the interrupt raised by Timer #1. It wakes up the software every 500 ms to perform applications.
+ * @details This function handles the interrupt raised by Timer #4. It wakes up the software every 500 ms to perform applications.
  * @return Nothing
  */
-ISR(TIMER1_COMPA_vect)
+ISR(TIMER4_COMPA_vect)
 {
 	p_global_scheduler->launchPeriodicTasks();
 }
@@ -54,7 +54,7 @@ ISR(TIMER3_COMPA_vect)
  * @details This function calls increments the clock counter at the end of the period.
  * @return Nothing
  */
-ISR(TIMER4_COMPA_vect)
+ISR(TIMER1_COMPA_vect)
 {
 	p_global_BSW_Clock->incrementCounter();
 }

@@ -106,6 +106,17 @@ public:
 		return TCNT1;
 	}
 
+	/*!
+	 * @brief Reads current value of timer #4
+	 * @details This function reads the value of of timer #4 using register TCNT4. The function is inlined to speed up SW execution.
+	 *
+	 * @return Current timer value
+	 */
+	inline uint16_t getTimer4Value()
+	{
+		return TCNT4;
+	}
+
 private:
 	uint8_t prescaler1;
 	uint8_t prescaler3;

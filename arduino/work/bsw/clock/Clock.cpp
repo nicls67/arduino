@@ -25,7 +25,7 @@ Clock::Clock()
 		p_global_BSW_timer = new timer();
 
 	/* Configure and start timer */
-	p_global_BSW_timer->configureTimer4(CLOCK_TIMER_PRESCALER_VALUE, CLOCK_TIMER_CTC_VALUE);
-	p_global_BSW_timer->startTimer4();
+	p_global_BSW_timer->configureTimer1(CLOCK_TIMER_PRESCALER_VALUE, CLOCK_TIMER_CTC_VALUE);
+	p_global_BSW_timer->startTimer1();
 }
 

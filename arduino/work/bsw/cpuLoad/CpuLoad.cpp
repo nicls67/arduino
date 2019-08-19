@@ -39,7 +39,7 @@ CpuLoad::CpuLoad()
 
 void CpuLoad::ComputeCPULoad()
 {
-	uint16_t counter_value = p_global_BSW_timer->getTimer1Value();
+	uint16_t counter_value = p_global_BSW_timer->getTimer4Value();
 
 	/* Compute current load */
 	current_load = (uint8_t)((uint32_t)(counter_value * 100) / (uint32_t)TIMER_CTC_VALUE);
